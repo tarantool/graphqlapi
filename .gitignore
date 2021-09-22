@@ -23,5 +23,4 @@ node_modules
 .history
 .vscode
 build.luarocks/
-Makefile
 *.rock
