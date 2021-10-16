@@ -27,5 +27,4 @@ return setmetatable({
     init = init,
     apply_config = apply_config,
     stop = stop,
-    reloadable = true,
 }, { __index = graphqlapi })
