@@ -299,7 +299,7 @@ local function getFieldEntry(objectType, object, fields, context)
   local directivesDefaultValues = {}
 
   if next(directiveMap) then
-    util.map_name(context.schema.directives or {}, function(directive, directive_name)
+    util.map_by_name(context.schema.directives or {}, function(directive, directive_name)
       local supplied_directive = directiveMap[directive_name]
       if supplied_directive ~= nil then
         local directiveArgumentMap = {}

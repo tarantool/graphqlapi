@@ -117,7 +117,9 @@ function schema:generateDirectiveMap()
           -- END_HACK: resolve type names to real types
 
           local argumentType = argument.__type and argument or argument.kind
-          assert(argumentType, 'Must supply type for argument "' .. name .. '" on "' .. directive.name .. '"')
+          if argumentType == nil then
+            error('Must supply type for argument "' .. name .. '" on "' .. directive.name .. '"')
+          end
           argumentType.defaultValue = argument.defaultValue
           self:generateTypeMap(argumentType)
       end

@@ -291,7 +291,7 @@ __Type = types.object({
         arguments = {
           includeDeprecated = {
             kind = types.boolean,
-            defaultValue = false
+            defaultValue = false,
           }
         },
         resolve = function(kind, arguments)

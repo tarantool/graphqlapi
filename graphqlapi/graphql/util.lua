@@ -11,9 +11,9 @@ local function map(t, fn)
   return res
 end
 
-local function map_name(t, fn)
+local function map_by_name(t, fn)
   local res = {}
-  for _, v in ipairs(t) do
+  for _, v in ipairs(t or {}) do
     if v.name then
       res[v.name] = fn(v, v.name)
     end
@@ -331,7 +331,7 @@ end
 
 return {
   map = map,
-  map_name = map_name,
+  map_by_name = map_by_name,
   find = find,
   filter = filter,
   values = values,

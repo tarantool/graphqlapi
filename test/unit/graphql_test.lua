@@ -5,6 +5,7 @@ local parse = require('graphqlapi.graphql.parse').parse
 local types = require('graphqlapi.graphql.types')
 local schema = require('graphqlapi.graphql.schema')
 local validate = require('graphqlapi.graphql.validate').validate
+local util = require('graphqlapi.graphql.util')
 
 function g.test_parse_comments()
     t.assert_error(parse('{a(b:"#")}').definitions, {})
@@ -1027,4 +1028,68 @@ function g.test_types_for_different_schemas()
             validate, schema_1, parse([[query { object_list { long_2 string_1 } }]]))
     t.assert_error_msg_contains('Field "string_2" is not defined on type "Object"',
             validate, schema_1, parse([[query { object_list { long_1 string_2 } }]]))
+end
+
+function g.test_boolean_coerce()
+    local test_query = types.object({
+        name = 'Query',
+        fields = {
+            test_boolean = {
+                kind = types.boolean.nonNull,
+                arguments = {
+                    value = types.boolean,
+                    non_null_value = types.boolean.nonNull,
+                }
+            },
+        }
+    })
+
+    local test_schema = schema.create({query = test_query})
+
+    validate(test_schema, parse([[ { test_boolean(value: true, non_null_value: true) } ]]))
+    validate(test_schema, parse([[ { test_boolean(value: false, non_null_value: false) } ]]))
+    validate(test_schema, parse([[ { test_boolean(value: null, non_null_value: true) } ]]))
+
+    -- Errors
+    t.assert_error_msg_contains('Could not coerce value "True" with type "enum" to type boolean',
+            validate, test_schema, parse([[ { test_boolean(value: True) } ]]))
+    t.assert_error_msg_contains('Could not coerce value "123" with type "int" to type boolean',
+            validate, test_schema, parse([[ { test_boolean(value: 123) } ]]))
+    t.assert_error_msg_contains('Could not coerce value "value" with type "string" to type boolean',
+            validate, test_schema, parse([[ { test_boolean(value: "value") } ]]))
+end
+
+function g.test_util_map_by_name()
+    local res = util.map_by_name(nil, nil)
+    t.assert_items_equals(res, {})
+    res = util.map_by_name({ { name = 'a' }, { name = 'b' }, }, function(v) return v end)
+    t.assert_items_equals(res, {a = {name = 'a'}, b = {name = 'b'}})
+end
+
+function g.test_util_filter()
+    local res = util.filter({ { name = 'a' }, { name = 'b' }, }, function(v) return v.name == 'a' end)
+    t.assert_items_equals(res, {{name = 'a'}})
+end
+
+function g.test_util_values()
+    local res = util.values({ a = { name = 'a' }, b = { name = 'b' }, })
+    t.assert_items_equals(res, {{name = 'a'}, {name = 'b'}})
+end
+
+function g.test_util_cmpdeeply()
+    t.assert_equals(util.cmpdeeply({{{ a = 1}}}, {{{ a = 1}}}), true)
+    t.assert_equals(util.cmpdeeply({ a = { a = 1 }}, { a = { a = 2 }}), false)
+    t.assert_equals(util.cmpdeeply({ a = 1 }, { a = 1, b = { b = 3 }}), false)
+    t.assert_equals(util.cmpdeeply({{{ a = tonumber('nan')}}}, {{{ a = tonumber('nan')}}}), true)
+    t.assert_equals(util.cmpdeeply('nan', {{{ a = tonumber('nan')}}}), false)
+end
+
+function g.test_util_check()
+    t.assert_error_msg_equals('a must be a nil, got string', util.check, 'a', 'a', nil)
+    t.assert_error_msg_equals('a must be a nil or a 1, got string', util.check, 'a', 'a', nil, 1)
+    t.assert_error_msg_equals('a must be a 3 or a 2r a 1, got string', util.check, 'a', 'a', 3, 2, 1)
+end
+
+function g.test_get_type_name_error()
+    t.assert_error_msg_equals('Internal error: unknown type:\n--- []\n...\n', util.getTypeName, {})
 end
