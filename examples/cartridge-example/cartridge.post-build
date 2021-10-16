@@ -10,7 +10,7 @@
 # rm -rf doc
 
 GRAPHQLIDE=graphqlide-0.0.12-1.all.rock
-GRAPHQLAPI=graphqlapi-0.0.1-1.all.rock
+GRAPHQLAPI=graphqlapi-scm-1.all.rock
 GRAPHQLAPIHELPERS=graphqlapi-helpers-0.0.1-1.all.rock
 
 tarantoolctl rocks remove graphqlide --force
