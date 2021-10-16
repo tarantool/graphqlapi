@@ -346,6 +346,15 @@ __Type = types.object({
         end
       },
 
+      specifiedByUrl = {
+        kind = types.string,
+        resolve = function(kind)
+          if kind.__type == 'Scalar' then
+              return kind.specifiedByUrl
+          end
+        end,
+      },
+
       ofType = {
         kind = __Type
       },

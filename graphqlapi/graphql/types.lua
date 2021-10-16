@@ -461,8 +461,8 @@ types.skip = types.directive({
   onInlineFragment = true,
 })
 
-types.specifiedByURL = types.directive({
-  name = 'specifiedByURL',
+types.specifiedByUrl = types.directive({
+  name = 'specifiedByUrl',
   description = 'Custom scalar specification URL.',
   arguments = {
     ['url'] = { kind = types.string.nonNull, description = 'Scalar specification URL.' },

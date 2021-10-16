@@ -24,7 +24,7 @@ local types = {
     nullable = graphql_types.nullable,
     scalar = graphql_types.scalar,
     skip = graphql_types.skip,
-    specifiedByURL = graphql_types.specifiedByURL,
+    specifiedByUrl = graphql_types.specifiedByUrl,
     string = graphql_types.string,
 }
 

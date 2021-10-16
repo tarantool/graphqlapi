@@ -1,10 +1,11 @@
-local json = require('json')
-local types = require('graphqlapi.graphql.types')
-local schema = require('graphqlapi.graphql.schema')
-local parse = require('graphqlapi.graphql.parse')
-local validate = require('graphqlapi.graphql.validate')
 local execute = require('graphqlapi.graphql.execute')
 local introspection = require('test.integration.introspection')
+local json = require('json')
+local parse = require('graphqlapi.graphql.parse')
+local schema = require('graphqlapi.graphql.schema')
+local types = require('graphqlapi.graphql.types')
+local util = require('graphqlapi.graphql.util')
+local validate = require('graphqlapi.graphql.validate')
 
 local t = require('luatest')
 local g = t.group('graphql_integration')
@@ -1372,5 +1373,44 @@ function g.test_custom_directives()
             test_B = "{\"custom\":{\"arg\":\"echo\"}}"
         }
     })
+    t.assert_equals(errors, nil)
+end
+
+function g.test_specifiedByUrl()
+    local function callback(_, _)
+        return nil
+    end
+
+    local custom_scalar = types.scalar({
+        name = 'CustomInt',
+        description = "The `CustomInt` scalar type represents non-fractional signed whole numeric values. " ..
+                      "Int can represent values from -(2^31) to 2^31 - 1, inclusive.",
+        serialize = function(value)
+            return value
+        end,
+        parseLiteral = function(node)
+            return node.value
+        end,
+        isValueOfTheType = function(_)
+            return true
+        end,
+        specifiedByUrl = 'http://localhost',
+    })
+
+    local query_schema = {
+        ['test'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                arg = custom_scalar,
+            },
+            resolve = callback,
+        }
+    }
+
+    local data, errors = check_request(introspection.query, query_schema)
+    t.assert_equals(
+        util.map_by_name(data.__schema.types, function(v) return v end)['CustomInt'].specifiedByUrl,
+        'http://localhost'
+    )
     t.assert_equals(errors, nil)
 end

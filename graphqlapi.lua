@@ -88,7 +88,7 @@ local function get_schema(schema_name)
     local directives = {
         types.include,
         types.skip,
-        types.specifiedByURL,
+        types.specifiedByUrl,
     }
 
     for _, directive in pairs(types.get_directives(schema_name) or {}) do
