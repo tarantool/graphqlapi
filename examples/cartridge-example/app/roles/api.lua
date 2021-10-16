@@ -25,14 +25,7 @@ local function init(opts) -- luacheck: no unused args
 
     local graphqlide = cartridge.service_get('graphqlide')
     if graphqlide ~= nil then
-        graphqlide.set_endpoint({
-            name = 'Admin',
-            path = '/admin/api',
-            options = {
-                specifiedByUrl = false,
-                directiveIsRepeatable = false,
-            }
-        })
+        graphqlide.add_cartridge_api_endpoint('Admin')
         graphqlide.set_endpoint({ name = 'Default', path = '/admin/graphql', default = true })
         if data_ok == true then
             graphqlide.set_endpoint({ name = 'Data', path = '/admin/graphql' })
