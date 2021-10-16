@@ -271,7 +271,7 @@ function rules.fragmentSpreadTargetDefined(node, context)
 end
 
 function rules.fragmentDefinitionHasNoCycles(node, context)
-  local seen = { [node.name.value] = true, }
+  local seen = { [node.name.value] = true }
 
   local function detectCycles(selectionSet)
     for _, selection in ipairs(selectionSet.selections) do
@@ -313,7 +313,7 @@ function rules.fragmentSpreadIsPossible(node, context)
 
   local function getTypes(kind)
     if kind.__type == 'Object' then
-      return { [kind] = kind, }
+      return { [kind] = kind }
     elseif kind.__type == 'Interface' then
       return context.schema:getImplementors(kind.name)
     elseif kind.__type == 'Union' then
@@ -563,7 +563,7 @@ function rules.variableUsageAllowed(node, context)
   local arguments
 
   if node.kind == 'field' then
-    arguments = { [node.name.value] = node.arguments, }
+    arguments = { [node.name.value] = node.arguments }
   elseif node.kind == 'fragmentSpread' then
     local seen = {}
     local fragment = context.fragmentMap[node.name.value]
@@ -588,7 +588,5 @@ function rules.variableUsageAllowed(node, context)
     end
   end
 end
-
--- }}}
 
 return rules

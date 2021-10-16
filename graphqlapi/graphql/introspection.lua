@@ -6,11 +6,11 @@ local __Schema, __Directive, __DirectiveLocation, __Type, __Field, __InputValue,
 local function resolveArgs(field)
     local function transformArg(arg, name)
         if arg.__type then
-            return { kind = arg, name = name, }
+            return { kind = arg, name = name }
         elseif arg.name then
             return arg
         else
-            local result = { name = name, }
+            local result = { name = name }
 
             for k, v in pairs(arg) do
                 result[k] = v
@@ -72,9 +72,9 @@ __Schema = types.object({
         resolve = function(schema)
           return schema.directives
         end,
-      }
+      },
     }
-  end
+  end,
 })
 
 __Directive = types.object({
@@ -137,7 +137,7 @@ __Directive = types.object({
         end
       },
     }
-  end
+  end,
 })
 
 __DirectiveLocation = types.enum({
@@ -151,94 +151,94 @@ __DirectiveLocation = types.enum({
   values = {
     QUERY = {
       value = 'QUERY',
-      description = 'Location adjacent to a query operation.'
+      description = 'Location adjacent to a query operation.',
     },
 
     MUTATION = {
       value = 'MUTATION',
-      description = 'Location adjacent to a mutation operation.'
+      description = 'Location adjacent to a mutation operation.',
     },
 
     FIELD = {
       value = 'FIELD',
-      description = 'Location adjacent to a field.'
+      description = 'Location adjacent to a field.',
     },
 
     FRAGMENT_DEFINITION = {
       value = 'FRAGMENT_DEFINITION',
-      description = 'Location adjacent to a fragment definition.'
+      description = 'Location adjacent to a fragment definition.',
     },
 
     FRAGMENT_SPREAD = {
       value = 'FRAGMENT_SPREAD',
-      description = 'Location adjacent to a fragment spread.'
+      description = 'Location adjacent to a fragment spread.',
     },
 
     INLINE_FRAGMENT = {
       value = 'INLINE_FRAGMENT',
-      description = 'Location adjacent to an inline fragment.'
+      description = 'Location adjacent to an inline fragment.',
     },
 
     VARIABLE_DEFINITION = {
       value = 'VARIABLE_DEFINITION',
-      description = 'Location adjacent to a variable definition.'
+      description = 'Location adjacent to a variable definition.',
     },
 
     SCHEMA = {
       value = 'SCHEMA',
-      description = 'Location adjacent to schema.'
+      description = 'Location adjacent to schema.',
     },
 
     SCALAR = {
       value = 'SCALAR',
-      description = 'Location adjacent to a scalar.'
+      description = 'Location adjacent to a scalar.',
     },
 
     OBJECT = {
       value = 'OBJECT',
-      description = 'Location adjacent to an object.'
+      description = 'Location adjacent to an object.',
     },
 
     FIELD_DEFINITION = {
       value = 'FIELD_DEFINITION',
-      description = 'Location adjacent to a field definition.'
+      description = 'Location adjacent to a field definition.',
     },
 
     ARGUMENT_DEFINITION = {
       value = 'ARGUMENT_DEFINITION',
-      description = 'Location adjacent to an argument definition.'
+      description = 'Location adjacent to an argument definition.',
     },
 
     INTERFACE = {
       value = 'INTERFACE',
-      description = 'Location adjacent to an interface.'
+      description = 'Location adjacent to an interface.',
     },
 
     UNION = {
       value = 'UNION',
-      description = 'Location adjacent to an union.'
+      description = 'Location adjacent to an union.',
     },
 
     ENUM = {
       value = 'ENUM',
-      description = 'Location adjacent to an enum.'
+      description = 'Location adjacent to an enum.',
     },
 
     ENUM_VALUE = {
       value = 'ENUM_VALUE',
-      description = 'Location adjacent to an enum value.'
+      description = 'Location adjacent to an enum value.',
     },
 
     INPUT_OBJECT = {
       value = 'INPUT_OBJECT',
-      description = 'Location adjacent to an input object.'
+      description = 'Location adjacent to an input object.',
     },
 
     INPUT_FIELD_DEFINITION = {
       value = 'INPUT_FIELD_DEFINITION',
-      description = 'Location adjacent to an input field definition.'
+      description = 'Location adjacent to an input field definition.',
     },
-  }
+  },
 })
 
 __Type = types.object({
@@ -350,7 +350,7 @@ __Type = types.object({
         kind = __Type
       },
     }
-  end
+  end,
 })
 
 __Field = types.object({
@@ -368,26 +368,26 @@ __Field = types.object({
 
       args = {
         kind = types.nonNull(types.list(types.nonNull(__InputValue))),
-        resolve = resolveArgs
+        resolve = resolveArgs,
       },
 
       type = {
         kind = __Type.nonNull,
         resolve = function(field)
           return field.kind
-        end
+        end,
       },
 
       isDeprecated = {
         kind = types.boolean.nonNull,
         resolve = function(field)
           return field.deprecationReason ~= nil
-        end
+        end,
       },
 
       deprecationReason = types.string,
     }
-  end
+  end,
 })
 
 __InputValue = types.object({
@@ -408,7 +408,7 @@ __InputValue = types.object({
         kind = types.nonNull(__Type),
         resolve = function(field)
           return field.kind
-        end
+        end,
       },
 
       defaultValue = {
@@ -416,8 +416,8 @@ __InputValue = types.object({
         description = 'A GraphQL-formatted string representing the default value for this input value.',
         resolve = function(inputVal)
           return inputVal.defaultValue and tostring(inputVal.defaultValue) -- TODO improve serialization a lot
-        end
-      }
+        end,
+      },
     }
   end,
 })
@@ -450,44 +450,44 @@ __TypeKind = types.enum({
   values = {
     SCALAR = {
       value = 'SCALAR',
-      description = 'Indicates this type is a scalar.'
+      description = 'Indicates this type is a scalar.',
     },
 
     OBJECT = {
       value = 'OBJECT',
-      description = 'Indicates this type is an object. `fields` and `interfaces` are valid fields.'
+      description = 'Indicates this type is an object. `fields` and `interfaces` are valid fields.',
     },
 
     INTERFACE = {
       value = 'INTERFACE',
-      description = 'Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.'
+      description = 'Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.',
     },
 
     UNION = {
       value = 'UNION',
-      description = 'Indicates this type is a union. `possibleTypes` is a valid field.'
+      description = 'Indicates this type is a union. `possibleTypes` is a valid field.',
     },
 
     ENUM = {
       value = 'ENUM',
-      description = 'Indicates this type is an enum. `enumValues` is a valid field.'
+      description = 'Indicates this type is an enum. `enumValues` is a valid field.',
     },
 
     INPUT_OBJECT = {
       value = 'INPUT_OBJECT',
-      description = 'Indicates this type is an input object. `inputFields` is a valid field.'
+      description = 'Indicates this type is an input object. `inputFields` is a valid field.',
     },
 
     LIST = {
       value = 'LIST',
-      description = 'Indicates this type is a list. `ofType` is a valid field.'
+      description = 'Indicates this type is a list. `ofType` is a valid field.',
     },
 
     NON_NULL = {
       value = 'NON_NULL',
-      description = 'Indicates this type is a non-null. `ofType` is a valid field.'
+      description = 'Indicates this type is a non-null. `ofType` is a valid field.',
     },
-  }
+  },
 })
 
 local Schema = {
@@ -537,5 +537,5 @@ return {
     __schema = Schema,
     __type = Type,
     __typename = TypeName,
-  }
+  },
 }

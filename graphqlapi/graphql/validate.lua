@@ -30,7 +30,7 @@ local visitors = {
       return node.definitions
     end,
 
-    rules = { rules.uniqueFragmentNames, exit = { rules.noUnusedFragments }, },
+    rules = { rules.uniqueFragmentNames, exit = { rules.noUnusedFragments } },
   },
 
   operation = {
@@ -59,7 +59,7 @@ local visitors = {
       exit = {
         rules.variablesAreUsed,
         rules.variablesAreDefined,
-      }
+      },
     },
   },
 
@@ -68,7 +68,7 @@ local visitors = {
       return node.selections
     end,
 
-    rules = { rules.unambiguousSelections, },
+    rules = { rules.unambiguousSelections },
   },
 
   field = {
@@ -266,7 +266,7 @@ local visitors = {
       end)
     end,
 
-    rules = { rules.uniqueInputObjectFields, }
+    rules = { rules.uniqueInputObjectFields },
   },
 
   inputObject = {
@@ -276,7 +276,7 @@ local visitors = {
       end)
     end,
 
-    rules = { rules.uniqueInputObjectFields, },
+    rules = { rules.uniqueInputObjectFields },
   },
 
   list = {
@@ -348,4 +348,6 @@ local function validate(schema, tree)
   return visit(tree)
 end
 
-return {validate=validate,}
+return {
+  validate=validate,
+}

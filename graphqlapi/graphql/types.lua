@@ -443,7 +443,7 @@ types.include = types.directive({
   name = 'include',
   description = 'Directs the executor to include this field or fragment only when the `if` argument is true.',
   arguments = {
-    ['if'] = { kind = types.boolean.nonNull, description = 'Included when true.'}
+    ['if'] = { kind = types.boolean.nonNull, description = 'Included when true.'},
   },
   onField = true,
   onFragmentSpread = true,
@@ -454,7 +454,7 @@ types.skip = types.directive({
   name = 'skip',
   description = 'Directs the executor to skip this field or fragment when the `if` argument is true.',
   arguments = {
-    ['if'] = { kind = types.boolean.nonNull, description = 'Skipped when true.', }
+    ['if'] = { kind = types.boolean.nonNull, description = 'Skipped when true.' },
   },
   onField = true,
   onFragmentSpread = true,
@@ -465,7 +465,7 @@ types.specifiedByURL = types.directive({
   name = 'specifiedByURL',
   description = 'Custom scalar specification URL.',
   arguments = {
-    ['url'] = { kind = types.string.nonNull, description = 'Scalar specification URL.', }
+    ['url'] = { kind = types.string.nonNull, description = 'Scalar specification URL.' },
   },
   onScalar = true,
 })

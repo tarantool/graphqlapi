@@ -389,4 +389,6 @@ local function execute(schema, tree, rootValue, variables, operationName)
 end
 
 
-return {execute=execute}
+return {
+  execute=execute,
+}
