@@ -1150,10 +1150,48 @@ function g.test_both_data_and_error_result()
                 arg4 = types.long,
             },
             resolve = callback,
-        }
+        },
     }
     local data, errors = check_request(query, query_schema)
     t.assert_equals(data, {test_A = 'A', test_B = 'B'})
+    t.assert_equals(errors,  {
+        {message = 'Simple error A'},
+        {message = 'Simple error B'},
+    })
+
+    query = [[{
+        prefix {
+            test_A: test(arg: "A")
+            test_B: test(arg: "B")
+        }
+    }]]
+
+    query_schema = {
+        ['prefix'] = {
+            kind = types.object({
+                name = 'prefix',
+                fields = {
+                    ['test'] = {
+                        kind = types.string.nonNull,
+                        arguments = {
+                            arg = types.string.nonNull,
+                            arg2 = types.string,
+                            arg3 = types.int,
+                            arg4 = types.long,
+                        },
+                        resolve = callback,
+                    },
+                },
+            }),
+            arguments = {},
+            resolve = function()
+                return {}
+            end,
+        },
+    }
+
+    data, errors = check_request(query, query_schema)
+    t.assert_equals(data, {prefix = {test_A = 'A', test_B = 'B'}})
     t.assert_equals(errors,  {
         {message = 'Simple error A'},
         {message = 'Simple error B'},
