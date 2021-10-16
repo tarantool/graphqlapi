@@ -25,4 +25,4 @@ clean:
 .PHONY: build
 build:	
 		tarantoolctl rocks make
-		tarantoolctl rocks pack graphqlapi 0.0.1-1	
+		tarantoolctl rocks pack graphqlapi scm-1	

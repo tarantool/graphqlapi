@@ -4,7 +4,7 @@ local fio = require('fio')
 local checks = require('checks')
 local errors = require('errors')
 
-local VERSION = '0.0.1-1'
+local VERSION = 'scm-1'
 
 for _, module in ipairs({
     'graphqlapi.cluster',
