@@ -32,7 +32,7 @@ local function fragment()
         fields = {
             bucket_id = box.NULL,
         },
-        callback = "fragments.entity.entity_get_by_id"
+        callback = 'fragments.entity.entity_get_by_id'
     })
     operations.remove_query({
         name = 'entity_get_by_name'
@@ -46,7 +46,7 @@ local function fragment()
         fields = {
             bucket_id = box.NULL,
         },
-        callback = "fragments.entity.entity_get_by_name"
+        callback = 'fragments.entity.entity_get_by_name'
     })
     operations.remove_query({
         name = 'entity_get_all'
@@ -56,7 +56,7 @@ local function fragment()
         type_name = space_name..'_full',
         name = 'entity_get_all',
         list = true,
-        callback = "fragments.entity.entity_get_all"
+        callback = 'fragments.entity.entity_get_all'
     })
 end
 
