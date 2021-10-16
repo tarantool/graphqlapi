@@ -3,10 +3,10 @@ SHELL := /bin/bash
 .PHONY: .rocks
 .rocks: graphqlapi-0.0.1-1.rockspec Makefile
 		tarantoolctl rocks make
-		tarantoolctl rocks install luatest 0.5.5
+		tarantoolctl rocks install luatest 0.5.6
 		tarantoolctl rocks install luacov 0.13.0
 		tarantoolctl rocks install luacheck 0.26.0
-		tarantoolctl rocks install cartridge 2.7.1
+		tarantoolctl rocks install cartridge 2.7.2
 
 .PHONY: lint
 lint:
