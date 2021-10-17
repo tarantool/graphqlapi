@@ -56,7 +56,7 @@ return {
     dependencies = {
         'cartridge.roles.vshard-router',
         'cartridge.roles.crud-router',
-        'cartridge.roles.graphqlapi',
         'cartridge.roles.graphqlide',
+        'cartridge.roles.graphqlapi',
     }
 }

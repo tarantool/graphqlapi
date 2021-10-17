@@ -15,8 +15,6 @@ local ok, err = cartridge.cfg({
         'cartridge.roles.crud-storage',
         'cartridge.roles.crud-router',
         'cartridge.roles.metrics',
-        -- 'cartridge.roles.graphqlapi',
-        -- 'cartridge.roles.graphqlide',
         'migrator',
         'app.roles.api',
         'app.roles.storage',
