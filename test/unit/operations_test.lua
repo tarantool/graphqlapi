@@ -31,7 +31,7 @@ g.test_add_remove_query_default_schema_no_prefix = function()
     t.assert_equals(type(operations.get_queries()['entity']), 'table')
     t.assert_equals(operations.get_queries()['entity'].description, 'Get entity')
     t.assert_equals(schemas.is_invalid(), true)
-    t.assert_items_equals(schemas.list_schemas(), {'default'})
+    t.assert_items_equals(schemas.list_schemas(), {'Default'})
 
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
@@ -51,7 +51,7 @@ g.test_add_remove_query_default_schema_no_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'query "entity" already exists in schema: "default"')
+    t.assert_equals(err, 'query "entity" already exists in schema: "Default"')
 
     operations.remove_query({name = 'entity'})
 
@@ -86,7 +86,7 @@ g.test_add_remove_query_default_schema_with_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'query or prefix with name "test" already exists in schema: "default"')
+    t.assert_equals(err, 'query or prefix with name "test" already exists in schema: "Default"')
 
     operations.add_query({
         prefix = 'test',
@@ -120,7 +120,7 @@ g.test_add_remove_query_default_schema_with_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'query "entity_1" already exists in prefix "test" in schema: "default"')
+    t.assert_equals(err, 'query "entity_1" already exists in prefix "test" in schema: "Default"')
 
     operations.add_query({
         prefix = 'test',
@@ -333,7 +333,7 @@ g.test_add_remove_mutation_default_schema_no_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'mutation "entity" already exists in schema: "default"')
+    t.assert_equals(err, 'mutation "entity" already exists in schema: "Default"')
 
 
     operations.remove_mutation({ name = 'entity' })
@@ -367,7 +367,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'mutation or prefix with name "test" already exists in schema: "default"')
+    t.assert_equals(err, 'mutation or prefix with name "test" already exists in schema: "Default"')
 
     operations.add_mutation({
         prefix = 'test',
@@ -401,7 +401,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_equals(err, 'mutation "entity_1" already exists in prefix "test" in schema: "default"')
+    t.assert_equals(err, 'mutation "entity_1" already exists in prefix "test" in schema: "Default"')
 
     operations.add_mutation({
         prefix = 'test',
@@ -1180,7 +1180,7 @@ g.test_operations_stop = function()
     t.assert_equals(type(operations.get_queries()['entity']), 'table')
     t.assert_equals(operations.get_queries()['entity'].description, 'Get entity')
     t.assert_equals(schemas.is_invalid(), true)
-    t.assert_items_equals(schemas.list_schemas(), {'default'})
+    t.assert_items_equals(schemas.list_schemas(), {'Default'})
 
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
@@ -1224,7 +1224,7 @@ g.test_on_resolve_trigger = function()
     end
 
     operations.on_resolve(on_resolve_trigger1, nil)
-    t.assert_error_msg_contains('query default nil entity', operations.get_queries()['entity'].resolve)
+    t.assert_error_msg_contains('query Default nil entity', operations.get_queries()['entity'].resolve)
 
     operations.stop()
 

@@ -115,10 +115,8 @@ local function is_map(tbl)
 end
 
 local function coerce_schema(schema)
-    if schema == nil then
+    if schema == nil or (type(schema) == 'string' and schema == '') then
         schema = defaults.DEFAULT_SCHEMA_NAME
-    else
-        schema = schema:lower()
     end
     return schema
 end

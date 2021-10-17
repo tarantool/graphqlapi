@@ -39,7 +39,7 @@ g.test_enum = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'enum "TestEnum" already exists in schema: "default"')
+    t.assert_str_contains(err, 'enum "TestEnum" already exists in schema: "Default"')
 end
 
 g.test_input_object = function()
@@ -60,7 +60,7 @@ g.test_input_object = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'inputObject "Human" already exists in schema: "default"')
+    t.assert_str_contains(err, 'inputObject "Human" already exists in schema: "Default"')
 end
 
 g.test_interface = function()
@@ -81,7 +81,7 @@ g.test_interface = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'interface "Human" already exists in schema: "default"')
+    t.assert_str_contains(err, 'interface "Human" already exists in schema: "Default"')
 end
 
 g.test_object = function()
@@ -102,7 +102,7 @@ g.test_object = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'object "Human" already exists in schema: "default"')
+    t.assert_str_contains(err, 'object "Human" already exists in schema: "Default"')
 end
 
 g.test_union = function()
@@ -135,7 +135,7 @@ g.test_union = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'union "CatOrDog" already exists in schema: "default"')
+    t.assert_str_contains(err, 'union "CatOrDog" already exists in schema: "Default"')
 end
 
 g.test_double = function()
@@ -243,9 +243,9 @@ g.test_remove_all = function()
     t.assert_items_equals(types.list_types('Spaces'), {})
 
     add_test_enum()
-    add_test_enum('spaces')
+    add_test_enum('Spaces')
 
-    t.assert_items_equals(schemas.list_schemas(), {'spaces', 'default'})
+    t.assert_items_equals(schemas.list_schemas(), {'Spaces', 'Default'})
 
     t.assert_items_equals(types.list_types(), {'TestEnum'})
     t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})
@@ -255,9 +255,9 @@ g.test_remove_all = function()
     t.assert_items_equals(types.list_types('Spaces'), {})
 
     add_test_enum()
-    add_test_enum('spaces')
+    add_test_enum('Spaces')
 
-    t.assert_items_equals(schemas.list_schemas(), {'spaces', 'default'})
+    t.assert_items_equals(schemas.list_schemas(), {'Spaces', 'Default'})
 
     t.assert_items_equals(types.list_types(), {'TestEnum'})
     t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})
@@ -273,7 +273,7 @@ g.test_remove_all = function()
     types.add_space_object({ space = 'entity', name = 'entity', })
     types.add_space_object({ space = 'entity', name = 'entity1', })
     t.assert_items_equals(types.list_types(), {'entity', 'entity1'})
-    types.remove_all('default')
+    types.remove_all('Default')
 
     types.add_space_object({
         name = 'entity',
@@ -896,7 +896,7 @@ g.test_directives = function()
     end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(err, 'directive "my_directive" already exists in schema: "default"')
+    t.assert_str_contains(err, 'directive "my_directive" already exists in schema: "Default"')
 
     t.assert_equals(types.get_directives()['my_directive'].__type, "Directive")
 

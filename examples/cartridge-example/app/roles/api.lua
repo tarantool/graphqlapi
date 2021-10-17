@@ -1,14 +1,12 @@
 local cartridge = require('cartridge')
-local data_ok = pcall(require, 'graphqlapi.helpers.data')
-local schema_ok = pcall(require, 'graphqlapi.helpers.schema')
-local service_ok = pcall(require, 'graphqlapi.helpers.service')
-local spaces_ok = pcall(require, 'graphqlapi.helpers.spaces')
 local middleware = table.copy(require('graphqlapi.middleware'))
+local graphqlide_ok, graphqlide = pcall(require, 'graphqlide')
 
 local function init(opts) -- luacheck: no unused args
     -- if opts.is_master then
     -- end
 
+    -- add wrapper to GraphQL http endpoint to be able collect metrics
     local metrics = cartridge.service_get('metrics')
     local graphqlapi = cartridge.service_get('graphqlapi')
     if metrics ~= nil and graphqlapi ~= nil then
@@ -23,22 +21,11 @@ local function init(opts) -- luacheck: no unused args
         graphqlapi.set_middleware(middleware)
     end
 
-    local graphqlide = cartridge.service_get('graphqlide')
-    if graphqlide ~= nil then
+    if graphqlide_ok == true then
+        -- add Tarantool Cartridge GraphQL API schema to GraphQLIDE
         graphqlide.add_cartridge_api_endpoint('Admin')
-        graphqlide.set_endpoint({ name = 'Default', path = '/admin/graphql', default = true })
-        if data_ok == true then
-            graphqlide.set_endpoint({ name = 'Data', path = '/admin/graphql' })
-        end
-        if schema_ok == true then
-            graphqlide.set_endpoint({ name = 'Schema', path = '/admin/graphql' })
-        end
-        if service_ok == true then
-            graphqlide.set_endpoint({ name = 'Service', path = '/admin/graphql' })
-        end
-        if spaces_ok == true then
-            graphqlide.set_endpoint({ name = 'Spaces', path = '/admin/graphql' })
-        end
+        -- make Tarantool Cartridge GraphQL API schema default
+        graphqlide.set_default('Admin')
     end
 
     return true

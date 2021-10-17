@@ -161,7 +161,7 @@ local function _execute_graphql(req)
     local schema_name = defaults.DEFAULT_SCHEMA_NAME
 
     if req.headers.schema ~= nil and type(req.headers.schema) == 'string' then
-        schema_name = req.headers.schema:lower()
+        schema_name = req.headers.schema
     end
 
     if body == nil or body == '' then
@@ -301,6 +301,7 @@ local function set_endpoint(endpoint, opts)
     checks('string', '?table')
     delete_route(_httpd, _endpoint)
     _endpoint = remove_side_slashes(endpoint)
+    rawset(_G, '__GRAPHQLAPI_ENDPOINT', _endpoint)
     opts = opts or {}
     opts.path = _endpoint
     opts.name = _endpoint
@@ -352,7 +353,7 @@ local function init(httpd, middleware, endpoint, fragments_dir, opts)
 
     endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
     endpoint = endpoint or defaults.DEFAULT_ENDPOINT
-    rawset(_G, '__GRAPHQLAPI_ENDPOINT', _endpoint)
+    --rawset(_G, '__GRAPHQLAPI_ENDPOINT', _endpoint)
     fragments_dir = fragments_dir or rawget(_G, '__GRAPHQLAPI_MODELS_DIR')
     _fragments_dir = fragments_dir or defaults.DEFAULT_MODELS_DIR
     rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)

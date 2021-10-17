@@ -157,7 +157,7 @@ end
 
 g.test_coerce_schema = function()
     t.assert_equals(utils.coerce_schema(nil), defaults.DEFAULT_SCHEMA_NAME)
-    t.assert_equals(utils.coerce_schema('SPACES'), 'spaces')
+    t.assert_equals(utils.coerce_schema('spaces'), 'spaces')
 end
 
 g.test_map_by_field = function()

@@ -4,7 +4,7 @@ local defaults = {
     -- default http endpoint
     DEFAULT_ENDPOINT = '/admin/graphql',
     -- name of default schema
-    DEFAULT_SCHEMA_NAME = 'default',
+    DEFAULT_SCHEMA_NAME = 'Default',
     -- default config update channel capacity for change space messages
     CONFIG_UPDATE_CHANNEL_CAPACITY = 100,
     -- default schema update channel capacity for change space messages
