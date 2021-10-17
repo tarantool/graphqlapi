@@ -1,12 +1,11 @@
 local cartridge = require('cartridge')
-local middleware = table.copy(require('graphqlapi.middleware'))
 local graphqlide_ok, graphqlide = pcall(require, 'graphqlide')
 
 local function init(opts) -- luacheck: no unused args
     -- if opts.is_master then
     -- end
 
-    -- add wrapper to GraphQL http endpoint to be able collect metrics
+    -- add wrapper to to be able collect metrics on GraphQL http endpoint requests
     local metrics = cartridge.service_get('metrics')
     local graphqlapi = cartridge.service_get('graphqlapi')
     if metrics ~= nil and graphqlapi ~= nil then
@@ -17,6 +16,7 @@ local function init(opts) -- luacheck: no unused args
             { max_age_time = 60, age_buckets_count = 5, }
         )
         metrics.http_middleware.set_default_collector(latency_collector)
+        local middleware = {}
         middleware.request_wrapper = metrics.http_middleware.v1
         graphqlapi.set_middleware(middleware)
     end

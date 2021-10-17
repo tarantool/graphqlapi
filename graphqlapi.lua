@@ -47,12 +47,13 @@ local validate = require('graphqlapi.graphql.validate')
 local defaults = require('graphqlapi.defaults')
 local helpers = require('graphqlapi.helpers')
 local fragments = require('graphqlapi.fragments')
+local middleware = require('graphqlapi.middleware')
 local operations = require('graphqlapi.operations')
 local schemas = require('graphqlapi.schemas')
 local trigger = require('graphqlapi.trigger')
 local types = require('graphqlapi.types')
 
-local _http_middleware = nil
+local _http_middleware = {}
 local _endpoint = nil
 local _graphql_schema = {}
 local _httpd = nil
@@ -314,21 +315,36 @@ local function get_endpoint()
     return _endpoint
 end
 
-local function _set_middleware(middleware)
-    if middleware == nil or
-       middleware.render_response == nil or
-       middleware.authorize_request == nil or
-       middleware.request_wrapper == nil then
-        log.info('Using default HTTP middleware')
-        middleware = require('graphqlapi.middleware')
-    else
-        log.info('Using custom HTTP middleware')
+local function _set_middleware(http_middleware)
+    if http_middleware == nil then
+        _http_middleware = middleware
+        return
     end
-    _http_middleware = middleware
+
+    local m = {}
+    if http_middleware.render_response == nil  then
+        m.render_response = _http_middleware.render_response or middleware.render_response
+    else
+        m.render_response = http_middleware.render_response
+    end
+
+    if http_middleware.authorize_request == nil then
+        m.authorize_request = _http_middleware.authorize_request or middleware.authorize_request
+    else
+        m.authorize_request = http_middleware.authorize_request
+    end
+
+    if http_middleware.request_wrapper == nil then
+        m.request_wrapper = _http_middleware.request_wrapper or middleware.request_wrapper
+    else
+        m.request_wrapper = http_middleware.request_wrapper
+    end
+
+    _http_middleware = m
 end
 
-local function set_middleware(middleware)
-    _set_middleware(middleware)
+local function set_middleware(http_middleware)
+    _set_middleware(http_middleware)
     set_endpoint(_endpoint)
 end
 
@@ -348,7 +364,7 @@ local function _init()
     end
 end
 
-local function init(httpd, middleware, endpoint, fragments_dir, opts)
+local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
     checks('table', '?table', '?string', '?string', '?table')
 
     endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
@@ -358,7 +374,7 @@ local function init(httpd, middleware, endpoint, fragments_dir, opts)
     rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)
 
     _httpd = httpd
-    _set_middleware(middleware)
+    _set_middleware(http_middleware)
     set_endpoint(endpoint, opts)
 
     local ok, err = _init()
@@ -378,7 +394,7 @@ local function stop()
     fragments.stop()
     types.remove_all()
     operations.stop()
-    _http_middleware = nil
+    _http_middleware = {}
     _endpoint = nil
     _graphql_schema = {}
     _httpd = nil

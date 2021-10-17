@@ -1,3 +1,4 @@
+local cartridge = require('cartridge')
 local log = require('log')
 local json = require('json')
 local operations = require('graphqlapi.operations')
@@ -13,7 +14,10 @@ local json_options = {
 local function log_request(operation_type, operation_schema, operation_prefix, operation_name, ...)
     local _, arguments, info = ...
 
-    log.info("\nGraphQL request =>\n"..
+    -- user will be nil if no cartridge auth is enabled
+    local user = cartridge.http_get_username()
+
+    log.info("\nGraphQL request by username: %s =>\n"..
              "\toperation: %s\n"..
              "\tschema: %s\n"..
              "\tprefix: %s\n"..
@@ -22,6 +26,7 @@ local function log_request(operation_type, operation_schema, operation_prefix, o
              "\targuments defaults: %s\n"..
              "\tdirectives: %s\n"..
              "\tdirectives defaults: %s",
+        tostring(user or 'unknown'),
         operation_type,
         tostring(operation_schema),
         tostring(operation_prefix),
