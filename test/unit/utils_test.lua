@@ -250,11 +250,23 @@ end
 
 g.test_compat = function()
     local cache = {}
-    local instance = 's1-master'
+
     local compat = utils.to_compat(cache, nil)
     t.assert_equals(compat, nil)
-    compat = utils.to_compat(cache, instance)
-    t.assert_equals(compat, 's1_master')
-    t.assert_equals(utils.from_compat(cache, compat), instance)
     t.assert_equals(utils.from_compat(cache, nil), nil)
+
+    local test_names = {
+        {'s1-master', 's1_master'},
+        {'_bucket', '_bucket'},
+        {
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=`\\/?<>,.',
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ____________________'
+        },
+    }
+
+    for _, test_name in pairs(test_names) do
+        compat = utils.to_compat(cache, test_name[1])
+        t.assert_equals(compat, test_name[2])
+        t.assert_equals(utils.from_compat(cache, compat), test_name[1])
+    end
 end

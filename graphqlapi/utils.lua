@@ -209,7 +209,7 @@ local function capitalize(str, option)
     if option == true then
         return str:upper()
     end
-        return str
+    return str
 end
 
 local function is_box_null(value)
@@ -221,7 +221,7 @@ end
 
 local function to_compat(cache, name)
     if type(name) == 'string' then
-        local compat = name:gsub("-", "_")
+        local compat = name:gsub("%W", "_")
         cache = cache or {}
         cache[compat] = name
         return compat
