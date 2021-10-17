@@ -6,8 +6,8 @@ local helper = require('test.helper')
 
 local HOST = 'localhost'
 local PORT = 15999
-local ENDPOINT = '/graphql'
-local url = 'http://'..HOST..':'..tostring(PORT)..'/admin/graphql'
+local ENDPOINT = 'admin/graphql'
+local url = 'http://'..HOST..':'..tostring(PORT)..'/'..ENDPOINT
 
 local errors = require('errors')
 local http = require('http.server')
@@ -45,9 +45,9 @@ g.test_set_get_endpoint = function()
     httpd:start()
     graphqlapi.init(httpd, nil, nil, 'test/fragments/suite1')
     graphqlapi.set_endpoint(ENDPOINT)
-    t.assert_equals(graphqlapi.get_endpoint(), 'graphql')
+    t.assert_equals(graphqlapi.get_endpoint(), 'admin/graphql')
     graphqlapi.set_endpoint(ENDPOINT..'/')
-    t.assert_equals(graphqlapi.get_endpoint(), 'graphql')
+    t.assert_equals(graphqlapi.get_endpoint(), 'admin/graphql')
     graphqlapi.stop()
     httpd:stop()
 end

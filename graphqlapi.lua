@@ -353,7 +353,6 @@ local function init(httpd, middleware, endpoint, fragments_dir, opts)
 
     endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
     endpoint = endpoint or defaults.DEFAULT_ENDPOINT
-    --rawset(_G, '__GRAPHQLAPI_ENDPOINT', _endpoint)
     fragments_dir = fragments_dir or rawget(_G, '__GRAPHQLAPI_MODELS_DIR')
     _fragments_dir = fragments_dir or defaults.DEFAULT_MODELS_DIR
     rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)
