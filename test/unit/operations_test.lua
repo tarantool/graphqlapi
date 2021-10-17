@@ -154,7 +154,7 @@ g.test_add_remove_query_default_schema_with_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    operations.remove_query_prefix({prefix = 'test'})
+    operations.remove_queries_prefix({prefix = 'test'})
     t.assert_equals(operations.is_queries_prefix_exists({ prefix = 'test' }), false)
     t.assert_equals(operations.get_queries()['test'], nil)
     t.assert_equals(schemas.is_invalid(), true)
@@ -276,7 +276,7 @@ g.test_add_remove_query_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    operations.remove_query_prefix({prefix = 'test', schema = 'test_schema'})
+    operations.remove_queries_prefix({prefix = 'test', schema = 'test_schema'})
     t.assert_equals(operations.get_queries('test_schema')['test'], nil)
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
@@ -434,7 +434,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    operations.remove_mutation_prefix({prefix = 'test'})
+    operations.remove_mutations_prefix({prefix = 'test'})
     t.assert_equals(operations.is_mutations_prefix_exists({ prefix = 'test' }), false)
     t.assert_equals(operations.get_mutations()['test'], nil)
     t.assert_equals(schemas.is_invalid(), true)
@@ -564,7 +564,7 @@ g.test_add_remove_mutation_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    operations.remove_mutation_prefix({
+    operations.remove_mutations_prefix({
         prefix = 'test',
         schema = 'test_schema',
     })
@@ -659,7 +659,7 @@ g.test_add_remove_space_query_default_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid(), false)
     t.assert_items_equals(operations.list_queries(), {'test.entity'})
 
-    operations.remove_query_prefix({prefix = 'test'})
+    operations.remove_queries_prefix({prefix = 'test'})
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
@@ -781,7 +781,7 @@ g.test_add_remove_space_query_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    operations.remove_query_prefix({
+    operations.remove_queries_prefix({
         schema = 'test_schema',
         prefix = 'test',
     })
@@ -863,7 +863,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid(), false)
     t.assert_items_equals(operations.list_mutations(), {'test.entity'})
 
-    operations.remove_mutation_prefix({prefix = 'test'})
+    operations.remove_mutations_prefix({prefix = 'test'})
 
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
@@ -984,7 +984,7 @@ g.test_add_remove_space_mutation_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    operations.remove_mutation_prefix({
+    operations.remove_mutations_prefix({
         schema = 'test_schema',
         prefix = 'test',
     })

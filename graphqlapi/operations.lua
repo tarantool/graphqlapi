@@ -100,7 +100,7 @@ local function is_queries_prefix_exists(opts)
     return false
 end
 
-local function remove_query_prefix(opts)
+local function remove_queries_prefix(opts)
     checks({
         prefix = 'string',
         schema = '?string',
@@ -197,7 +197,7 @@ local function is_mutations_prefix_exists(opts)
     return false
 end
 
-local function remove_mutation_prefix(opts)
+local function remove_mutations_prefix(opts)
     checks({
         prefix = 'string',
         schema = '?string',
@@ -874,12 +874,12 @@ return {
     -- Queries prefixes API
     add_queries_prefix = add_queries_prefix,
     is_queries_prefix_exists = is_queries_prefix_exists,
-    remove_query_prefix = remove_query_prefix,
+    remove_queries_prefix = remove_queries_prefix,
 
     -- Mutations prefixes API
     add_mutations_prefix = add_mutations_prefix,
     is_mutations_prefix_exists = is_mutations_prefix_exists,
-    remove_mutation_prefix = remove_mutation_prefix,
+    remove_mutations_prefix = remove_mutations_prefix,
 
     -- Queries API
     add_query = add_query,
