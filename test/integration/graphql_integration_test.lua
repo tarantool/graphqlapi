@@ -1496,3 +1496,235 @@ function g.test_descriptions()
         util.map_by_name(test_input_object.inputFields, function(v) return v end)['input_object_arg_described']
     t.assert_equals(input_object_arg_described.description, 'input object argument')
 end
+
+function g.test_query_arguments_defaults()
+    local query1 = [[
+        query {
+            test_query(
+                string_arg: "string_arg"
+                int_arg: 0
+                object_arg: {
+                    string_arg: "string_arg"
+                    int_arg: 3
+                }
+            )
+        }
+    ]]
+
+    local query2 = [[
+        query($string_var: String, $int_var: Int, $object_var: input_object) {
+            test_query(
+                string_arg: $string_var
+                int_arg: $int_var
+                object_arg: $object_var
+            )
+        }
+    ]]
+
+    local variables = {
+        string_var = 'string_var',
+        int_var = 0,
+        object_var = {
+            string_arg = 'string_arg',
+            int_arg = 3,
+        }
+    }
+
+    local function callback(_, arguments, info)
+        return json.encode({
+            arguments = arguments,
+            defaults = info.defaultValues,
+        })
+    end
+
+    local query_schema = {
+        ['test_query'] = {
+            kind = types.string,
+            arguments = {
+                string_arg = {
+                    kind = types.string,
+                    defaultValue = 'default1',
+                },
+                int_arg = {
+                    kind = types.int,
+                    defaultValue = 1,
+                },
+                object_arg = types.inputObject({
+                    name = 'input_object',
+                    fields = {
+                        string_arg = {
+                            kind = types.string,
+                            defaultValue = 'default2',
+                        },
+                        int_arg = {
+                            kind = types.int,
+                            defaultValue = 2,
+                        },
+                    },
+                })
+            },
+            resolve = callback,
+        },
+    }
+
+    local data, errors = check_request(query1, query_schema)
+    t.assert_items_equals(json.decode(data.test_query), {
+        arguments = {
+            string_arg = 'string_arg',
+            int_arg = 0,
+            object_arg = {
+                string_arg = 'string_arg',
+                int_arg = 3,
+            },
+        },
+        defaults = {
+            string_arg = "default1",
+            int_arg = 1,
+            object_arg = {
+                string_arg = 'default2',
+                int_arg = 2,
+            }
+        },
+    })
+    t.assert_equals(errors, nil)
+
+    data, errors = check_request(query2, query_schema, nil, nil, {variables = variables})
+    t.assert_items_equals(json.decode(data.test_query), {
+        arguments = {
+            int_arg = 0,
+            string_arg = 'string_var',
+            object_arg = {
+                string_arg = 'string_arg',
+                int_arg = 3,
+            },
+        },
+        defaults = {
+            string_arg = "default1",
+            int_arg = 1,
+            object_arg = {
+                string_arg = 'default2',
+                int_arg = 2,
+            }
+        },
+    })
+    t.assert_equals(errors, nil)
+end
+
+function g.test_directives_defaults()
+    local function callback(_, _, info)
+        return json.encode({
+            directives = info.directives,
+            directiveDefaults = info.directivesDefaultValues,
+        })
+    end
+
+    local query1 = [[
+        query {
+            test_query
+            @custom
+        }
+    ]]
+
+    local query2 = [[
+        query($string_var: String, $int_var: Int, $object_var: input_object) {
+            test_query@custom(
+                string_arg: $string_var
+                int_arg: $int_var
+                object_arg: $object_var
+            )
+        }
+    ]]
+
+    local variables = {
+        string_var = 'string_var',
+        int_var = 0,
+        object_var = {
+            string_arg = 'string_arg',
+            int_arg = 3,
+        }
+    }
+
+    local query_schema = {
+        ['test_query'] = {
+            kind = types.string,
+            resolve = callback,
+        },
+    }
+
+    local directives = {
+        types.directive({
+            name = 'custom',
+            arguments = {
+                string_arg = {
+                    kind = types.string,
+                    defaultValue = 'default1',
+                },
+                int_arg = {
+                    kind = types.int,
+                    defaultValue = 1,
+                },
+                object_arg = types.inputObject({
+                    name = 'input_object',
+                    fields = {
+                        string_arg = {
+                            kind = types.string,
+                            defaultValue = 'default2',
+                        },
+                        int_arg = {
+                            kind = types.int,
+                            defaultValue = 2,
+                        },
+                    },
+                })
+            },
+            onField = true,
+        })
+    }
+
+    local data, errors = check_request(query1, query_schema, nil, directives)
+    t.assert_equals(data, {
+        test_query = json.encode({
+            directives = {
+                custom = {}
+            },
+            directiveDefaults = {
+                custom = {
+                    int_arg = 1,
+                    string_arg = 'default1',
+                    object_arg = {
+                        string_arg = 'default2',
+                        int_arg = 2,
+                    }
+                }
+            }
+        })
+    })
+    t.assert_equals(errors, nil)
+
+    data, errors = check_request(query2, query_schema, nil, directives, {variables = variables})
+    t.assert_equals(data, {
+        test_query = json.encode({
+            directives = {
+                custom = {
+                    int_arg = 0,
+                    string_arg = 'string_var',
+                    object_arg ={
+                        int_arg = 3,
+                        string_arg = "string_arg",
+                    }
+                }
+            },
+            directiveDefaults = {
+                custom = {
+                    int_arg = 1,
+                    string_arg = 'default1',
+                    object_arg = {
+                        string_arg = 'default2',
+                        int_arg = 2,
+                    }
+                }
+            },
+        })
+    })
+    t.assert_equals(errors, nil)
+end

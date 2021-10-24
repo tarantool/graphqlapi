@@ -73,8 +73,8 @@ local function getTypeName(t)
 end
 
 local function coerceDefaultValues(schemaType, value)
-  if not value then
-    return nil
+  if schemaType ~= nil and schemaType.defaultValue ~= nil then
+    return schemaType.defaultValue
   end
 
   if schemaType.__type == 'NonNull' then
@@ -84,6 +84,9 @@ local function coerceDefaultValues(schemaType, value)
   if schemaType.__type == 'InputObject' then
     for name, field in pairs(schemaType.fields or {}) do
       local kind = field.kind or {}
+      if value == nil then
+        value = {}
+      end
 
       if kind.__type == 'NonNull' or kind.__type == 'InputObject' or kind.__type == 'List' then
           value[name] = coerceDefaultValues(field.kind, value[name])
@@ -147,9 +150,6 @@ local function coerceValue(node, schemaType, variables, opts)
       end
     end
 
-    if schemaType.__type and type(value) == 'table' and next(value) then
-      value._defaults = coerceDefaultValues(schemaType, {})
-    end
     return value
   end
 
@@ -185,7 +185,6 @@ local function coerceValue(node, schemaType, variables, opts)
     end
 
     local inputObjectValue = {}
-    inputObjectValue._defaults = {}
     for fieldName, _ in pairs(fieldNameSet) do
       if not schemaType.fields[fieldName] then
         error(('Unknown input object field "%s"'):format(fieldName))
@@ -194,17 +193,6 @@ local function coerceValue(node, schemaType, variables, opts)
       local childValue = fieldValues[fieldName]
       local childType = schemaType.fields[fieldName].kind
       inputObjectValue[fieldName] = coerceValue(childValue, childType, variables, opts)
-      if inputObjectValue[fieldName] ~= nil and type(inputObjectValue[fieldName]) == 'table' then
-        for k, v in ipairs(inputObjectValue[fieldName] or {}) do
-          if type(inputObjectValue[fieldName][k]) == 'table' then
-            inputObjectValue._defaults[fieldName] = inputObjectValue._defaults[fieldName] or {}
-            inputObjectValue._defaults[fieldName][k] = v._defaults
-            inputObjectValue[fieldName][k]._defaults = nil
-          end
-        end
-      else
-        inputObjectValue._defaults[fieldName] = schemaType.fields[fieldName].defaultValue
-      end
     end
     return inputObjectValue
   end
@@ -340,6 +328,7 @@ return {
   trim = trim,
   getTypeName = getTypeName,
   coerceValue = coerceValue,
+  coerceDefaultValues = coerceDefaultValues,
 
   is_array = is_array,
   check = check,

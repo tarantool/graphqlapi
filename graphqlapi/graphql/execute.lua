@@ -252,7 +252,7 @@ local function getFieldEntry(objectType, object, fields, context)
     for _, value in ipairs(context.operation.variableDefinitions) do
         local variableType = query_util.typeFromAST(value.type, context.schema)
         defaultValues[value.variable.name.value] =
-          util.coerceValue(value.defaultValue, variableType) or variableType.defaultValue
+          util.coerceValue(value.defaultValue, variableType)
     end
   end
 
@@ -263,10 +263,7 @@ local function getFieldEntry(objectType, object, fields, context)
       strict_non_null = true,
       defaultValues = defaultValues,
     })
-    if res ~= nil and type(res) == 'table' then
-      defaultValues[name] = table.deepcopy(res._defaults)
-      if res ~= nil then res._defaults = nil end
-    end
+    defaultValues[name] = util.coerceDefaultValues(argument, defaultValues[name])
     return res
   end)
 
@@ -308,22 +305,17 @@ local function getFieldEntry(objectType, object, fields, context)
         end
 
         directives[directive_name] = util.map(directive.arguments or {}, function(argument, name)
-        local supplied = directiveArgumentMap[name] and directiveArgumentMap[name].value
-        local defaultValue = argument.defaultValue
-        if argument.kind then argument = argument.kind end
-        directivesDefaultValues[directive_name] = directivesDefaultValues[directive_name] or {}
-        if defaultValue ~= nil then directivesDefaultValues[directive_name][name] = defaultValue end
-        local res = util.coerceValue(supplied, argument, context.variables, {
-          strict_non_null = true,
-          defaultValues = defaultValues,
-        })
-
-        if res ~= nil and type(res) == 'table' then
-          defaultValues[name] = table.deepcopy(res._defaults)
-          if res ~= nil then res._defaults = nil end
-        end
-        return res
-      end)
+          local supplied = directiveArgumentMap[name] and directiveArgumentMap[name].value
+          if argument.kind then argument = argument.kind end
+          local res = util.coerceValue(supplied, argument, context.variables, {
+            strict_non_null = true,
+            defaultValues = defaultValues,
+          })
+          directivesDefaultValues[directive_name] = directivesDefaultValues[directive_name] or {}
+          directivesDefaultValues[directive_name][name] =
+            util.coerceDefaultValues(argument, directivesDefaultValues[directive_name][name])
+          return res
+        end)
       end
     end)
   end
