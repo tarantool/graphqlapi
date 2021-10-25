@@ -3,4 +3,4 @@
 # See https://github.com/tarantool/cartridge-cli#packing-an-application for details.
 
 - path: '.rocks'
-  key-path: cartridge-example-scm-1.rockspec
+  key-path: cartridge-full-scm-1.rockspec

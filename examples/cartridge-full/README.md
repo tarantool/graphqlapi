@@ -83,7 +83,7 @@ You can use it to probe instances:
 ```bash
 cartridge start -d  # if you've stopped instances
 cartridge admin probe \
-  --name cartridge-example \
+  --name cartridge-full \
   --run-dir ./tmp/run \
   --uri localhost:3302
 ```

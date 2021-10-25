@@ -6,7 +6,7 @@ exclude_files = {
     'tmp/',
     '.history/',
     'test/fragments',
-    'examples/cartridge-example/.rocks/'
+    'examples/cartridge-full/.rocks/'
 }
 
 max_line_length = 120

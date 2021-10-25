@@ -1,24 +1,24 @@
 ---
-cartridge-example.router:
+cartridge-full.router:
   advertise_uri: localhost:3301
   http_port: 8081
 
-cartridge-example.s1-master:
+cartridge-full.s1-master:
   advertise_uri: localhost:3302
   http_port: 8082
 
-cartridge-example.s1-replica:
+cartridge-full.s1-replica:
   advertise_uri: localhost:3303
   http_port: 8083
 
-cartridge-example.s2-master:
+cartridge-full.s2-master:
   advertise_uri: localhost:3304
   http_port: 8084
 
-cartridge-example.s2-replica:
+cartridge-full.s2-replica:
   advertise_uri: localhost:3305
   http_port: 8085
 
-cartridge-example-stateboard:
+cartridge-full-stateboard:
   listen: localhost:4401
   password: passwd

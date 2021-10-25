@@ -1,4 +1,4 @@
-package = 'cartridge-example'
+package = 'cartridge-full'
 version = 'scm-1'
 source  = {
     url = '/dev/null',
