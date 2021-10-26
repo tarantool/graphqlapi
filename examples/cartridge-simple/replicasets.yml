@@ -1,0 +1,10 @@
+router:
+  instances:
+  - router
+  roles:
+  - vshard-router
+  - vshard-storage
+  - app.roles.custom
+  weight: 1
+  all_rw: false
+  vshard_group: default

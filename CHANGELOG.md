@@ -5,11 +5,16 @@
 - `automatically add/remove schemas to graphqlide registry`
 - `rename remove_query_prefix() to remove_queries_prefix()`
 - `rename remove_mutation_prefix() to remove_mutations_prefix()`
-- `fix specifiedByUrl directive and field not propagated to introspection`
+- `fix specifiedByUrl directive and specifiedByUrl field not propagated to introspection`
 - `improve tests of embedded graphql module`
 - `update luatest@0.5.5 to luatest@0.5.6`
-- `improve cartridge-example (update dependencies, simplify code)`
+- `improve cartridge full example (update dependencies, simplify code)`
 - `fix default Tarantool Cartridge authorization doesn't work`
+- `more accurate cast of Tarantool object names to GraphQL names allowed characters`
+- `make arguments/directives arguments defaults to be propagated more carefully during request execution`
+- `rename 'cartridge-example' to 'cartridge-full'`
+- `add simple Cartridge App example`
+- `remove double error logging if fragments dir is not found`
 
 ## 0.0.1
 

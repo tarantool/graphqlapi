@@ -1,0 +1,5 @@
+---
+cartridge-simple.router:
+  advertise_uri: localhost:3301
+  http_port: 8081
+
