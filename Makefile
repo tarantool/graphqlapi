@@ -10,6 +10,7 @@ SHELL := /bin/bash
 
 .PHONY: lint
 lint:
+		@ if [ ! -d ".rocks" ]; then make .rocks; fi
 		.rocks/bin/luacheck .
 
 .PHONY: test
@@ -22,7 +23,12 @@ test: 	lint
 clean:
 		rm -rf .rocks
 
-.PHONY: build
-build:	
+.PHONY: rock
+rock:
+		@ if [ ! -d ".rocks" ]; then make .rocks; fi
 		tarantoolctl rocks make
-		tarantoolctl rocks pack graphqlapi scm-1
+		tarantoolctl rocks pack graphqlapi
+
+.PHONY: install
+install:
+		tarantoolctl rocks install graphqlapi-scm-1.all.rock
