@@ -67,7 +67,7 @@ local e_graphql_execute = errors.new_class('GraphQL execution failed')
 local function get_schema(schema_name)
     checks('?string')
 
-    if schemas.is_invalid() == true then
+    if schemas.is_invalid(schema_name) == true then
         _graphql_schema[schema_name] = nil
         schemas.reset_invalid(schema_name)
     end
@@ -377,11 +377,7 @@ local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
     _set_middleware(http_middleware)
     set_endpoint(endpoint, opts)
 
-    local ok, err = _init()
-    if not ok then
-        log.error('%s', err)
-        return err
-    end
+    _init()
 
     trigger.init()
 end
@@ -409,11 +405,7 @@ local function reload()
     helpers.stop()
     _graphql_schema = {}
 
-    local ok, err = _init()
-    if not ok then
-        log.error('%s', err)
-        return nil, err
-    end
+    _init()
     return true
 end
 
