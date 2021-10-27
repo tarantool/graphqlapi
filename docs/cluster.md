@@ -4,15 +4,23 @@
   - [lua API](#lua-api)
     - [get_servers()](#get_servers)
     - [get_masters()](#get_masters)
-    - [get_storages_masters()](#get_storages_masters)
+    - [get_storages_instances()](#get_storages_instances)
     - [get_self_alias()](#get_self_alias)
     - [get_self_uri()](#get_self_uri)
     - [get_replicasets()](#get_replicasets)
-    - [get_replicaset_instances(replicaset)](#get_replicaset_instancesreplicaset)
+    - [get_replicaset_instances()](#get_replicaset_instances)
     - [get_instances()](#get_instances)
+    - [get_servers_by_list()](#get_servers_by_list)
     - [get_existing_spaces()](#get_existing_spaces)
     - [is_space_exists()](#is_space_exists)
     - [get_schema()](#get_schema)
+    - [check_schema()](#check_schema)
+    - [set_schema()](#set_schema)
+    - [sharding_function()](#sharding_function)
+    - [set_sharding_function()](#set_sharding_function)
+    - [get_sharding_function()](#get_sharding_function)
+    - [remove_sharding_function()](#remove_sharding_function)
+    - [remove_all_sharding_functions()](#remove_all_sharding_functions)
 
 Submodule `cluster.lua` is a part of GraphQL API module provided functions specific to cluster application architecture. This particular implementation was made for Tarantool Cartridge Application (requires: `Cartridge`, `VShard` and `DDL` modules), for any custom application architecture, for example for so called pure-Tarantool applications most functions of this module may need to be overridden to comply it.
 
@@ -20,59 +28,67 @@ Submodule `cluster.lua` is a part of GraphQL API module provided functions speci
 
 ### get_servers()
 
-`cluster.get_servers()` - function to get connections to all cluster instances,
+`cluster.get_servers()` - method to get connections to all cluster instances,
 
 returns:
 
-- `servers` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
 
-- `connect_errors` (`table`) - array of errors if some cluster instances is not available.
+- `[2]` (`table`) - array of errors if some cluster instances is not available.
 
 ### get_masters()
 
-`cluster.get_masters()` - function to get connections to active master instances of all replicasets,
+`cluster.get_masters()` - method to get connections to active master instances of all cluster replicasets,
 
 returns:
 
-- `servers` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
 
-- `connect_errors` (`table`) - array of errors if some master instances is not available.
+- `[2]` (`table`) - array of errors if some master instances is not available.
 
-### get_storages_masters()
+### get_storages_instances()
 
-`cluster.get_storages_masters()` - function to get connections to master instances of all storage replicasets,
+`cluster.get_storages_instances(mode, prefer_replica, balance)` - method to get connections to get one instance from of all storage replicasets according to desired policy,
 
-- `servers` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+where:
 
-- `connect_errors` (`table`) - array of errors if some master instances is not available.
+- `mode` (`string`) - optional, have to be 'write' for replicaset masters (default) or 'read' for replicas if available;
+- `prefer_replica` (`boolean`) - optional, if true then the preferred target is one of the replicas, false by default;
+- `balance` (`boolean`) - use replica according to vshard load balancing policy;
+
+returns:
+
+- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+
+- `[2]` (`table`) - array of errors if some master instances is not available.
 
 ### get_self_alias()
 
-`cluster.get_self_alias()` - function to get instance alias this function called on,
+`cluster.get_self_alias()` - method to get instance alias this function called on,
 
 returns:
 
-- `instance_name` (`string`) - name of instance.
+- `[1]` (`string`) - name of instance.
 
 ### get_self_uri()
 
-`cluster.get_self_uri()` - function to get instance URI this function called on,
+`cluster.get_self_uri()` - method to get instance URI this function called on,
 
 returns:
 
-- `uri` (`string`) - URI (IP:port or FQDN:port) of instance.
+- `[1]` (`string`) - URI (IP:port or FQDN:port) of instance.
 
 ### get_replicasets()
 
-`cluster.get_replicasets()` - function to get all cluster replicasets alias names,
+`cluster.get_replicasets()` - method to get all cluster replicasets alias names,
 
 returns:
 
-- `replicasets` (`table`) - array of strings - cluster replicasets alias names.
+- `[1]` (`table`) - array of strings - cluster replicasets alias names.
 
-### get_replicaset_instances(replicaset)
+### get_replicaset_instances()
 
-`cluster.get_replicaset_instances()` - function to get all replicaset instances alias names,
+`cluster.get_replicaset_instances(replicaset)` - method to get all replicaset instances alias names,
 
 where:
 
@@ -80,40 +96,123 @@ where:
 
 returns:
 
-- `replicasets` (`table`) - array of strings - cluster replicasets aliases names.
+- `[1]` (`table`) - array of strings - cluster replicaset instances alias names.
 
 ### get_instances()
 
-`cluster.get_instances()` - function to get all cluster replicasets alias names,
+`cluster.get_instances()` - method to get all cluster replicasets alias names,
 
 returns:
 
-- `replicasets` (`table`) - array of strings - cluster replicasets alias names.
+- `[1]` (`table`) - array of strings - all cluster instances alias names.
+
+### get_servers_by_list()
+
+`cluster.get_servers_by_list()` - method to get servers objects by provided list of instances alias names,
+
+returns:
+
+- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+
+- `[2]` (`table`) - array of errors if some instances is not available.
 
 ### get_existing_spaces()
 
-`cluster.get_existing_spaces()` - function to get list of existing spaces on instance,
+`cluster.get_existing_spaces()` - method to get list of existing spaces,
 
 returns:
 
-- `spaces` (`table`) - array of existing non-system spaces on instance.
+- `[1]` (`table`) - array of `strings` of existing non-system spaces on instance this function called on.
 
 ### is_space_exists()
 
-`cluster.is_space_exists(space)` - function to check if the desired space is exists on instance,
+`cluster.is_space_exists(space)` - method to check if the desired space is exists,
 
 where:
 
-- `space` (`string`) - name of space;
+- `space` (`string`) - name of space to be checked;
 
 returns:
 
-- `status` (`boolean`) - true if space exists, false - if not.
+- `[1]` (`boolean`) - true if space exists, false - if not.
 
 ### get_schema()
 
-`cluster.get_schema()` - function to get database schema,
+`cluster.get_schema()` - method to get database schema (ddl.get_schema() wrapper),
 
 returns:
 
-- `schema` (`table`) - database schema, for additional info see [ddl.get_schema()](https://github.com/tarantool/ddl#get-spaces-format).
+- `[1]` (`table`) - database schema, for additional info see [ddl.get_schema()](https://github.com/tarantool/ddl#get-spaces-format).
+
+### check_schema()
+
+`cluster.check_schema()` - method to get database schema (ddl.check_schema() wrapper),
+
+returns:
+
+- `[1]` (`boolean`) - `true` if no error, otherwise return `nil`;
+- `[2]` (`error`) - error object.
+
+For additional info see [ddl.check_schema()](https://github.com/tarantool/ddl#check-compatibility).
+
+### set_schema()
+
+`cluster.set_schema()` - method to get database schema (ddl.set_schema() wrapper),
+
+returns:
+
+- `[1]` (`boolean`) - `true` if no error, otherwise return `nil`;
+- `[2]` (`error`) - error object.
+
+For additional info see [ddl.set_schema()](https://github.com/tarantool/ddl#set-spaces-format).
+
+### sharding_function()
+
+`cluster.sharding_function(space_name, sharding_keys)` - method to calculate bucket_id for provided space and values of sharding keys,
+
+where:
+
+- `space_name` (`string`) - mandatory, name of space;
+- `sharding_keys` (`table`) - mandatory, an array of sharding keys;
+
+returns:
+
+- `[1]` (`unsigned`) - bucket_id.
+
+### set_sharding_function()
+
+`cluster.set_sharding_function(space_name, shard_function)` - method to set custom sharding function for a space,
+
+where:
+
+- `space_name` (`string`) - mandatory, name of space;
+- `shard_function` (`function`) - mandatory, sharding function;
+
+returns:
+
+- `[1]` (`boolean`) - `true` if no error, otherwise return `nil`;
+- `[2]` (`error`) - error object.
+
+### get_sharding_function()
+
+`cluster.get_sharding_function(space_name)` - method to get custom sharding function for a space,
+
+where:
+
+- `space_name` (`string`) - mandatory, name of space;
+
+returns:
+
+- `[1]` (`function`) - sharding function for desired space.
+
+### remove_sharding_function()
+
+`cluster.remove_sharding_function(space_name)` - method to remove sharding function for space,
+
+where:
+
+- `space_name` (`string`) - mandatory, name of space.
+
+### remove_all_sharding_functions()
+
+`cluster.remove_all_sharding_functions()` - method to remove all custom sharding functions for all spaces.

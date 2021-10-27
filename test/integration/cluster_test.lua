@@ -192,7 +192,7 @@ g.test_set_sharding_function = function()
     ok, res, err = pcall(function() return router.net_box:eval(call_test_func, {'test'}) end)
 
     t.assert_equals(ok, true)
-    t.assert_equals(res, false)
+    t.assert_equals(res, nil)
     t.assert_str_contains(err.err, 'space "test" not found on instance: router')
 
     ok, res = pcall(function() return router.net_box:eval(call_test_func, {'entity'}) end)

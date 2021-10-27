@@ -61,7 +61,9 @@ end
 local function get_storages_instances(mode, prefer_replica, balance)
     checks('?string', '?boolean', '?boolean')
     local servers = {}
-    mode = mode or 'write'
+    if mode ~= 'read' and mode ~= 'write' then
+        mode = 'write'
+    end
     prefer_replica = prefer_replica or false
     balance = balance or false
 
@@ -193,6 +195,7 @@ local function default_sharding_function(sharding_keys)
 end
 
 local function sharding_function(space_name, sharding_keys)
+    checks('string', '?')
     if sharding_keys == nil then
         error("Can't get bucket_id with null shard :" .. debug.traceback(), 0)
     end
@@ -212,13 +215,13 @@ local function set_sharding_function(space_name, shard_function)
         _sharding_functions[space_name] = shard_function
         return true
     else
-        return false, e_sharding:new('space "%s" not found on instance: %s', space_name, get_self_alias())
+        return nil, e_sharding:new('space "%s" not found on instance: %s', space_name, get_self_alias())
     end
 end
 
 local function get_sharding_function(space_name)
     checks('string')
-    return _sharding_functions[space_name]
+    return _sharding_functions[space_name] or _sharding_functions['*'] or default_sharding_function
 end
 
 local function remove_sharding_function(space_name)
