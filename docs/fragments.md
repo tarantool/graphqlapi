@@ -11,14 +11,14 @@
     - [remove_fragment()](#remove_fragment)
     - [remove_fragment_by_space_name()](#remove_fragment_by_space_name)
     - [remove_all()](#remove_all)
-    - [list_fragments()](#list_fragments)
-    - [list_loaded()](#list_loaded)
+    - [fragments_list()](#fragments_list)
+    - [loaded_list()](#loaded_list)
 
 Submodule `fragments.lua` is a part of GraphQL API module that is used to load, remove and manipulate custom user GraphQL fragments. GraphQL fragments for this module must be written using GraphQLAPI module API and placed to project's subdirectory.
 
 ## GraphQL API fragment structure
 
-Each fragment must be a valid *.lua which returns a table of the following structure:
+Each fragment must be a valid lua-file which returns a table with the following structure:
 
 ```lua
     return {
@@ -56,7 +56,7 @@ If any lua-file in fragments dir tree doesn't return fragment function - it will
 
 ### init()
 
-`fragments.init(dir_name)` - function to init `fragments` module including loading and apply custom GraphQL fragments provided by application,
+`fragments.init(dir_name)` - method to init `fragments` module including loading and apply custom GraphQL fragments provided by application,
 
 where:
 
@@ -71,11 +71,11 @@ This function is used by internal routines and performs the following actions:
 
 ### stop()
 
-`fragments.stop()` - function to deinit `fragments` module, it removes all fragments and cleanup all internal module variables including unload all modules that was required by all fragments functions. This behavior is needed to make possible hot-reload of all fragments.
+`fragments.stop()` - module to deinit `fragments` module, it removes all fragments and cleanup all internal module variables including unload all modules that was required by all fragments functions. This behavior is needed to make possible hot-reload of all fragments.
 
 ### update_space_fragments()
 
-`fragments.update_space_fragments(space_name)` - function to reload fragments related to provided `space_name`,
+`fragments.update_space_fragments(space_name)` - method to reload fragments related to provided `space_name`,
 
 where:
 
@@ -85,7 +85,7 @@ This function is usually called when space with `space_name` is changed. It make
 
 ### apply_fragment()
 
-`fragments.apply_fragment(fragment)` - function to apply fragment,
+`fragments.apply_fragment(fragment)` - method to apply fragment,
 
 where:
 
@@ -99,7 +99,7 @@ returns:
 
 ### load_fragment()
 
-`fragments.load_fragment(filename)` - function to load GraphQL API fragment from file,
+`fragments.load_fragment(filename)` - method to load GraphQL API fragment from file,
 
 where:
 
@@ -113,7 +113,7 @@ Function `load_fragment()` performs the following actions:
 
 ### remove_fragment()
 
-`fragments.remove_fragment(filename)` - function is used to remove GraphQL API fragment from fragments internal cache,
+`fragments.remove_fragment(filename)` - method is used to remove GraphQL API fragment from fragments internal cache,
 
 where:
 
@@ -123,7 +123,7 @@ Note: internal fragment cache is indexed by GraphQL API fragment filenames.
 
 ### remove_fragment_by_space_name()
 
-`fragments.remove_fragment_by_space_name(space_name)` - function is used to remove all GraphQL API fragment(s) from fragments internal cache by spaces names,
+`fragments.remove_fragment_by_space_name(space_name)` - method is used to remove all GraphQL API fragment(s) from fragments internal cache by spaces names,
 
 where:
 
@@ -133,19 +133,19 @@ Function `remove_fragment_by_space_name()` is called when space is removed.
 
 ### remove_all()
 
-`fragments.remove_all()` - function to remove all GraphQL API fragments from fragments internal cache.
+`fragments.remove_all()` - method to remove all GraphQL API fragments from fragments internal cache.
 
-### list_fragments()
+### fragments_list()
 
-`fragments.list_fragments()` - function is used to get array of path's of loaded fragments,
+`fragments.fragments_list()` - method is used to get array of path's of loaded fragments,
 
 returns:
 
 - `fragments` (`table`) - array of loaded fragments paths. Each fragment is represented by fragment lua-file path divided by dot instead of "/".
 
-### list_loaded()
+### loaded_list()
 
-`fragments.list_loaded()` - function is used to get array of loaded fragments,
+`fragments.loaded_list()` - method is used to get array of loaded fragments,
 
 returns:
 

@@ -15,6 +15,8 @@
 - `rename 'cartridge-example' to 'cartridge-full'`
 - `add simple Cartridge App example`
 - `remove double error logging if fragments dir is not found`
+- `rename fragments.list_fragments to fragments.fragments_list`
+- `rename fragments.list_loaded to fragments.loaded_list`
 
 ## 0.0.1
 

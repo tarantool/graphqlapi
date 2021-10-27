@@ -89,30 +89,30 @@ end
 g.test_init_stop = function()
     package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
     fragments.init('test/fragments/suite1')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.valid_fragment',
         'test.fragments.suite1.spaces.spaces',
     })
-    t.assert_items_equals(fragments.list_loaded(), {'module'})
+    t.assert_items_equals(fragments.loaded_list(), {'module'})
 
     fragments.stop()
-    t.assert_items_equals(fragments.list_fragments(), {})
+    t.assert_items_equals(fragments.fragments_list(), {})
     t.assert_equals(package.loaded['module'], nil)
 end
 
 g.test_remove_fragment = function()
     package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
     fragments.init('test/fragments/suite1/')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.valid_fragment',
         'test.fragments.suite1.spaces.spaces',
     })
-    t.assert_items_equals(fragments.list_loaded(), {'module'})
+    t.assert_items_equals(fragments.loaded_list(), {'module'})
 
     fragments.remove_fragment('test/fragments/suite1/valid_fragment.lua')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.spaces.spaces',
     })
@@ -120,15 +120,15 @@ g.test_remove_fragment = function()
     fragments.stop()
 
     fragments.init('./test/fragments/suite1/')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.valid_fragment',
         'test.fragments.suite1.spaces.spaces',
     })
-    t.assert_items_equals(fragments.list_loaded(), {'module'})
+    t.assert_items_equals(fragments.loaded_list(), {'module'})
 
     fragments.remove_fragment('test.fragments.suite1.valid_fragment')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.spaces.spaces',
     })
@@ -137,16 +137,16 @@ end
 g.test_remove_fragment_by_space_name = function ()
     package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
     fragments.init('test/fragments/suite1/')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.valid_fragment',
         'test.fragments.suite1.spaces.spaces',
     })
-    t.assert_items_equals(fragments.list_loaded(), {'module'})
+    t.assert_items_equals(fragments.loaded_list(), {'module'})
 
     fragments.remove_fragment_by_space_name('fragment')
 
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.spaces.spaces',
     })
@@ -156,7 +156,7 @@ g.test_update_space_fragments = function()
     _G._test_fragment = 0
     package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
     fragments.init('test/fragments/suite1')
-    t.assert_items_equals(fragments.list_fragments(), {
+    t.assert_items_equals(fragments.fragments_list(), {
         'test.fragments.suite1.missing_spaces',
         'test.fragments.suite1.valid_fragment',
         'test.fragments.suite1.spaces.spaces',

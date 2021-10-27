@@ -21,7 +21,7 @@ local function list_modules()
     return list
 end
 
-local function list_fragments()
+local function fragments_list()
     local fragments = {}
     for key in pairs(_fragments) do
         table.insert(fragments, key)
@@ -29,7 +29,7 @@ local function list_fragments()
     return fragments
 end
 
-local function list_loaded()
+local function loaded_list()
     return _loaded
 end
 
@@ -201,6 +201,6 @@ return {
     remove_fragment_by_space_name = remove_fragment_by_space_name,
     remove_all = remove_all,
     get_func = get_func,
-    list_fragments = list_fragments,
-    list_loaded = list_loaded,
+    fragments_list = fragments_list,
+    loaded_list = loaded_list,
 }
