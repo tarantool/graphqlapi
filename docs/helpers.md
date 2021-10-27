@@ -183,7 +183,11 @@ where:
 - `schema` (`string`) - mandatory, schema name registering resource belongs to;
 - `class` (`string`) - mandatory, graphql part class, e.g.: 'directive', 'object', 'type', etc.;
 - `name` (`string`) - mandatory, graphql part name;
-- `helper` (`string`) - mandatory, helper name.
+- `helper` (`string`) - mandatory, helper name;
+
+returns:
+
+`[1]` (`boolean`) - true - resource is also used by other helper(s), false - not used and may be deleted.
 
 Example:
 
