@@ -1,11 +1,11 @@
 local defaults = {
     -- default fragments dir path
-    DEFAULT_MODELS_DIR = 'fragments',
+    DEFAULT_FRAGMENTS_DIR = 'fragments',
     -- default http endpoint
     DEFAULT_ENDPOINT = 'admin/graphql',
     -- name of default schema
     DEFAULT_SCHEMA_NAME = 'Default',
-    -- default config update channel capacity for change space messages
+    -- default config update channel capacity for change config messages
     CONFIG_UPDATE_CHANNEL_CAPACITY = 100,
     -- default schema update channel capacity for change space messages
     SCHEMA_UPDATE_CHANNEL_CAPACITY = 100,
