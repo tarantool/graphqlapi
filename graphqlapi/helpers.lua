@@ -91,9 +91,9 @@ local function on_update_config(trigger_new, trigger_old)
     return trigger_new
 end
 
-local function update_schema(opts)
+local function update_schema(message)
     for update_schema_trigger in pairs(_on_update_schema_triggers) do
-        local _, err = e_update_schema_trigger:pcall(update_schema_trigger, opts)
+        local _, err = e_update_schema_trigger:pcall(update_schema_trigger, message)
         if err then
             log.error('%s', err)
         end
