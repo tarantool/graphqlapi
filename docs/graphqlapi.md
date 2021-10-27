@@ -9,9 +9,11 @@
     - [get_fragments_dir()](#get_fragments_dir)
     - [set_endpoint()](#set_endpoint)
     - [get_endpoint()](#get_endpoint)
+    - [set_middleware()](#set_middleware)
+    - [get_middleware()](#get_middleware)
     - [VERSION](#version)
 
-Module `graphqlapi.lua` is a main module which provides general functions to init/stop/reload module and also for setting/getting http-endpoint and for setting/getting GraphQLAPI fragments dir path.
+Module `graphqlapi.lua` is a main module which provides general functions to init/stop/reload module and also for setting/getting http-endpoint, setting/getting middleware and setting/getting GraphQLAPI fragments dir path.
 
 It can be loaded by the following code:
 
@@ -23,25 +25,21 @@ If module runs in Tarantool Cartridge Application Role you can also use the foll
 
 ```lua
     local cartridge = require('cartridge')
-    local graphqlapi = cartridge.service_get('cartridge')
+    local graphqlapi = cartridge.service_get('graphqlapi')
 ```
 
 ## Lua API
 
 ### init()
 
-`graphqlapi.init(httpd, middleware, endpoint, fragments_dir, opts)` - function is used to initialize GraphQLAPI module,
+`graphqlapi.init(httpd, middleware, endpoint, fragments_dir, opts)` - method is used to initialize GraphQLAPI module,
 
 where:
 
 - `httpd` (`table`) - mandatory, instance of a Tarantool HTTP server;
-
 - `middleware` (`table`) - optional, instance of set of middleware callbacks;
-
 - `endpoint` (`string`) - optional, URI of http endpoint to be used for interacting with GraphQLAPI module, default value: `http(s)://<server:port>/admin/graphql`;
-
 - `fragments_dir` (`string`)  - optional, path to dir with customer GraphQL fragments, default value: `<app_root>/fragments`;
-
 - `opts` (`table`) - optional, options of http-route, options are the same as http:route [HTTP routes](https://github.com/tarantool/http/tree/1.1.0#using-routes)
 
 Example:
@@ -64,15 +62,15 @@ Example:
 
 ### stop()
 
-`graphqlapi.stop()` - function is used to deinit GraphQL API module, remove all used variables, cleanup cache and destroy http-endpoint.
+`graphqlapi.stop()` - method is used to deinit GraphQL API module, remove all used variables, cleanup cache and destroy http-endpoint.
 
 ### reload()
 
-`graphqlapi.reload()` - function is used to reload all fragments from disk. Usually used to load new fragments, that may be placed to the same fragments_dir.
+`graphqlapi.reload()` - method is used to reload all fragments from disk. Usually used to load new fragments, that may be placed to the same fragments_dir.
 
 ### set_fragments_dir()
 
-`graphqlapi.set_fragments_dir(fragments_dir)` - function is used to get GraphQL API fragments dir path, 
+`graphqlapi.set_fragments_dir(fragments_dir)` - method is used to get GraphQL API fragments dir path, 
 
 where:
 
@@ -87,7 +85,7 @@ Example:
 
 ### get_fragments_dir()
 
-`graphqlapi.get_fragments_dir()` - function is used to get GraphQL API fragments dir path, 
+`graphqlapi.get_fragments_dir()` - method is used to get GraphQL API fragments dir path, 
 
 Returns `fragments_dir` (`string`) - path to GraphQL API fragments.
 
@@ -102,7 +100,7 @@ Example:
 
 ### set_endpoint()
 
-`graphqlapi.set_endpoint(endpoint)` - function is used to set endpoint in runtime.
+`graphqlapi.set_endpoint(endpoint)` - method is used to set endpoint in runtime.
 
 where:
 
@@ -118,7 +116,7 @@ Example:
 
 ### get_endpoint()
 
-`graphqlapi.get_endpoint()` - function is used to get endpoint.
+`graphqlapi.get_endpoint()` - method is used to get endpoint.
 
 Returns:
 
@@ -132,6 +130,40 @@ Example:
     local graphqlapi_endpoint = graphqlapi.get_endpoint()
     log.info('GraphQL API endpoint: %s', graphqlapi_endpoint)
 ```
+
+### set_middleware()
+
+`graphqlapi.set_middleware(http_middleware)` - method is used to set custom middleware triggers,
+
+where:
+
+- `http_middleware` (`table`) - mandatory, table with one or more provided middleware functions:
+
+```lua
+    http_middleware = {
+        render_response = function(resp) return resp end,
+        request_wrapper = function(handler) return handler end,
+        authorize_request = function(req) return true end,
+    }
+```
+
+For more detailed info about this triggers refer to [middleware submodule](middleware.md).
+
+Example:
+
+```lua
+    local graphqlapi = require('graphqlapi')
+    local http_middleware = require('middleware')
+    graphqlapi.set_endpoint(http_middleware)
+```
+
+### get_middleware()
+
+`graphqlapi.get_middleware()` - method is used to set custom middleware triggers,
+
+returns:
+
+`[1]` (`table`) - current http-middleware triggers. For more info refer to [middleware submodule](middleware.md).
 
 ### VERSION
 
