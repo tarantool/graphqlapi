@@ -18,6 +18,8 @@
 - `rename fragments.list_fragments to fragments.fragments_list`
 - `rename fragments.list_loaded to fragments.loaded_list`
 - `rename schemas.list_schemas to schemas.schemas_list`
+- `rename operations.list_queries to operations.queries_list`
+- `rename operations.mutations_list to operation.mutations_list`
 
 ## 0.0.1
 

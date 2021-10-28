@@ -7,17 +7,23 @@
     - [get_queries()](#get_queries)
     - [get_mutations()](#get_mutations)
     - [add_queries_prefix()](#add_queries_prefix)
-    - [remove_query_prefix()](#remove_query_prefix)
+    - [is_queries_prefix_exists()](#is_queries_prefix_exists)
+    - [remove_queries_prefix()](#remove_queries_prefix)
     - [add_mutations_prefix()](#add_mutations_prefix)
-    - [remove_mutation_prefix()](#remove_mutation_prefix)
+    - [is_mutations_prefix_exists()](#is_mutations_prefix_exists)
+    - [remove_mutations_prefix()](#remove_mutations_prefix)
     - [add_query()](#add_query)
+    - [is_query_exists()](#is_query_exists)
     - [remove_query()](#remove_query)
-    - [list_queries()](#list_queries)
+    - [queries_list()](#queries_list)
     - [add_mutation()](#add_mutation)
+    - [is_mutation_exists()](#is_mutation_exists)
     - [remove_mutation()](#remove_mutation)
-    - [list_mutations()](#list_mutations)
+    - [mutations_list()](#mutations_list)
     - [add_space_query()](#add_space_query)
+    - [remove_space_query()](#remove_space_query)
     - [add_space_mutation()](#add_space_mutation)
+    - [remove_space_mutation()](#remove_space_mutation)
     - [remove_operations_by_space_name()](#remove_operations_by_space_name)
     - [on_resolve()](#on_resolve)
     - [remove_on_resolve_triggers()](#remove_on_resolve_triggers)
@@ -28,11 +34,11 @@ Submodule `operations.lua` - is a part of GraphQL API module provided functions 
 
 ### stop()
 
-`operations.stop()` - function to deinit `operations` submodule, it removes all queries, mutations and cleanup all internal module variables including trigger function that controls any space format changes. This behavior is needed to make possible hot-reload of all GraphQL API operations.
+`operations.stop()` - method to deinit `operations` submodule, it removes all queries, mutations and cleanup all internal module variables including trigger functions that controls any space format changes. This behavior is needed to make possible hot-reload of all GraphQL API operations.
 
 ### remove_all()
 
-`operations.remove_all()` - function to remove all queries, mutations and cleanup all internal module variables. Unlike `stop()` `remove_all()` doesn't remove space trigger function.
+`operations.remove_all()` - method to remove all queries, mutations and cleanup all internal module variables. Unlike `stop()` `remove_all()` doesn't remove space trigger function.
 
 ### get_queries()
 
@@ -52,120 +58,197 @@ returns:
 
 ### add_queries_prefix()
 
-`operations.add_queries_prefix(prefix, doc)` - function to add queries prefix,
+`operations.add_queries_prefix(opts)` - method to add queries prefix to the desired schema,
 
 where:
 
-- `prefix` (`string`) - mandatory, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
-
-- `doc` (`string`) - any arbitrary text that describes prefixed set of GraphQL queries.
+- `opts` (`table`) - mandatory, options to create queries prefix:
+  - `prefix` (`string`) - mandatory, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `type_name` (`string`) - optional, custom prefix object type name. By default, if `type_name` is not provided created prefix will have the following type name:  [defaults.QUERIES_PREFIX](defaults.md#queries_prefix)..opts.prefix and if `type_name` is is provided then opts.type_name will be used for prefix object type name;
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+  - `doc` (`string`) - any arbitrary text that describes prefixed set of GraphQL queries.
 
 Example:
 
 ```lua
-    require('graphqlapi.operations').add_queries_prefix('entity', 'entity operations')
+    require('graphqlapi.operations').add_queries_prefix({
+      prefix = 'queries_prefix',
+      type_name = 'API_QUERIES_PREFIX',
+      schema = 'Default',
+      docs = 'Set of queries',
+    })
 ```
 
-### remove_query_prefix()
+### is_queries_prefix_exists()
 
-`operations.remove_query_prefix(prefix)` - function to remove queries prefix and all the underlying queries,
+`operations.is_queries_prefix_exists(opts)` - method to check is queries prefix already exists in the desired schema,
 
-- `prefix` (`string`) - mandatory, queries prefix name to be removed.
+where:
+
+- `opts` (`table`) - mandatory, options to check queries prefix:
+  - `prefix` (`string`) - mandatory, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
+
+returns:
+
+`[1]` (`boolean`) - `true` if requested queries prefix already exists in desired schema, `false` if not.
+
+### remove_queries_prefix()
+
+`operations.remove_queries_prefix(opts)` - method to remove queries prefix and all the underlying queries to keep schema consistent,
+
+where:
+
+- `opts` (`string`) - mandatory, queries prefix options:
+  - `prefix` (`string`) - mandatory, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name).
+
 
 Example:
 
 ```lua
-    require('graphqlapi.operations').remove_query_prefix('entity')
+    require('graphqlapi.operations').remove_queries_prefix('queries_prefix')
 ```
 
 ### add_mutations_prefix()
 
-`operations.add_mutations_prefix(prefix, doc)` - function to add mutations prefix,
+`operations.add_mutations_prefix(opts)` - method to add mutations prefix to the desired schema,
 
 where:
 
-- `prefix` (`string`) - mandatory, mutations prefix name according to [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
-
-- `doc` (`string`) - any arbitrary text that describes prefixed set of GraphQL mutations.
+- `opts` (`table`) - mandatory, options to create mutations prefix:
+  - `prefix` (`string`) - mandatory, mutations prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `type_name` (`string`) - optional, custom mutations prefix object type name. By default, if `type_name` is not provided created prefix will have the following type name:  [defaults.QUERIES_PREFIX](defaults.md#mutations_prefix)..opts.prefix and if `type_name` is is provided then opts.type_name will be used for prefix object type name;
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+  - `doc` (`string`) - any arbitrary text that describes prefixed set of GraphQL queries.
 
 Example:
 
 ```lua
-    require('graphqlapi.operations').add_mutations_prefix('entity', 'entity operations')
+    require('graphqlapi.operations').add_mutations_prefix({
+      prefix = 'mutations_prefix',
+      type_name = 'MUTATIONS_API_PREFIX',
+      schema = 'Default',
+      docs = 'Set of mutations',
+    })
 ```
 
-### remove_mutation_prefix()
+### is_mutations_prefix_exists()
 
-`operations.add_mutations_prefix(prefix)` - function to remove mutations prefix and all the underlying queries,
+`operations.is_mutations_prefix_exists(opts)` - method to check is mutations prefix already exists in the desired schema,
 
-- `prefix` (`string`) - mandatory, mutations prefix name to be removed.
+where:
+
+- `opts` (`table`) - mandatory, options to check mutations prefix:
+  - `prefix` (`string`) - mandatory, mutations prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
+
+returns:
+
+`[1]` (`boolean`) - `true` if requested mutations prefix already exists in the desired schema, `false` if not.
+
+### remove_mutations_prefix()
+
+`operations.remove_mutations_prefix(opts)` - method to remove mutations prefix and all the underlying queries to keep schema consistent,
+
+where:
+
+- `opts` (`string`) - mandatory, mutations prefix options:
+  - `prefix` (`string`) - mandatory, mutations prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name).
+
 
 Example:
 
 ```lua
-    require('graphqlapi.operations').remove_query_prefix('entity')
+    require('graphqlapi.operations').remove_mutations_prefix('mutations_prefix')
 ```
 
 ### add_query()
 
-`operations.add_query(opts)` - function to add GraphQL query,
+`operations.add_query(opts)` - method to add GraphQL query,
 
 where:
 
-- `opts` (`table`) - mandatory, GraphQL query which has the following parameters:
+- `opts` (`table`) - mandatory, query options:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name).
   - `prefix` (`string`) - optional, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names). Queries prefix must be created before using it;
   - `name` (`string`) - mandatory, query name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
   - `doc` (`string`) - optional, any arbitrary text that describes query;
-  - `args` (`table`) - optional, table of query arguments - list of GraphQL scalars compliant with [#2.6 GraphQL specification](http://spec.graphql.org/draft/#sec-Language.Arguments);
-  - `kind` (`table|string`) - mandatory, list of GraphQL scalars compliant with [#2.6 GraphQL specification](http://spec.graphql.org/draft/#sec-Language.Arguments) or string;
+  - `args` (`table`) - optional, table of query arguments - map of GraphQL scalars or inputObjects compliant with [#2.6 GraphQL specification](http://spec.graphql.org/draft/#sec-Language.Arguments);
+  - `kind` (`table|string`) - mandatory, list of GraphQL scalars or GraphQL object compliant with [#2.6 GraphQL specification](http://spec.graphql.org/draft/#sec-Language.Arguments) or string;
   - `callback` (`string`) - mandatory, path and name of function to be called to execute GraphQL query.
 
 Example:
 
 ```lua
   require('operations').add_query({
+        schema = `Default`,
         prefix = 'entities',
         name = 'entity',
         doc = 'Get entity object',
         args = {
             entity_id = types.string.nonNull,
+            id = types.int,
+            user = types()['user_entity_input']
         },
         kind = types.list(types.entity),
         callback = 'fragments.entity.entity_get',
     })
 ```
 
-### remove_query()
+### is_query_exists()
 
-`operations.remove_query(name, prefix)` - function is used to remove GraphQL query,
+`operations.is_query_exists(opts)` - method to check if query already exists in the desired schema,
 
 where:
 
-- `name` (`string`) - mandatory, query name;
-  
-- `prefix` (`string`) - optional, queries prefix name.
+- `opts` (`table`) - mandatory, options to check query:
+  - `name` (`string`) - mandatory, query name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `prefix` (`string`) - mandatory, query prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
+
+returns:
+
+`[1]` (`boolean`) - `true` if requested query already exists in the desired schema, `false` if not.
+
+### remove_query()
+
+`operations.remove_query(opts)` - method is used to remove GraphQL query from the desired schema,
+
+where:
+
+- `opts` (`table`) - mandatory, options to check query:
+  - `name` (`string`) - mandatory, query name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `prefix` (`string`) - mandatory, query prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name).
 
 Example:
 
 ```lua
-  require('operations').remove_query('entity', 'entities')
+  require('operations').remove_query({
+    name = 'entity',
+    prefix = 'entities',
+    schema = `Default`,
+  })
 ```
 
-### list_queries()
+### queries_list()
 
-`operations.list_queries()` - function is used to get list of registered queries,
+`operations.queries_list()` - method is used to get list of registered queries,
 
 returns:
 
-- `queries` (`table`) - list of queries. If query has a prefix `list_queries()` returns it in the following format: 'entities.entity'.
+- `queries` (`table`) - list of queries. If query has a prefix `queries_list()` returns it in the following format: 'entities.entity'.
 
 ### add_mutation()
 
-`operations.add_mutation(opts)` - function to add GraphQL mutation,
+`operations.add_mutation(opts)` - method to add GraphQL mutation,
 
 where:
 
-- `opts` (`table`) - mandatory, GraphQL mutation which has the following parameters:
+- `opts` (`table`) - mandatory, mutation options:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
   - `prefix` (`string`) - optional, mutations prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names). Mutations prefix must be created before using it;
   - `name` (`string`) - mandatory, mutation name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
   - `doc` (`string`) - optional, any arbitrary text that describes mutation;
@@ -177,6 +260,7 @@ Example:
 
 ```lua
   require('operations').add_mutation({
+        schema = `Default`,
         prefix = 'entities',
         name = 'entity',
         doc = 'Update entity object',
@@ -189,38 +273,59 @@ Example:
     })
 ```
 
-### remove_mutation()
+### is_mutation_exists()
 
-`operations.remove_mutation(name, prefix)` - function is used to remove GraphQL mutation,
+`operations.is_mutation_exists(opts)` - method to check if mutation already exists in the desired schema,
 
 where:
 
-- `name` (`string`) - mandatory, mutation name;
+- `opts` (`table`) - mandatory, options to check mutation:
+  - `name` (`string`) - mandatory, mutation name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `prefix` (`string`) - mandatory, mutation prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
 
-- `prefix` (`string`) - optional, mutations prefix name.
+returns:
+
+`[1]` (`boolean`) - `true` if requested mutation already exists in the desired schema, `false` if not.
+
+### remove_mutation()
+
+`operations.remove_mutation(name, prefix)` - method is used to remove GraphQL mutation,
+
+where:
+
+- `opts` (`table`) - mandatory, options to remove mutation:
+  - `name` (`string`) - mandatory, mutation name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `prefix` (`string`) - mandatory, mutation prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name).
 
 Example:
 
 ```lua
-  require('operations').remove_mutation('entity', 'entities')
+  require('operations').remove_mutation({
+    name = 'entity',
+    prefix = 'entities',
+    schema = `Default`,
+  })
 ```
 
-### list_mutations()
+### mutations_list()
 
-`operations.list_mutations()` - function is used to get list of registered mutations,
+`operations.mutations_list()` - method is used to get list of registered queries,
 
 returns:
 
-- `mutations` (`table`) - list of mutations. If query has a prefix `list_mutations()` returns it in the following format: 'entities.entity'.
+- `queries` (`table`) - list of queries. If mutation has a prefix `mutations_list()` returns it in the following format: 'entities.entity'.
 
 ### add_space_query()
 
-`operations.add_space_query(opts)` - function to add GraphQL space object type and space query based on provided space format. Query and related space GraphQL type (representation) can be flexibly configured by add_space_query() options,
+`operations.add_space_query(opts)` - method to add GraphQL space object type and space query based on provided space format. Query and related space GraphQL type (representation) can be flexibly configured by add_space_query() options,
 
 where:
 
-- `opts` (`table`) - mandatory, GraphQL space query which has the following parameters:
-  - `type_name` (`string`) - optional, GraphQL type name related to specified space, if not provided space query related GraphQL type will be named exactly equal to space name;
+- `opts` (`table`) - mandatory, GraphQL space query options:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+  - `type_name` (`string`) - optional, GraphQL type name related to specified space, if not provided space query related GraphQL type will be named exactly equal to space name with postfix '_space';
   - `description` (`string`) - optional, any arbitrary text that describes space GraphQL type;
   - `space` (`string`) - mandatory, name of existing space;
   - `fields` (`string`) - optional, table with list of space GraphQL type. It's possible to add any additional fields to query results that can be returned by callback function, as well as remove any unneeded space fields from query result. For example, if space has `bucket_id` field and request must not return this field then that field may be removed by the following trick:
@@ -235,7 +340,8 @@ where:
   - `name` (`string`) - optional, query name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names). if not provided will be named exactly equal to space name;
   - `doc` (`string`) - optional, any arbitrary text that describes query;
   - `args` (`table`) - optional, table of query arguments - list of GraphQL scalars compliant with [#2.6 GraphQL specification](http://spec.graphql.org/draft/#sec-Language.Arguments);
-  - `kind` (`boolean`) - optional, flag to set kind as list of datasets or single dataset;
+  - `kind` (`table`) - optional, by default kind will be an GraphQL object with space fields but if kind is not nil then it will used as result in this particular query;
+  - `list` (`boolean`) - optional, flag to set kind as list of datasets or single dataset;
   - `callback` (`string`) - mandatory, path and name of function to be called to execute GraphQL query.
 
 Example:
@@ -250,6 +356,7 @@ Example:
         }
     })
     require('operations').add_space_query({
+        schema = 'Default',
         type_name = 'entity_query_type',
         description = '"entity" query GraphQL type',
         space = 'entity',
@@ -262,18 +369,31 @@ Example:
         args = {
             entity_id = types.string.nonNull,
         },
-        kind = true,
+        list = true,
         callback = 'fragments.entity_get',
     })
 ```
 
+### remove_space_query()
+
+`operations.remove_space_query(opts)` - method to remove GraphQL space object type and space query,
+
+where:
+
+- `opts` (`table`) - mandatory, GraphQL space query options:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+  - `prefix` (`string`) - optional, queries prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `space` (`string`) - mandatory, name of space;
+  - `name` (`string`) - optional, query name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names).
+
 ### add_space_mutation()
 
-`operations.add_space_mutation(opts)` - function to add GraphQL space object type and space mutation based on provided space format. Mutation and related space GraphQL type (representation) can be flexibly configured by add_space_mutation() options,
+`operations.add_space_mutation(opts)` - method to add GraphQL space object type and space mutation based on provided space format. Mutation and related space GraphQL type (representation) can be flexibly configured by add_space_mutation() options,
 
 where:
 
 - `opts` (`table`) - mandatory, GraphQL space mutation which has the following parameters:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
   - `type_name` (`string`) - optional, GraphQL type name related to specified space, if not provided space mutation related GraphQL type will be named exactly equal to space name;
   - `description` (`string`) - optional, any arbitrary text that describes space GraphQL type;
   - `space` (`string`) - mandatory, name of existing space;
@@ -304,6 +424,7 @@ Example:
         }
     })
     require('operations').add_space_mutation({
+        schema = 'Default',
         type_name = 'entity_mutation_type',
         description = '"entity" mutation GraphQL type',
         space = 'entity',
@@ -321,21 +442,34 @@ Example:
     })
 ```
 
+### remove_space_mutation()
+
+`operations.remove_space_mutation(opts)` - method to remove GraphQL space object type and space mutation,
+
+where:
+
+- `opts` (`table`) - mandatory, GraphQL space mutation options:
+  - `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+  - `prefix` (`string`) - optional, mutations prefix name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names);
+  - `space` (`string`) - mandatory, name of space;
+  - `name` (`string`) - optional, mutation name compliant with [#2.1.9 GraphQL specification](http://spec.graphql.org/draft/#sec-Names).
+
+
 ### remove_operations_by_space_name()
 
 `operations.remove_operations_by_space_name(space_name)` - function to remove GraphQL queries and mutations related to the space previously added by `add_space_query()` and `add_space_mutation()`,
 
 where:
 
-- `space_name` (`string`) - mandatory, name of existing space;
+- `space_name` (`string`) - mandatory, name of existing space.
 
 ### on_resolve()
 
-`operations.on_resolve(trigger_new, trigger_old)` - function to set or remove special triggers that will called on every GraphQL resolve. Trigger can help to solve the following cases:
+`operations.on_resolve(trigger_new, trigger_old)` - method to set or remove special triggers that will be called on every GraphQL resolve. Trigger can help to solve the following cases:
 
 - log requests and it's arguments;
 - make some custom filtration of quests and its arguments;
-- deny of executing some requests if it's needed;
+- deny of executing some requests if it's needed,
 
 where:
 
@@ -344,10 +478,18 @@ where:
 
 Note: As both two arguments `on_resolve()` is optional, but one of them must be present to apply any changes (see examples below).
 
-Trigger function `trigger(operation_type, operation_name)` has two arguments:
+Trigger function `trigger(operation_type, operation_schema, operation_prefix, operation_name, object, arguments, info)` has the following arguments:
 
 - `operation_type` (`string`) - can contain the following values: `query` or `mutation`
-- `operation_name` (`string`) - contains
+- `operation_schema` (`string`) - schema name executed query or mutation belongs to;
+- `operation_prefix` (`string`) - prefix name of query or mutation;
+- `operation_name` (`string`) - query or mutation name;
+- `object` (`table`) - GraphQL object;
+- `arguments` (`table`) - a set of request arguments;
+- `info` (`table`) - a set of additional request info:
+  - `defaultValues` (`table`) - arguments default values;
+  - `directives` (`table`) - directives;
+  - `directivesDefaultValues` (`table`) - directivesdefault values,
 
 and may return two values:
 
@@ -359,8 +501,38 @@ and may return two values:
 Example:
 
 ```lua
-    local function log_request(operation_type, operation_name)
-        log.info("GraphQL %s: %s", operation_type, operation_name)
+    local json_options = {
+      encode_use_tostring = true,
+      encode_deep_as_nil = true,
+      encode_max_depth = 10,
+      encode_invalid_as_nil = true,
+    }
+
+    local function log_request(operation_type, operation_schema, operation_prefix, operation_name, ...)
+    local _, arguments, info = ...
+
+    -- user will be nil if no cartridge auth is enabled
+    local user = cartridge.http_get_username()
+
+    log.info("\nGraphQL request by username: %s =>\n"..
+              "\toperation: %s\n"..
+              "\tschema: %s\n"..
+              "\tprefix: %s\n"..
+              "\toperation name: %s\n"..
+              "\targuments: %s\n"..
+              "\targuments defaults: %s\n"..
+              "\tdirectives: %s\n"..
+              "\tdirectives defaults: %s",
+          tostring(user or 'unknown'),
+          operation_type,
+          tostring(operation_schema),
+          tostring(operation_prefix),
+          operation_name,
+          json.encode(arguments, json_options),
+          json.encode(info.defaultValues, json_options),
+          json.encode(info.directives, json_options),
+          json.encode(info.directivesDefaultValues, json_options)
+      )
     end
 
     local function deny_mutations(operation_type, operation_name)
@@ -376,9 +548,8 @@ Example:
 
     -- remove one of the triggers
     operations.on_resolve(nil, deny_mutations) -- remove deny GraphQL mutation requests trigger
-
 ```
 
 ### remove_on_resolve_triggers()
 
-`operations.remove_on_resolve_triggers()` - function to remove all GraphQL API triggers at once.
+`operations.remove_on_resolve_triggers()` - method to remove all GraphQL API triggers at once.

@@ -36,7 +36,7 @@ g.test_add_remove_query_default_schema_no_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_queries(), {'entity'})
+    t.assert_items_equals(operations.queries_list(), {'entity'})
 
     local ok, err = pcall(function()
         operations.add_query({
@@ -142,7 +142,7 @@ g.test_add_remove_query_default_schema_with_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_queries(), {'test.entity_1', 'test.entity_2'})
+    t.assert_items_equals(operations.queries_list(), {'test.entity_1', 'test.entity_2'})
 
     operations.remove_query({
         name = 'entity_1',
@@ -196,7 +196,7 @@ g.test_add_remove_query_custom_schema_no_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity'})
 
     operations.remove_query({name = 'entity', schema = 'test_schema'})
 
@@ -262,7 +262,7 @@ g.test_add_remove_query_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'test.entity_1', 'test.entity_2'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'test.entity_1', 'test.entity_2'})
 
     operations.remove_query({
         name = 'entity_1',
@@ -318,7 +318,7 @@ g.test_add_remove_mutation_default_schema_no_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_mutations(), {'entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity'})
 
     local ok, err = pcall(function()
         operations.add_mutation({
@@ -422,7 +422,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_mutations(), {'test.entity_1', 'test.entity_2'})
+    t.assert_items_equals(operations.mutations_list(), {'test.entity_1', 'test.entity_2'})
 
     operations.remove_mutation({
         name = 'entity_1',
@@ -476,7 +476,7 @@ g.test_add_remove_mutation_custom_schema_no_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity'})
 
     operations.remove_mutation({name = 'entity', schema = 'test_schema'})
     t.assert_equals(operations.get_mutations('test_schema')['entity'], nil)
@@ -548,7 +548,7 @@ g.test_add_remove_mutation_custom_schema_with_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'test.entity_1', 'test.entity_2'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'test.entity_1', 'test.entity_2'})
 
     operations.remove_mutation({
         name = 'entity_1',
@@ -607,7 +607,7 @@ g.test_add_remove_space_query_default_schema_no_prefix = function()
         t.assert_equals(schemas.is_invalid(), true)
         schemas.reset_invalid()
         t.assert_equals(schemas.is_invalid(), false)
-        t.assert_items_equals(operations.list_queries(), {'entity'})
+        t.assert_items_equals(operations.queries_list(), {'entity'})
 
         operations.remove_space_query({
             space = 'entity'
@@ -615,7 +615,7 @@ g.test_add_remove_space_query_default_schema_no_prefix = function()
         t.assert_equals(schemas.is_invalid(), true)
         schemas.reset_invalid()
 
-        t.assert_items_equals(operations.list_queries(), {})
+        t.assert_items_equals(operations.queries_list(), {})
 
     space:drop()
 
@@ -657,14 +657,14 @@ g.test_add_remove_space_query_default_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
-    t.assert_items_equals(operations.list_queries(), {'test.entity'})
+    t.assert_items_equals(operations.queries_list(), {'test.entity'})
 
     operations.remove_queries_prefix({prefix = 'test'})
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_queries(), {})
+    t.assert_items_equals(operations.queries_list(), {})
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -686,7 +686,7 @@ g.test_add_remove_space_query_default_schema_with_prefix = function()
         prefix = 'test',
     })
 
-    t.assert_items_equals(operations.list_queries(), {})
+    t.assert_items_equals(operations.queries_list(), {})
 
     operations.add_space_query({
         prefix = 'test',
@@ -704,7 +704,7 @@ g.test_add_remove_space_query_default_schema_with_prefix = function()
         prefix = 'test',
     })
 
-    t.assert_items_equals(operations.list_queries(), {})
+    t.assert_items_equals(operations.queries_list(), {})
 
     space:drop()
 end
@@ -727,7 +727,7 @@ g.test_add_remove_space_query_custom_schema_no_prefix = function()
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity'})
 
     operations.remove_space_query({
         schema = 'test_schema',
@@ -737,7 +737,7 @@ g.test_add_remove_space_query_custom_schema_no_prefix = function()
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {})
+    t.assert_items_equals(operations.queries_list('test_schema'), {})
 
     space:drop()
 end
@@ -767,7 +767,7 @@ g.test_add_remove_space_query_custom_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
-    t.assert_items_equals(operations.list_queries('test_schema'), {'test.entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'test.entity'})
 
     operations.remove_query({
         schema = 'test_schema',
@@ -775,7 +775,7 @@ g.test_add_remove_space_query_custom_schema_with_prefix = function()
         prefix = 'test',
     })
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {})
+    t.assert_items_equals(operations.queries_list('test_schema'), {})
 
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
@@ -807,7 +807,7 @@ g.test_add_remove_space_mutation_default_schema_no_prefix = function()
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
-    t.assert_items_equals(operations.list_mutations(), {'entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity'})
 
     operations.remove_space_mutation({
         space = 'entity'
@@ -816,7 +816,7 @@ g.test_add_remove_space_mutation_default_schema_no_prefix = function()
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
 
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     space:drop()
 
@@ -861,7 +861,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
-    t.assert_items_equals(operations.list_mutations(), {'test.entity'})
+    t.assert_items_equals(operations.mutations_list(), {'test.entity'})
 
     operations.remove_mutations_prefix({prefix = 'test'})
 
@@ -869,7 +869,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
 
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -891,7 +891,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
         space = 'entity',
     })
 
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     operations.add_space_mutation({
         prefix = 'test',
@@ -909,7 +909,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
         name = 'entity',
     })
 
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     space:drop()
 end
@@ -931,7 +931,7 @@ g.test_add_remove_space_mutation_custom_schema_no_prefix = function()
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity'})
 
     operations.remove_space_mutation({
         schema = 'test_schema',
@@ -941,7 +941,7 @@ g.test_add_remove_space_mutation_custom_schema_no_prefix = function()
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {})
 
     space:drop()
 end
@@ -970,7 +970,7 @@ g.test_add_remove_space_mutation_custom_schema_with_prefix = function()
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
     t.assert_equals(schemas.is_invalid('test_schema'), false)
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'test.entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'test.entity'})
 
     operations.remove_mutation({
         schema = 'test_schema',
@@ -978,7 +978,7 @@ g.test_add_remove_space_mutation_custom_schema_with_prefix = function()
         prefix = 'test',
     })
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {})
 
     t.assert_equals(schemas.is_invalid('test_schema'), true)
     schemas.reset_invalid('test_schema')
@@ -1003,7 +1003,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_get',
     })
 
-    t.assert_items_equals(operations.list_queries(), {'entity'})
+    t.assert_items_equals(operations.queries_list(), {'entity'})
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -1021,7 +1021,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_get'
     })
 
-    t.assert_items_equals(operations.list_queries(), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.queries_list(), {'entity', 'test.entity'})
 
     operations.add_query({
         schema = 'test_schema',
@@ -1034,7 +1034,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_get'
     })
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity'})
 
     operations.add_queries_prefix({
         schema = 'test_schema',
@@ -1054,7 +1054,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_get'
     })
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity', 'test.entity'})
 
     operations.add_mutation({
         name = 'entity',
@@ -1066,7 +1066,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_set'
     })
 
-    t.assert_items_equals(operations.list_mutations(), {'entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity'})
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -1084,7 +1084,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_set'
     })
 
-    t.assert_items_equals(operations.list_mutations(), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity', 'test.entity'})
 
     operations.add_mutation({
         schema = 'test_schema',
@@ -1097,7 +1097,7 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_set'
     })
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity'})
 
     operations.add_mutations_prefix({
         schema = 'test_schema',
@@ -1117,24 +1117,24 @@ g.test_operations_remove_all = function()
         callback = 'fragments.entity.entity_set'
     })
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity', 'test.entity'})
 
     operations.remove_all({schema = box.NULL})
 
     t.assert_items_equals(operations.get_queries(), {})
     t.assert_items_equals(operations.get_mutations(), {})
-    t.assert_items_equals(operations.list_queries(), {})
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.queries_list(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     operations.remove_all()
     t.assert_items_equals(operations.get_queries(), {})
     t.assert_items_equals(operations.get_mutations(), {})
-    t.assert_items_equals(operations.list_queries(), {})
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.queries_list(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
     t.assert_items_equals(operations.get_queries('test_schema'), {})
     t.assert_items_equals(operations.get_mutations('test_schema'), {})
-    t.assert_items_equals(operations.list_queries('test_schema'), {})
-    t.assert_items_equals(operations.list_mutations('test_schema'), {})
+    t.assert_items_equals(operations.queries_list('test_schema'), {})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {})
 
     local space = test_helper.create_space()
 
@@ -1160,8 +1160,8 @@ g.test_operations_remove_all = function()
 
     t.assert_items_equals(operations.get_queries(), {})
     t.assert_items_equals(operations.get_mutations(), {})
-    t.assert_items_equals(operations.list_queries(), {})
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.queries_list(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 
     space:drop()
 end
@@ -1198,8 +1198,8 @@ g.test_operations_stop = function()
     operations.stop()
     t.assert_equals(operations.get_queries(), {})
     t.assert_equals(operations.get_mutations(), {})
-    t.assert_items_equals(operations.list_queries(), {})
-    t.assert_items_equals(operations.list_mutations(), {})
+    t.assert_items_equals(operations.queries_list(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
 end
 
 g.test_on_resolve_trigger = function()
@@ -1263,7 +1263,7 @@ g.test_remove_operations_by_space_name = function()
         callback = 'fragments.entity.entity_get',
     })
 
-    t.assert_items_equals(operations.list_queries(), {'entity'})
+    t.assert_items_equals(operations.queries_list(), {'entity'})
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -1280,7 +1280,7 @@ g.test_remove_operations_by_space_name = function()
         callback = 'fragments.entity.entity_get',
     })
 
-    t.assert_items_equals(operations.list_queries(), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.queries_list(), {'entity', 'test.entity'})
 
     operations.add_space_query({
         schema = 'test_schema',
@@ -1292,7 +1292,7 @@ g.test_remove_operations_by_space_name = function()
         callback = 'fragments.entity.entity_get',
     })
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity'})
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -1311,7 +1311,7 @@ g.test_remove_operations_by_space_name = function()
         callback = 'fragments.entity.entity_get',
     })
 
-    t.assert_items_equals(operations.list_queries('test_schema'), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.queries_list('test_schema'), {'entity', 'test.entity'})
 
     operations.add_space_mutation({
         space = 'entity',
@@ -1322,7 +1322,7 @@ g.test_remove_operations_by_space_name = function()
         callback = "fragments.entity.entity_set"
     })
 
-    t.assert_items_equals(operations.list_mutations(), {'entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity'})
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -1339,7 +1339,7 @@ g.test_remove_operations_by_space_name = function()
         callback = 'fragments.entity.entity_set',
     })
 
-    t.assert_items_equals(operations.list_mutations(), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.mutations_list(), {'entity', 'test.entity'})
 
     operations.add_space_mutation({
         schema = 'test_schema',
@@ -1351,7 +1351,7 @@ g.test_remove_operations_by_space_name = function()
         callback = "fragments.entity.entity_set"
     })
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity'})
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -1370,13 +1370,13 @@ g.test_remove_operations_by_space_name = function()
         callback = "fragments.entity.entity_set"
     })
 
-    t.assert_items_equals(operations.list_mutations('test_schema'), {'entity', 'test.entity'})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {'entity', 'test.entity'})
 
     operations.remove_operations_by_space_name('entity')
-    t.assert_items_equals(operations.list_queries(), {})
-    t.assert_items_equals(operations.list_mutations(), {})
-    t.assert_items_equals(operations.list_queries('test_schema'), {})
-    t.assert_items_equals(operations.list_mutations('test_schema'), {})
+    t.assert_items_equals(operations.queries_list(), {})
+    t.assert_items_equals(operations.mutations_list(), {})
+    t.assert_items_equals(operations.queries_list('test_schema'), {})
+    t.assert_items_equals(operations.mutations_list('test_schema'), {})
 
     space:drop()
 end

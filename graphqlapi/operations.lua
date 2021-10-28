@@ -348,7 +348,7 @@ local function remove_query(opts)
     schemas.set_invalid(opts.schema)
 end
 
-local function list_queries(schema_name)
+local function queries_list(schema_name)
     checks('?string')
 
     local queries = {}
@@ -487,6 +487,25 @@ local function remove_mutation(opts)
     end
 
     schemas.set_invalid(opts.schema)
+end
+
+local function mutations_list(schema_name)
+    checks('?string')
+
+    local mutations = {}
+    schema_name = utils.coerce_schema(schema_name)
+    _mutations[schema_name] = _mutations[schema_name] or {}
+
+    for mutation in pairs(_mutations[schema_name]) do
+        if is_mutation_prefix(_mutations[schema_name][mutation]) then
+            for prefixed_mutation in pairs(_mutations[schema_name][mutation].kind.fields or {}) do
+                table.insert(mutations, tostring(mutation)..'.'..tostring(prefixed_mutation))
+            end
+        else
+            table.insert(mutations, mutation)
+        end
+    end
+    return mutations
 end
 
 local function add_space_query(opts)
@@ -728,25 +747,6 @@ local function remove_space_mutation(opts)
     end
 end
 
-local function list_mutations(schema_name)
-    checks('?string')
-
-    local mutations = {}
-    schema_name = utils.coerce_schema(schema_name)
-    _mutations[schema_name] = _mutations[schema_name] or {}
-
-    for mutation in pairs(_mutations[schema_name]) do
-        if is_mutation_prefix(_mutations[schema_name][mutation]) then
-            for prefixed_mutation in pairs(_mutations[schema_name][mutation].kind.fields or {}) do
-                table.insert(mutations, tostring(mutation)..'.'..tostring(prefixed_mutation))
-            end
-        else
-            table.insert(mutations, mutation)
-        end
-    end
-    return mutations
-end
-
 local function remove_on_resolve_triggers()
     _on_resolve_triggers = {}
 end
@@ -885,13 +885,13 @@ return {
     add_query = add_query,
     is_query_exists = is_query_exists,
     remove_query = remove_query,
-    list_queries = list_queries,
+    queries_list = queries_list,
 
     -- Mutations API
     add_mutation = add_mutation,
     is_mutation_exists = is_mutation_exists,
     remove_mutation = remove_mutation,
-    list_mutations = list_mutations,
+    mutations_list = mutations_list,
 
     -- Spaces queries and mutations API
     add_space_query = add_space_query,
