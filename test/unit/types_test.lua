@@ -245,7 +245,7 @@ g.test_remove_all = function()
     add_test_enum()
     add_test_enum('Spaces')
 
-    t.assert_items_equals(schemas.list_schemas(), {'Spaces', 'Default'})
+    t.assert_items_equals(schemas.schemas_list(), {'Spaces', 'Default'})
 
     t.assert_items_equals(types.list_types(), {'TestEnum'})
     t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})
@@ -257,7 +257,7 @@ g.test_remove_all = function()
     add_test_enum()
     add_test_enum('Spaces')
 
-    t.assert_items_equals(schemas.list_schemas(), {'Spaces', 'Default'})
+    t.assert_items_equals(schemas.schemas_list(), {'Spaces', 'Default'})
 
     t.assert_items_equals(types.list_types(), {'TestEnum'})
     t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})

@@ -54,7 +54,7 @@ local function remove_all()
     end
 end
 
-local function list_schemas()
+local function schemas_list()
     local schemas = {}
     for schema_name in pairs(_schema_invalid) do
         table.insert(schemas, schema_name)
@@ -68,5 +68,5 @@ return {
     is_invalid = is_invalid,
     remove_schema = remove_schema,
     remove_all = remove_all,
-    list_schemas = list_schemas,
+    schemas_list = schemas_list,
 }
