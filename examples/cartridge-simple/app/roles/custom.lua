@@ -1,14 +1,21 @@
-local data = require('graphqlapi.helpers.data')
-local spaces = require('graphqlapi.helpers.spaces')
+local data_ok, data = pcall(require, 'graphqlapi.helpers.data')
+local spaces_ok, spaces = pcall(require, 'graphqlapi.helpers.spaces')
 
 local test_data = require('app.test_data')
 
 local function init(opts) -- luacheck: no unused args
     -- if opts.is_master then
     -- end
-    spaces.init({ schema = 'Spaces' })
-    data.init({ schema = 'Data' })
 
+    if spaces_ok == true then
+        spaces.init({ schema = 'Spaces' })
+    end
+
+    if data_ok == true then
+        data.init({ schema = 'Data' })
+    end
+
+    -- Create test space and fill it with test data
     test_data.fill()
 
     return true
