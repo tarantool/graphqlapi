@@ -183,7 +183,7 @@ types.mapper = setmetatable({
     ['boolean'] = { ['type'] = types.boolean, name = 'Boolean', },
     ['decimal'] = { ['type'] = types.long, name = 'Long', },
     ['double'] = { ['type'] = types.double, name = 'Double', },
-    ['integer'] = { ['type'] = types.int, name = 'Int', },
+    ['integer'] = { ['type'] = types.long, name = 'Long', },
     ['map'] = { ['type'] = types.map, name = 'Map', },
     ['number'] = { ['type'] = types.float, name = 'Float', },
     ['scalar'] = { ['type'] = types.any, name = 'Any', },
@@ -237,22 +237,22 @@ types.space_fields = function(space, required)
     return fields
 end
 
-types.remove = function (type_name, schema_name)
+types.remove = function (type_name, schema)
     checks('string', '?string')
 
-    schema_name = utils.coerce_schema(schema_name)
-    graphql_types.get_env(schema_name)[type_name] = nil
+    schema = utils.coerce_schema(schema)
+    graphql_types.get_env(schema)[type_name] = nil
 
     for space in pairs(_space_type or {}) do
         local space_types = table.copy(_space_type[space])
         for index, _type in pairs(space_types or {}) do
-            if _type.schema == schema_name and _type.type_name == type_name then
+            if _type.schema == schema and _type.type_name == type_name then
                 table.remove(_space_type[space], index)
             end
         end
     end
 
-    schemas.set_invalid(schema_name)
+    schemas.set_invalid(schema)
     return type_name
 end
 
@@ -549,12 +549,12 @@ types.add_space_input_object = function(opts)
     return graphql_types.get_env(opts.schema)[type_name]
 end
 
-types.list_types = function(schema_name)
+types.types_list = function(schema)
     checks('?string')
 
-    schema_name = utils.coerce_schema(schema_name)
+    schema = utils.coerce_schema(schema)
     local type_list = {}
-    for _type in pairs(graphql_types.get_env(schema_name)) do
+    for _type in pairs(graphql_types.get_env(schema)) do
         table.insert(type_list, _type)
     end
     return type_list
@@ -631,31 +631,32 @@ types.get_directives = function(schema)
 end
 
 types.is_directive_exists = function(name, schema)
+    checks('string', '?')
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     return _directives[schema][name] ~= nil
 end
 
-types.directives_list = function(schema_name)
+types.directives_list = function(schema)
     checks('?string')
-
-    schema_name = utils.coerce_schema(schema_name)
+    schema = utils.coerce_schema(schema)
     local directives_list = {}
-    for directive in pairs(_directives[schema_name] or {}) do
+    for directive in pairs(_directives[schema] or {}) do
         table.insert(directives_list, directive)
     end
     return directives_list
 end
 
 types.remove_directive = function(name, schema)
+    checks('string', '?')
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     _directives[schema][name] = nil
 end
 
 return setmetatable(types, {
-    __call = function(_, schema_name)
-        schema_name = utils.coerce_schema(schema_name)
-        return graphql_types.get_env(schema_name)
+    __call = function(_, schema)
+        schema = utils.coerce_schema(schema)
+        return graphql_types.get_env(schema)
     end
 })

@@ -232,47 +232,47 @@ g.test_remove = function()
         space = 'entity',
     })
 
-    t.assert_items_equals(types.list_types(), {'entity'})
+    t.assert_items_equals(types.types_list(), {'entity'})
     types.remove('entity')
 
     space:drop()
 end
 
 g.test_remove_all = function()
-    t.assert_items_equals(types.list_types(), {})
-    t.assert_items_equals(types.list_types('Spaces'), {})
+    t.assert_items_equals(types.types_list(), {})
+    t.assert_items_equals(types.types_list('Spaces'), {})
 
     add_test_enum()
     add_test_enum('Spaces')
 
     t.assert_items_equals(schemas.schemas_list(), {'Spaces', 'Default'})
 
-    t.assert_items_equals(types.list_types(), {'TestEnum'})
-    t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})
+    t.assert_items_equals(types.types_list(), {'TestEnum'})
+    t.assert_items_equals(types.types_list('Spaces'), {'TestEnum'})
 
     types.remove_all()
-    t.assert_items_equals(types.list_types(), {})
-    t.assert_items_equals(types.list_types('Spaces'), {})
+    t.assert_items_equals(types.types_list(), {})
+    t.assert_items_equals(types.types_list('Spaces'), {})
 
     add_test_enum()
     add_test_enum('Spaces')
 
     t.assert_items_equals(schemas.schemas_list(), {'Spaces', 'Default'})
 
-    t.assert_items_equals(types.list_types(), {'TestEnum'})
-    t.assert_items_equals(types.list_types('Spaces'), {'TestEnum'})
+    t.assert_items_equals(types.types_list(), {'TestEnum'})
+    t.assert_items_equals(types.types_list('Spaces'), {'TestEnum'})
 
     types.remove_all(box.NULL)
-    t.assert_items_equals(types.list_types(), {})
+    t.assert_items_equals(types.types_list(), {})
 
     types.remove_all('Spaces')
-    t.assert_items_equals(types.list_types('Spaces'), {})
+    t.assert_items_equals(types.types_list('Spaces'), {})
 
     local space = helper.create_space('entity')
 
     types.add_space_object({ space = 'entity', name = 'entity', })
     types.add_space_object({ space = 'entity', name = 'entity1', })
-    t.assert_items_equals(types.list_types(), {'entity', 'entity1'})
+    t.assert_items_equals(types.types_list(), {'entity', 'entity1'})
     types.remove_all('Default')
 
     types.add_space_object({
@@ -296,7 +296,7 @@ g.test_remove_all = function()
     types.remove_all()
     types.remove_all()
 
-    t.assert_items_equals(types.list_types(), {})
+    t.assert_items_equals(types.types_list(), {})
     t.assert_items_equals(types.directives_list(), {})
 
     types.add_space_object({
@@ -318,7 +318,7 @@ g.test_remove_all = function()
 
     types.remove_all('spaces')
 
-    t.assert_items_equals(types.list_types('spaces'), {})
+    t.assert_items_equals(types.types_list('spaces'), {})
     t.assert_items_equals(types.directives_list('spaces'), {})
 
     space:drop()
@@ -342,11 +342,11 @@ g.test_add_remove_space_object = function ()
 
     t.assert_equals(type(types()['entity']), 'table')
     t.assert_equals(types()['entity'].description, 'Entity object')
-    t.assert_items_include(types.list_types(), {'entity'})
+    t.assert_items_include(types.types_list(), {'entity'})
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
-    t.assert_items_include(types.list_types(), {'entity'})
+    t.assert_items_include(types.types_list(), {'entity'})
     types.remove('entity')
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
@@ -366,7 +366,7 @@ g.test_add_remove_space_object = function ()
         }
     })
 
-    t.assert_items_include(types.list_types(), {'entity'})
+    t.assert_items_include(types.types_list(), {'entity'})
 
     t.assert_equals(type(types()['entity'].fields.entity), 'table')
     t.assert_equals(type(types()['entity'].fields.instance_alias), 'table')
@@ -395,11 +395,11 @@ g.test_add_remove_space_input_object = function ()
 
     t.assert_equals(type(types()['input_entity']), 'table')
     t.assert_equals(types()['input_entity'].description, 'Entity input object')
-    t.assert_items_include(types.list_types(), {'input_entity'})
+    t.assert_items_include(types.types_list(), {'input_entity'})
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
-    t.assert_items_include(types.list_types(), {'input_entity'})
+    t.assert_items_include(types.types_list(), {'input_entity'})
     types.remove('input_entity')
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
@@ -418,7 +418,7 @@ g.test_add_remove_space_input_object = function ()
         }
     })
 
-    t.assert_items_include(types.list_types(), {'entity'})
+    t.assert_items_include(types.types_list(), {'entity'})
 
     t.assert_equals(type(types()['entity'].fields.entity), 'table')
     t.assert_equals(type(types()['entity'].fields.instance_alias), 'table')
@@ -437,7 +437,7 @@ g.test_remove_types_by_space_name = function()
         description = 'Entity object',
         space = 'entity',
     })
-    t.assert_items_include(types.list_types(), {'entity'})
+    t.assert_items_include(types.types_list(), {'entity'})
     t.assert_equals(schemas.is_invalid(), true)
     schemas.reset_invalid()
     t.assert_equals(schemas.is_invalid(), false)
@@ -854,9 +854,9 @@ g.test_remove_recursive = function()
         }
     })
 
-    t.assert_items_equals(types.list_types(), { 'DogCommand', 'Pet', 'complicated', 'Dog', 'alsoComplicated', })
+    t.assert_items_equals(types.types_list(), { 'DogCommand', 'Pet', 'complicated', 'Dog', 'alsoComplicated', })
     t.assert_items_equals(types.remove_recursive('DogCommand'), { 'DogCommand', 'Pet', 'Dog', })
-    t.assert_items_equals(types.list_types(), { 'complicated', 'alsoComplicated', })
+    t.assert_items_equals(types.types_list(), { 'complicated', 'alsoComplicated', })
 end
 
 g.test_directives = function()
