@@ -4,19 +4,21 @@
   - [General description](#general-description)
   - [Install pre-built rock](#install-pre-built-rock)
   - [Lua API](#lua-api)
-  - [Example](#example)
+  - [Simple start](#simple-start)
+  - [Examples](#examples)
 
 ## General description
 
 Module based on:
 
 - [Tarantool 2.x.x](https://www.tarantool.io/en/download/)
-- [Tarantool Cartridge 2.6.0+](https://github.com/tarantool/cartridge) (optional)
+- [Tarantool Cartridge 2.6.0+](https://github.com/tarantool/cartridge)
 - [Tarantool Graphql 0.1.1+](https://github.com/tarantool/graphql)
 - [Tarantool DDL 1.4.0+](https://github.com/tarantool/ddl)
 - [Tarantool VShard 0.1.18](https://github.com/tarantool/vshard)
 - [Tarantool Checks 1.1.0+](https://github.com/tarantool/checks)
 - [Tarantool Errors 2.1.3+](https://github.com/tarantool/errors)
+- [Tarantool GraphQLIDE 0.0.14+](https://github.com/tarantool/graphqlide)
 
 **CAUTION:** Since this module is under heavy development it is not recommended to use on production environments and also API and functionality in future releases may be changed without backward compatibility!
 
@@ -24,14 +26,14 @@ Module based on:
 
 Simply run from the root of Tarantool App root the following:
 
-```sh
+```bash
     cd <tarantool-application-dir>
-    tarantoolctl rocks install https://github.com/no1seman/graphqlapi/releases/download/0.0.1/graphqlapi-0.0.1-1.all.rock
+    tarantoolctl rocks install graphqlapi
 ```
 
 ## Lua API
 
-This module has a several submodules:
+GraphQL API module has a several submodules. Each of submodule has an API that described in the following docs:
 
 - [graphqlapi](./docs/graphqlapi.md)
 - [graphqlapi.cluster](./docs/cluster.md)
@@ -43,18 +45,53 @@ This module has a several submodules:
 - [graphqlapi.schemas](./docs/schemas.md)
 - [graphqlapi.types](./docs/types.md)
 
-## Example
+## Simple start
 
-For fully featured example of using this module refer to: [GraphQL API Example](./examples/cartridge-example)
+1. Install the following modules to your app:
 
-To run example:
+```bash
+    cd <tarantool-application-dir>
+    
+    # install GraphQL IDE
+    tarantoolctl rocks install graphqlide
 
-```sh
-  cd ./examples/cartridge-example/
-  ./deps.sh
-  ./scripts/start.sh
-  ./scripts/bootstrap.sh
-  ./scripts/fill.sh
+    # install GraphQL API
+    tarantoolctl rocks install graphqlapi
+
+    # install GraphQL API Helpers (available only for Tarantool Enterprise SDK users)
+    tarantoolctl rocks install graphqlapi-helpers
 ```
 
-Then follow: `http://localhost:8081`
+1. Add dependent roles to router custom role:
+
+```lua
+    ...
+    dependencies = {
+        ...
+        'cartridge.roles.graphqlide',
+        'cartridge.roles.graphqlapi',
+    },
+    ...
+```
+
+3. Add helpers to init() router custom role:
+
+```lua
+local function init(opts) -- luacheck: no unused args
+    -- if opts.is_master then
+    -- end
+
+    spaces.init({ schema = 'Spaces' })
+    data.init({ schema = 'Data' })
+
+    return true
+end
+```
+
+4. Add custom fragments (if need some) to `./fragments` dir.
+
+## Examples
+
+For simple example of using this module refer to: [GraphQL API simple example](./examples/cartridge-simple)
+
+For fully featured example of using this module refer to: [GraphQL API full featured example](./examples/cartridge-full)
