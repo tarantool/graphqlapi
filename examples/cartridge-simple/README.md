@@ -1,15 +1,37 @@
-# Simple Tarantool Cartridge-based application
+# GraphQLAPI Tarantool Cartridge-based application simple example
 
-This a simplest application based on Tarantool Cartridge.
+This Example shows simple and quite easy way of howto use set of modules in application:
+
+- [Tarantool GraphQLIDE 0.0.14+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLAPI 0.0.2+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.2+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 
-To build application and setup topology:
+To build application, start it and setup topology:
 
 ```bash
+# build application
 cartridge build
+
+# start all instances including stateboard
 cartridge start -d
+
+# configure replicasets and bootstrap vshard
 cartridge replicasets setup --bootstrap-vshard
+
+# configure failover
+cartridge failover setup --file failover.yml
+```
+
+or use bash-scripts:
+
+```bash
+# build and start application
+./scripts/start.sh
+
+# bootstrap cluster and failover
+./scripts/bootstrap.sh
 ```
 
 Now you can visit http://localhost:8081 and see your application's Admin Web UI.
@@ -27,63 +49,40 @@ It configures package search path to correctly start application on production
 
 ## Roles
 
-Application has one simple role, [`app.roles.custom`](./app/roles/custom.lua).
-It exposes `/hello` and `/metrics` endpoints:
+Application has two simple roles:
+
+- [`app.roles.api`](./app/roles/api.lua).
+- [`app.roles.storage`](./app/roles/storage.lua)
+
+Both `api` and `storage` roles exposes `/metrics` endpoints:
 
 ```bash
-curl localhost:8081/hello
 curl localhost:8081/metrics
 ```
 
-Also, Cartridge roles [are registered](./init.lua)
-(`vshard-storage`, `vshard-router` and `metrics`).
+### api role
 
-You can add your own role, but don't forget to register in using
-`cartridge.cfg` call.
+Custom user `api` role uses the following Cartridge roles:
 
-## Instances configuration
+- cartridge.roles.vshard-router
+- cartridge.roles.crud-router
+- cartridge.roles.graphqlide
+- cartridge.roles.graphqlapi
 
-Configuration of instances that can be used to start application
-locally is places in [instances.yml](./instances.yml).
-It is used by `cartridge start`.
+### storage role
 
-## Topology configuration
+Custom user `storage` role uses the following roles:
 
-Topology configuration is described in [`replicasets.yml`](./replicasets.yml).
-It is used by `cartridge replicasets setup`.
+- cartridge.roles.vshard-storage
+- cartridge.roles.crud-storage
 
-## Tests
+## GraphqlIDE
 
-Simple unit and integration tests are placed in [`test`](./test) directory.
+After starting application on [`router` - http://localhost:8081](http://localhost:8081) instance GraphQL IDE will be available:
 
-First, we need to install test dependencies:
+![GraphQL IDE](./resources/GraphQLIDE.jpg "GraphQL IDE")
 
-```bash
-./deps.sh
-```
+The following schemes are available in this demo application:
 
-Then, run linter:
-
-```bash
-.rocks/bin/luacheck .
-```
-
-Now we can run tests:
-
-```bash
-cartridge stop  # to prevent "address already in use" error
-.rocks/bin/luatest -v
-```
-
-## Admin
-
-Application has admin function [`probe`](./app/admin.lua) configured.
-You can use it to probe instances:
-
-```bash
-cartridge start -d  # if you've stopped instances
-cartridge admin probe \
-  --name cartridge-simple \
-  --run-dir ./tmp/run \
-  --uri localhost:3302
-```
+- `Data` - CRUD GraphQL API generated based on the current cluster data schema;
+- `Spaces` - a set of queries and mutations to manipulate spaces.

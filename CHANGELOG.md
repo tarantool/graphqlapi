@@ -23,6 +23,7 @@
 - `rename types.list_types to types.types_list`
 - `map lua 'integer' to GraphQL 'Long' type`
 - `updated description of all APIs`
+- `update examples dependency cartridge@2.7.2 to cartridge@2.7.3`
 
 ## 0.0.1
 

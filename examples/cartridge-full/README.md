@@ -1,15 +1,47 @@
-# Simple Tarantool Cartridge-based application
+# GraphQLAPI Tarantool Cartridge-based application full featured example
 
-This a simplest application based on Tarantool Cartridge.
+This Example shows mostly all base capabilities of using the following set of modules:
+
+- [Tarantool GraphQLIDE 0.0.14+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLAPI 0.0.2+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.2+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 
-To build application and setup topology:
+To build application, start it and setup topology:
 
 ```bash
+# build application
 cartridge build
+
+# start all instances including stateboard
 cartridge start -d
+
+# configure replicasets and bootstrap vshard
 cartridge replicasets setup --bootstrap-vshard
+
+# configure failover
+cartridge failover setup --file failover.yml
+
+# fire migrations
+cartridge admin --run-dir `pwd`/tmp/run/ --name cartridge-full --instance router migrations
+
+# fill test data
+cartridge admin --run-dir `pwd`/tmp/run/ --name cartridge-full --instance router fill
+```
+
+or use bash-scripts:
+
+```bash
+# build and start application
+./scripts/start.sh
+
+# bootstrap cluster and failover
+./scripts/bootstrap.sh
+
+# create spaces (fire migrations) and fill test data
+./scripts/fill.sh
+
 ```
 
 Now you can visit http://localhost:8081 and see your application's Admin Web UI.
@@ -27,63 +59,144 @@ It configures package search path to correctly start application on production
 
 ## Roles
 
-Application has one simple role, [`app.roles.custom`](./app/roles/custom.lua).
-It exposes `/hello` and `/metrics` endpoints:
+Application has two simple roles:
+
+- [`app.roles.api`](./app/roles/api.lua).
+- [`app.roles.storage`](./app/roles/storage.lua)
+
+Both `api` and `storage` roles exposes `/metrics` endpoints:
 
 ```bash
-curl localhost:8081/hello
 curl localhost:8081/metrics
 ```
 
-Also, Cartridge roles [are registered](./init.lua)
-(`vshard-storage`, `vshard-router` and `metrics`).
+### api role
 
-You can add your own role, but don't forget to register in using
-`cartridge.cfg` call.
+Custom user `api` role uses the following Cartridge roles:
 
-## Instances configuration
+- cartridge.roles.vshard-router
+- cartridge.roles.crud-router
+- cartridge.roles.graphqlide
+- cartridge.roles.graphqlapi
 
-Configuration of instances that can be used to start application
-locally is places in [instances.yml](./instances.yml).
-It is used by `cartridge start`.
+### storage role
 
-## Topology configuration
+Custom user `storage` role uses the following roles:
 
-Topology configuration is described in [`replicasets.yml`](./replicasets.yml).
-It is used by `cartridge replicasets setup`.
+- cartridge.roles.vshard-storage
+- cartridge.roles.crud-storage
 
-## Tests
+### Fragments
 
-Simple unit and integration tests are placed in [`test`](./test) directory.
+Fragments - separate parts of GraphQL schemas located in `./fragments/*.lua`:
 
-First, we need to install test dependencies:
+- `entity.lua` - fragment adds 3 custom queries to `Default` schema:
+  - `entity_get_by_id`;
+  - `entity_get_by_name`;
+  - `entity_get_all`;
+- `helpers.lua` - fragment adds 3 schemas:
+  - `Data` - CRUD GraphQL API generated based on the current cluster data schema;
+  - `Service` - ;
+  - `Spaces`;
+- `logging.lua` - fragment adds custom logging for GraphQL API requests;
+- `owner.lua` - fragment adds 3 custom queries to `Default` schema:
+  - `owner_get_by_id`;
+  - `owner_get_by_username`;
+  - `owner_get_all`.
 
-```bash
-./deps.sh
+## GraphqlIDE
+
+After starting application on [`router` - http://localhost:8081](http://localhost:8081) instance GraphQL IDE will be available:
+
+![GraphQL IDE](./resources/graphqlide.jpg "GraphQL IDE")
+
+The following schemes are available in this demo application:
+
+- `Admin` - Tarantool Cartridge admin GraphQL API;
+- `Data` - CRUD GraphQL API generated based on the current cluster data schema;
+- `Default` - custom GraphQL API generated from `./fragments/*.lua`;
+- `Service` - a set of service queries and mutations;
+- `Spaces` - a set of queries and mutations to manipulate spaces.
+
+### Example requests
+
+Switch to `Default` schema in GraphQL IDE and make the following requests:
+
+```graphql
+query {
+  owner_get_all {
+    bucket_id
+    owner_surname
+    owner_name
+    owner_age
+    owner_username
+    owner_id
+  }
+}
 ```
 
-Then, run linter:
-
-```bash
-.rocks/bin/luacheck .
+```graphql
+query {
+  owner_get_by_id(owner_id: 1) {
+    owner_surname
+    owner_id
+    owner_age
+    owner_name
+    owner_username
+  }
+}
 ```
 
-Now we can run tests:
-
-```bash
-cartridge stop  # to prevent "address already in use" error
-.rocks/bin/luatest -v
+```graphql
+query {
+  owner_get_by_username(owner_username: "rapid") {
+    owner_surname
+    owner_id
+    owner_username
+    owner_age
+    owner_name
+    entities {
+      entity_description
+      entity_owner_id
+      entity_name
+      entity_id
+    }
+  }
+}
 ```
 
-## Admin
-
-Application has admin function [`probe`](./app/admin.lua) configured.
-You can use it to probe instances:
-
-```bash
-cartridge start -d  # if you've stopped instances
-cartridge admin probe \
-  --name cartridge-full \
-  --run-dir ./tmp/run \
-  --uri localhost:3302
+```graphql
+query{
+  entity_get_all {
+    bucket_id
+    entity_description
+    entity_owner_id
+    entity_name
+    entity_id
+  }
+}
 ```
+
+```graphql
+query {
+  entity_get_by_id(entity_id: 1) {
+    entity_description
+    entity_owner_id
+    entity_name
+    entity_id
+  }
+}
+```
+
+```graphql
+query{
+  entity_get_by_name(entity_name: "SSD") {
+    entity_description
+    entity_owner_id
+    entity_name
+    entity_id
+  }
+}
+```
+
+For other schemas all available queries and mutations may be found in GraphiQL Docs.

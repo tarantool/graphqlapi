@@ -3,4 +3,5 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH/..
 
+cartridge build
 cartridge start -d --stateboard

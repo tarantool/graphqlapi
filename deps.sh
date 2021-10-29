@@ -4,7 +4,7 @@
 set -e
 
 # Module dependencies:
-tarantoolctl rocks install cartridge 2.7.2
+tarantoolctl rocks install cartridge 2.7.3
 
 # Test dependencies:
 tarantoolctl rocks install luatest 0.5.6

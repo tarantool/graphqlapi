@@ -1,5 +1,4 @@
 local data_ok, data = pcall(require, 'graphqlapi.helpers.data')
-local schema_ok, schema = pcall(require, 'graphqlapi.helpers.schema')
 local service_ok, service = pcall(require, 'graphqlapi.helpers.service')
 local spaces_ok, spaces = pcall(require, 'graphqlapi.helpers.spaces')
 
@@ -30,9 +29,6 @@ local function fragment()
     end
     if spaces_ok == true then
         service.init({ schema = 'Service' })
-    end
-    if schema_ok == true then
-        schema.init({ schema = 'Schema' })
     end
 end
 
