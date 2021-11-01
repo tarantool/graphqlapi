@@ -8,6 +8,7 @@ exclude_files = {
     'test/fragments',
     'examples/cartridge-full/.rocks/',
     'examples/cartridge-simple/.rocks/',
+    'sdk/'
 }
 
 max_line_length = 120
