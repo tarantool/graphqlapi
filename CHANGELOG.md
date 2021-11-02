@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.3
+
+- `change paths after move repo to github/tarantool`
+- `update examples dependencies after move repo to github/tarantool`
+
 ## 0.0.2
 
 - `automatically add/remove schemas to graphqlide registry`
