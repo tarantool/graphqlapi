@@ -1,12 +1,12 @@
 package = 'graphqlapi'
 version = 'scm-1'
 source  = {
-    url = 'git+https://github.com/no1seman/graphqlapi.git',
+    url = 'git+https://github.com/tarantool/graphqlapi.git',
     branch = 'master',
 }
 description = {
     summary     = "GraphQL API backend module for Tarantool and Tarantool Cartridge",
-    homepage    = 'https://github.com/no1seman/graphqlapi',
+    homepage    = 'https://github.com/tarantool/graphqlapi',
     license     = 'BSD',
     maintainer  = "Yaroslav Shumakov <noiseman2000@mail.ru>";
 }
