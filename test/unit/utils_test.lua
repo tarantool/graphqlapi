@@ -249,6 +249,14 @@ g.test_is_box_null = function()
 end
 
 g.test_compat = function()
+    local function map_n(tbl)
+        local counter = 0
+        for _, _ in pairs(tbl) do
+            counter = counter +1
+        end
+        return counter
+    end
+
     local cache = {}
 
     local compat = utils.to_compat(cache, nil)
@@ -256,17 +264,21 @@ g.test_compat = function()
     t.assert_equals(utils.from_compat(cache, nil), nil)
 
     local test_names = {
-        {'s1-master', 's1_master'},
-        {'_bucket', '_bucket'},
+        {'s1-master', 's1_master', 1},
+        {'_bucket', '_bucket', 1},
         {
             'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=`\\/?<>,.',
-            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ____________________'
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ____________________',
+            2
         },
     }
 
     for _, test_name in pairs(test_names) do
         compat = utils.to_compat(cache, test_name[1])
+        print(test_name[1])
+        print(require('json').encode(cache))
         t.assert_equals(compat, test_name[2])
         t.assert_equals(utils.from_compat(cache, compat), test_name[1])
+        t.assert_equals(map_n(cache), test_name[3])
     end
 end

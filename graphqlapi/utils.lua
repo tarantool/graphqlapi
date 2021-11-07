@@ -220,18 +220,20 @@ local function is_box_null(value)
 end
 
 local function to_compat(cache, name)
-    if type(name) == 'string' then
-        local compat = name:gsub("%W", "_")
-        cache = cache or {}
-        cache[compat] = name
-        return compat
+    if type(name) == 'string' and cache ~= nil then
+        local found = name:match('%W')
+        if found ~= nil and found ~= '_' then
+            local compat = name:gsub("%W", "_")
+            cache = cache or {}
+            cache[compat] = name
+            return compat
+        end
     end
     return name
 end
 
 local function from_compat(cache, name)
-    if type(name) == 'string' and cache then
-        cache = cache or {}
+    if type(name) == 'string' and cache ~= nil and cache[name] ~= nil then
         return cache[name]
     end
     return name
