@@ -269,14 +269,12 @@ g.test_compat = function()
         {
             'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=`\\/?<>,.',
             'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ____________________',
-            2
+            2,
         },
     }
 
     for _, test_name in pairs(test_names) do
         compat = utils.to_compat(cache, test_name[1])
-        print(test_name[1])
-        print(require('json').encode(cache))
         t.assert_equals(compat, test_name[2])
         t.assert_equals(utils.from_compat(cache, compat), test_name[1])
         t.assert_equals(map_n(cache), test_name[3])
