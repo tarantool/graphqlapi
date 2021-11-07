@@ -239,6 +239,19 @@ local function from_compat(cache, name)
     return name
 end
 
+local function get_tnt_version()
+    local major_minor_patch = _G._TARANTOOL:split('-', 1)[1]
+    local major_minor_patch_parts = major_minor_patch:split('.', 2)
+
+    local version = {
+        major = tonumber(major_minor_patch_parts[1]),
+        minor = tonumber(major_minor_patch_parts[2]),
+        patch = tonumber(major_minor_patch_parts[3]),
+        enterprise = (_G._TARANTOOL):match('-r%d+') ~= nil,
+    }
+    return version
+end
+
 return {
     value_in = value_in,
     diff_maps = diff_maps,
@@ -257,4 +270,5 @@ return {
     is_box_null = is_box_null,
     to_compat = to_compat,
     from_compat = from_compat,
+    get_tnt_version = get_tnt_version,
 }
