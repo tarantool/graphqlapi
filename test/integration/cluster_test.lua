@@ -114,8 +114,8 @@ g.test_get_replicaset_instances = function()
     local instances = router.net_box:eval(
         "return require('graphqlapi.cluster').get_replicaset_instances('storage-1')")
     t.assert_items_equals(instances, {
-        {alias = "storage-1-replica", uri = "localhost:13303"},
-        {alias = "storage-1-master", uri = "localhost:13302"},
+        {alias = "storage-1-replica", status = "healthy", uri = "localhost:13303"},
+        {alias = "storage-1-master", status = "healthy", uri = "localhost:13302"},
     })
     instances = cluster.get_replicaset_instances()
     t.assert_items_equals(instances, {})
@@ -125,11 +125,11 @@ g.test_get_instances = function()
     local router = g.cluster:server('router')
     local instances = router.net_box:eval("return require('graphqlapi.cluster').get_instances()")
     t.assert_items_equals(instances, {
-        { alias = 'storage-1-replica', uri = 'localhost:13303', },
-        { alias = 'router', uri = 'localhost:13301', },
-        { alias = 'storage-2-replica', uri = 'localhost:13305', },
-        { alias = 'storage-2-master', uri = 'localhost:13304', },
-        { alias = 'storage-1-master', uri = 'localhost:13302', },
+        { alias = 'storage-1-replica', status = "healthy", uri = 'localhost:13303', },
+        { alias = 'router', status = "healthy", uri = 'localhost:13301', },
+        { alias = 'storage-2-replica', status = "healthy", uri = 'localhost:13305', },
+        { alias = 'storage-2-master', status = "healthy", uri = 'localhost:13304', },
+        { alias = 'storage-1-master', status = "healthy", uri = 'localhost:13302', },
     })
     instances = cluster.get_instances()
     t.assert_items_equals(instances, {})

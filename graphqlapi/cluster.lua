@@ -132,7 +132,7 @@ local function get_replicaset_instances(replicaset)
     local instances = {}
     for _, server in ipairs(cartridge.admin_get_servers() or {}) do
         if server.replicaset.alias == replicaset then
-            table.insert(instances, { alias = server.alias, uri = server.uri })
+            table.insert(instances, { alias = server.alias, uri = server.uri, status = server.status })
         end
     end
     return instances
@@ -141,7 +141,7 @@ end
 local function get_instances()
     local instances = {}
     for _, server in ipairs(cartridge.admin_get_servers() or {}) do
-        table.insert(instances, { alias = server.alias, uri = server.uri })
+        table.insert(instances, { alias = server.alias, uri = server.uri, status = server.status })
     end
     return instances
 end
