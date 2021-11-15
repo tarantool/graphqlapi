@@ -252,7 +252,7 @@ g.test_compat = function()
     local function map_n(tbl)
         local counter = 0
         for _, _ in pairs(tbl) do
-            counter = counter +1
+            counter = counter + 1
         end
         return counter
     end
