@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-BUNDLE_VERSION=2.8.2-0-gfc96d10f5-r428
+BUNDLE_VERSION=2.8.2-0-gfc96d10f5-r429
 
 .PHONY: .rocks
 .rocks: graphqlapi-scm-1.rockspec Makefile
@@ -8,7 +8,7 @@ BUNDLE_VERSION=2.8.2-0-gfc96d10f5-r428
 		tarantoolctl rocks install luatest 0.5.6
 		tarantoolctl rocks install luacov 0.13.0
 		tarantoolctl rocks install luacheck 0.26.0
-		tarantoolctl rocks install cartridge 2.7.2
+		tarantoolctl rocks install cartridge 2.7.3
 		tarantoolctl rocks make graphqlapi-scm-1.rockspec
 
 .PHONY: lint
@@ -37,16 +37,16 @@ install:
 		tarantoolctl rocks install graphqlapi-scm-1.all.rock
 
 .PHONY: sdk
-sdk: Makefile
-	wget https://tarantool:$(DOWNLOAD_TOKEN)@download.tarantool.io/enterprise/tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
-	tar -xzf tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
-	rm tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
-	mv tarantool-enterprise sdk
+sdk: 	Makefile
+		wget https://tarantool:$(DOWNLOAD_TOKEN)@download.tarantool.io/enterprise/tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
+		tar -xzf tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
+		rm tarantool-enterprise-bundle-$(BUNDLE_VERSION).tar.gz
+		mv tarantool-enterprise sdk
 
 push-scm-1:
-	curl --fail -X PUT -F "rockspec=@graphqlapi-scm-1.rockspec" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org
+		curl --fail -X PUT -F "rockspec=@graphqlapi-scm-1.rockspec" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org
 
 push-release:
-	cd release/ \
-    && curl --fail -X PUT -F "rockspec=@graphqlapi-${COMMIT_TAG}-1.rockspec" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org \
-    && curl --fail -X PUT -F "rockspec=@graphqlapi-${COMMIT_TAG}-1.all.rock" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org
+		cd release/ \
+		&& curl --fail -X PUT -F "rockspec=@graphqlapi-${COMMIT_TAG}-1.rockspec" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org \
+		&& curl --fail -X PUT -F "rockspec=@graphqlapi-${COMMIT_TAG}-1.all.rock" https://${ROCKS_USERNAME}:${ROCKS_PASSWORD}@rocks.tarantool.org
