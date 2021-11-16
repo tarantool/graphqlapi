@@ -13,6 +13,6 @@ tarantoolctl rocks remove graphqlide --force
 tarantoolctl rocks remove graphqlapi --force
 tarantoolctl rocks remove graphqlapi-helpers --force
 
-tarantoolctl rocks install graphqlide 0.0.15
-tarantoolctl rocks install graphqlapi 0.0.3
-tarantoolctl rocks install graphqlapi-helpers 0.0.3
+tarantoolctl rocks install graphqlide 0.0.16
+tarantoolctl rocks install graphqlapi 0.0.4
+tarantoolctl rocks install graphqlapi-helpers 0.0.4
