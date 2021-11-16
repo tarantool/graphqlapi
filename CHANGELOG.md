@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.4
+
+- `fix utils.to_compat() and utils.from_compat() incorrect logic`
+- `add status field to cluster.get_replicaset_instances() and cluster.get_instances()`
+- `add utils.get_tnt_version() function`
+- `fix arguments description introspection propagation`
+
 ## 0.0.3
 
 - `change paths after move repo to github/tarantool`
