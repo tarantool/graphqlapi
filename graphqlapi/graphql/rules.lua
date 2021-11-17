@@ -38,7 +38,7 @@ end
 function rules.loneAnonymousOperation(node, context)
   local name = node.name and node.name.value
 
-  if context.hasAnonymousOperation or (not name and next(context.operationNames)) then
+  if context.hasAnonymousOperation or (not name and next(context.operationNames or {})) then
     error('Cannot have more than one operation when using anonymous operations')
   end
 

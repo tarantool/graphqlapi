@@ -13,7 +13,7 @@ end
 local function owner_get_by_username(_, args, _)
     checks('?', { owner_username = 'string' }, '?')
     local res, err = utils.get_by_field(space_name, 'owner_username', args.owner_username)
-    if res and type(res) == 'table' and next(res) then
+    if type(res) == 'table' and next(res) then
         res.entities = utils.get_all_by_field('entity', 'entity_owner_id', res.owner_id)
     end
     return res, err

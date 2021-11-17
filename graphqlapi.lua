@@ -109,7 +109,7 @@ local function get_schema(schema_name)
         types(schema_name).Mutation = nil
     end
 
-    if next(mutations) then
+    if type(mutations) == 'table' and next(mutations) then
         root.mutation = types.object({name = 'Mutation', fields=mutations, schema = schema_name, })
     end
 

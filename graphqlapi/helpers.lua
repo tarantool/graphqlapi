@@ -82,10 +82,12 @@ local function on_update_config(trigger_new, trigger_old)
         end
     end
 
-    if next(_on_update_config_triggers) and _config_updater == nil then
+    if type(_on_update_config_triggers) == 'table' and
+       next(_on_update_config_triggers) and _config_updater == nil then
         config_updater_init()
     end
-    if next(_on_update_config_triggers) == nil then
+    if type(_on_update_config_triggers) == 'table' and
+       next(_on_update_config_triggers) == nil then
         config_updater_stop()
     end
     return trigger_new

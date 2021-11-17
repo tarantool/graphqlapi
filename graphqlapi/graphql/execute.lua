@@ -295,7 +295,7 @@ local function getFieldEntry(objectType, object, fields, context)
   local directives = {}
   local directivesDefaultValues = {}
 
-  if next(directiveMap) then
+  if type(directiveMap) == 'table' and next(directiveMap) then
     util.map_by_name(context.schema.directives or {}, function(directive, directive_name)
       local supplied_directive = directiveMap[directive_name]
       if supplied_directive ~= nil then
