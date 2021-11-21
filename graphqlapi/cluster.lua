@@ -12,8 +12,8 @@ local utils = require('graphqlapi.utils')
 local _sharding_functions = {}
 local _replicas = {}
 
-local e_spaces_api = errors.new_class('spaceAPI error', { capture_stack = false, })
-local e_sharding = errors.new_class('shardingAPI error', { capture_stack = false, })
+local e_cluster_api = errors.new_class('cluster API error', { capture_stack = false, })
+local e_sharding = errors.new_class('sharding API error', { capture_stack = false, })
 
 local function get_alias_by_uuid(conn)
     checks('table')
@@ -35,7 +35,7 @@ local function get_servers()
             table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
         else
             connect_errors = connect_errors or {}
-            table.insert(connect_errors,  e_spaces_api:new('instance \'%s\' error: %s', alias, err))
+            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
         end
     end
     return servers, connect_errors
@@ -52,7 +52,7 @@ local function get_masters()
             table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
         else
             connect_errors = connect_errors or {}
-            table.insert(connect_errors,  e_spaces_api:new('instance \'%s\' error: %s', alias, err))
+            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
         end
     end
     return servers, connect_errors
@@ -158,7 +158,7 @@ local function get_servers_by_list(instances)
                 table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
             else
                 connect_errors = connect_errors or {}
-                table.insert(connect_errors,  e_spaces_api:new('instance \'%s\' error: %s', alias, err))
+                table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
             end
         end
     end
