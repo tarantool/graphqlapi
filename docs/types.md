@@ -503,7 +503,7 @@ Example:
 
 ### specifiedBy
 
-`types.specifiedByUrl` - GraphQL built-in directive is used within the type system definition language to provide a scalar specification URL for specifying the behavior of custom scalar types, for more info refer to [specifiedBy](http://spec.graphql.org/draft/#sec--specifiedBy).
+`types.specifiedBy` - GraphQL built-in directive is used within the type system definition language to provide a scalar specification URL for specifying the behavior of custom scalar types, for more info refer to [specifiedBy](http://spec.graphql.org/draft/#sec--specifiedBy).
 
 ### add_directive()
 
