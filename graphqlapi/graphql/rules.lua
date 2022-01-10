@@ -1,7 +1,7 @@
-local types = require('graphqlapi.graphql.types')
-local util = require('graphqlapi.graphql.util')
 local introspection = require('graphqlapi.graphql.introspection')
 local query_util = require('graphqlapi.graphql.query_util')
+local types = require('graphqlapi.graphql.types')
+local util = require('graphqlapi.graphql.util')
 
 local function error(...)
   return _G.error(..., 0)
@@ -38,7 +38,7 @@ end
 function rules.loneAnonymousOperation(node, context)
   local name = node.name and node.name.value
 
-  if context.hasAnonymousOperation or (not name and next(context.operationNames or {})) then
+  if context.hasAnonymousOperation or (not name and next(context.operationNames)) then
     error('Cannot have more than one operation when using anonymous operations')
   end
 
@@ -166,16 +166,16 @@ function rules.unambiguousSelections(node, context)
 
         validateField(key, fieldEntry)
       elseif selection.kind == 'inlineFragment' then
-        local _parentType = selection.typeCondition and context.schema:getType(
+        local parentType = selection.typeCondition and context.schema:getType(
           selection.typeCondition.name.value) or parentType
-        validateSelectionSet(selection.selectionSet, _parentType)
+        validateSelectionSet(selection.selectionSet, parentType)
       elseif selection.kind == 'fragmentSpread' then
         local fragmentDefinition = context.fragmentMap[selection.name.value]
         if fragmentDefinition and not seen[fragmentDefinition] then
           seen[fragmentDefinition] = true
           if fragmentDefinition and fragmentDefinition.typeCondition then
-            local _parentType = context.schema:getType(fragmentDefinition.typeCondition.name.value)
-            validateSelectionSet(fragmentDefinition.selectionSet, _parentType)
+            local parentType = context.schema:getType(fragmentDefinition.typeCondition.name.value)
+            validateSelectionSet(fragmentDefinition.selectionSet, parentType)
           end
         end
       end
@@ -214,8 +214,8 @@ function rules.requiredArgumentsPresent(node, context)
   local parentField = getParentField(context, node.name.value)
   for name, argument in pairs(parentField.arguments) do
     if argument.__type == 'NonNull' then
-      local present = util.find(arguments, function(_argument)
-        return _argument.name.value == name
+      local present = util.find(arguments, function(argument)
+        return argument.name.value == name
       end)
 
       if not present then
@@ -317,11 +317,11 @@ function rules.fragmentSpreadIsPossible(node, context)
     elseif kind.__type == 'Interface' then
       return context.schema:getImplementors(kind.name)
     elseif kind.__type == 'Union' then
-      local _types = {}
+      local types = {}
       for i = 1, #kind.types do
-        _types[kind.types[i]] = kind.types[i]
+        types[kind.types[i]] = kind.types[i]
       end
-      return _types
+      return types
     else
       return {}
     end
@@ -331,7 +331,7 @@ function rules.fragmentSpreadIsPossible(node, context)
   local fragmentTypes = getTypes(fragmentType)
 
   local valid = util.find(parentTypes, function(kind)
-    -- local _kind = kind
+    local kind = kind
     -- Here is the check that type, mentioned in '... on some_type'
     -- conditional fragment expression is type of some field of parent object.
     -- In case of Union parent object and NonNull wrapped inner types
@@ -515,7 +515,13 @@ local function isVariableTypesValid(argument, argumentType, context,
     if hasDefault and variableType.__type ~= 'NonNull' then
       variableType = types.nonNull(variableType)
     end
-    if argumentType.kind then argumentType = argumentType.kind end
+
+    -- This line of code provides support to using
+    -- `arg = { kind = type, description = desc }`
+    -- type declaration in query input arguments
+    -- instead of `arg = type` one when passing
+    -- argument with a variable.
+    if argumentType.kind ~= nil then argumentType = argumentType.kind end
 
     if not isTypeSubTypeOf(variableType, argumentType, context) then
       return false, ('Variable "%s" type mismatch: the variable type "%s" ' ..
@@ -588,5 +594,7 @@ function rules.variableUsageAllowed(node, context)
     end
   end
 end
+
+-- }}}
 
 return rules

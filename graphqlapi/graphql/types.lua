@@ -1,5 +1,5 @@
-local util = require('graphqlapi.graphql.util')
 local ffi = require('ffi')
+local util = require('graphqlapi.graphql.util')
 local format = string.format
 
 local function error(...)
@@ -224,7 +224,6 @@ function types.inputObject(config)
       name = fieldName,
       kind = field.kind,
       description = field.description,
-      defaultValue = field.defaultValue,
     }
   end
 
@@ -463,9 +462,9 @@ types.skip = types.directive({
 
 types.specifiedBy = types.directive({
   name = 'specifiedBy',
-  description = 'Custom scalar specification URL.',
+  description = 'Custom scalar specification.',
   arguments = {
-    ['url'] = { kind = types.string.nonNull, description = 'Scalar specification URL.' },
+    ['url'] = { kind = types.string.nonNull, description = 'Scalar specification URL.', }
   },
   onScalar = true,
 })
