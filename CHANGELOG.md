@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.5
 
 - `rename errors class in cluster submodule`
 - `rename specifiedByUrl to specifiedBy`
