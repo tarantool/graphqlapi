@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `rename errors class in cluster submodule`
+- `rename specifiedByUrl to specifiedBy`
+- `use vanilla graphql lib`
+- `fixed not injecting module version in release workflow`
+
 ## 0.0.4
 
 - `fix utils.to_compat() and utils.from_compat() incorrect logic`
