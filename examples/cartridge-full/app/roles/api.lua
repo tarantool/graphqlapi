@@ -12,7 +12,7 @@ local function init(opts) -- luacheck: no unused args
         local latency_collector = metrics.summary(
             'http_server_request_latency',
             'HTTP Server Request Latency',
-            { [0.5] = 1e-6, [0.9] = 1e-6, [0.99] = 1e-6, },
+            { [0.5] = 1e-4, [0.9] = 1e-4, [0.99] = 1e-4, },
             { max_age_time = 60, age_buckets_count = 5, }
         )
         metrics.http_middleware.set_default_collector(latency_collector)

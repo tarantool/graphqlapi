@@ -6,6 +6,8 @@
 - `rename specifiedByUrl to specifiedBy`
 - `use vanilla graphql lib`
 - `fixed not injecting module version in release workflow`
+- `remove empty schema if it doesn't contain operations or prefixes`
+- `actualize examples`
 
 ## 0.0.4
 

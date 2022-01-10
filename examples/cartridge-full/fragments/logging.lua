@@ -6,7 +6,7 @@ local operations = require('graphqlapi.operations')
 local json_options = {
     encode_use_tostring = true,
     encode_deep_as_nil = true,
-    encode_max_depth = 10,
+    encode_max_depth = 7,
     encode_invalid_as_nil = true,
 }
 
@@ -23,18 +23,14 @@ local function log_request(operation_type, operation_schema, operation_prefix, o
              "\tprefix: %s\n"..
              "\toperation name: %s\n"..
              "\targuments: %s\n"..
-             "\targuments defaults: %s\n"..
-             "\tdirectives: %s\n"..
-             "\tdirectives defaults: %s",
+             "\tdirectives: %s\n",
         tostring(user or 'unknown'),
         operation_type,
         tostring(operation_schema),
         tostring(operation_prefix),
         operation_name,
         json.encode(arguments, json_options),
-        json.encode(info.defaultValues, json_options),
-        json.encode(info.directives, json_options),
-        json.encode(info.directivesDefaultValues, json_options)
+        json.encode(info.directives, json_options)
     )
 end
 

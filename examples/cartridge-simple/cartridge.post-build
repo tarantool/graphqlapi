@@ -8,11 +8,3 @@
 # rm -rf third_party
 # rm -rf node_modules
 # rm -rf doc
-
-tarantoolctl rocks remove graphqlide --force
-tarantoolctl rocks remove graphqlapi --force
-tarantoolctl rocks remove graphqlapi-helpers --force
-
-tarantoolctl rocks install graphqlide 0.0.16
-tarantoolctl rocks install graphqlapi 0.0.4
-tarantoolctl rocks install graphqlapi-helpers 0.0.4
