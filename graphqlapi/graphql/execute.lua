@@ -1,7 +1,7 @@
-local types = require('graphqlapi.graphql.types')
-local util = require('graphqlapi.graphql.util')
 local introspection = require('graphqlapi.graphql.introspection')
 local query_util = require('graphqlapi.graphql.query_util')
+local types = require('graphqlapi.graphql.types')
+local util = require('graphqlapi.graphql.util')
 local validate_variables = require('graphqlapi.graphql.validate_variables')
 
 local function error(...)
@@ -250,21 +250,26 @@ local function getFieldEntry(objectType, object, fields, context)
   local defaultValues = {}
   if context.operation.variableDefinitions ~= nil then
     for _, value in ipairs(context.operation.variableDefinitions) do
+      if value.defaultValue ~= nil then
         local variableType = query_util.typeFromAST(value.type, context.schema)
-        defaultValues[value.variable.name.value] =
-          util.coerceValue(value.defaultValue, variableType)
+        defaultValues[value.variable.name.value] = util.coerceValue(value.defaultValue, variableType)
+      end
     end
   end
 
   local arguments = util.map(fieldType.arguments or {}, function(argument, name)
     local supplied = argumentMap[name] and argumentMap[name].value
+
+    -- This line of code provides support to using
+    -- `arg = { kind = type, description = desc }`
+    -- type declaration in query input arguments
+    -- instead of `arg = type` one.
     if argument.kind then argument = argument.kind end
-    local res = util.coerceValue(supplied, argument, context.variables, {
+
+    return util.coerceValue(supplied, argument, context.variables, {
       strict_non_null = true,
       defaultValues = defaultValues,
     })
-    defaultValues[name] = util.coerceDefaultValues(argument, defaultValues[name])
-    return res
   end)
 
   --[[
@@ -293,30 +298,27 @@ local function getFieldEntry(objectType, object, fields, context)
   end
 
   local directives = {}
-  local directivesDefaultValues = {}
 
-  if type(directiveMap) == 'table' and next(directiveMap) then
-    util.map_by_name(context.schema.directives or {}, function(directive, directive_name)
+  if next(directiveMap) ~= nil then
+    util.map_name(context.schema.directives or {}, function(directive, directive_name)
       local supplied_directive = directiveMap[directive_name]
-      if supplied_directive ~= nil then
-        local directiveArgumentMap = {}
-        for _, argument in ipairs(supplied_directive.arguments or {}) do
-          directiveArgumentMap[argument.name.value] = argument
-        end
-
-        directives[directive_name] = util.map(directive.arguments or {}, function(argument, name)
-          local supplied = directiveArgumentMap[name] and directiveArgumentMap[name].value
-          if argument.kind then argument = argument.kind end
-          local res = util.coerceValue(supplied, argument, context.variables, {
-            strict_non_null = true,
-            defaultValues = defaultValues,
-          })
-          directivesDefaultValues[directive_name] = directivesDefaultValues[directive_name] or {}
-          directivesDefaultValues[directive_name][name] =
-            util.coerceDefaultValues(argument, directivesDefaultValues[directive_name][name])
-          return res
-        end)
+      if supplied_directive == nil then
+        return nil
       end
+
+      local directiveArgumentMap = {}
+      for _, argument in ipairs(supplied_directive.arguments or {}) do
+        directiveArgumentMap[argument.name.value] = argument
+      end
+
+      directives[directive_name] = util.map(directive.arguments or {}, function(argument, name)
+        local supplied = directiveArgumentMap[name] and directiveArgumentMap[name].value
+        if argument.kind then argument = argument.kind end
+        return util.coerceValue(supplied, argument, context.variables, {
+          strict_non_null = true,
+          defaultValues = defaultValues,
+        })
+      end)
     end)
   end
 
@@ -331,9 +333,8 @@ local function getFieldEntry(objectType, object, fields, context)
     rootValue = context.rootValue,
     operation = context.operation,
     variableValues = context.variables,
-    defaultValues = defaultValues,
+    defaultValues = context.defaultValues,
     directives = directives,
-    directivesDefaultValues = directivesDefaultValues,
   }
 
   local resolvedObject, err = (fieldType.resolve or defaultResolver)(object, arguments, info)
@@ -382,5 +383,5 @@ end
 
 
 return {
-  execute=execute,
+  execute = execute,
 }

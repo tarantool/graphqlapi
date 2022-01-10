@@ -1376,7 +1376,7 @@ function g.test_custom_directives()
     t.assert_equals(errors, nil)
 end
 
-function g.test_specifiedByUrl()
+function g.test_specifiedByUrl_scalar_field()
     local function callback(_, _)
         return nil
     end
@@ -1408,10 +1408,54 @@ function g.test_specifiedByUrl()
     }
 
     local data, errors = check_request(introspection.query, query_schema)
-    t.assert_equals(
-        util.map_by_name(data.__schema.types, function(v) return v end)['CustomInt'].specifiedByUrl,
-        'http://localhost'
-    )
+    local CustomInt_schema = util.find_by_name(data.__schema.types, 'CustomInt')
+    t.assert_type(CustomInt_schema, 'table', 'CustomInt schema found on introspection')
+    t.assert_equals(CustomInt_schema.specifiedByUrl, 'http://localhost')
+    t.assert_equals(errors, nil)
+end
+
+function g.test_specifiedBy_directive()
+    local function callback(_, args, info)
+        local v = args[1].value
+        local dir = info.directives
+        if dir ~= nil and dir.specifiedBy ~= nil then
+            return { value = v, url = dir.specifiedBy.url }
+        end
+
+        return { value = v }
+    end
+
+    local custom_scalar = types.scalar({
+        name = 'CustomInt',
+        description = "The `CustomInt` scalar type represents non-fractional signed whole numeric values. " ..
+                      "Int can represent values from -(2^31) to 2^31 - 1, inclusive.",
+        serialize = function(value)
+            return value
+        end,
+        parseLiteral = function(node)
+            return node.value
+        end,
+        isValueOfTheType = function(_)
+            return true
+        end,
+    })
+
+    local query_schema = {
+        ['test'] = {
+            kind = custom_scalar,
+            arguments = {
+                arg = custom_scalar,
+            },
+            resolve = callback,
+        }
+    }
+
+    local query = [[query {
+        test_A: test(arg: 1)@specifiedBy(url: "http://localhost")
+    }]]
+
+    local data, errors = check_request(query, query_schema)
+    t.assert_equals(data, { test_A = { url = "http://localhost", value = "1" } })
     t.assert_equals(errors, nil)
 end
 
@@ -1473,258 +1517,23 @@ function g.test_descriptions()
     local data, errors = check_request(introspection.query, query_schema, mutation_schema)
     t.assert_equals(errors, nil)
 
-    local test_query = util.map_by_name(data.__schema.types, function(v) return v end)['Query'].fields
-    t.assert_equals(test_query[1].description, 'test query')
+    local test_query = util.find_by_name(data.__schema.types, 'Query')
+    t.assert_equals(test_query.fields[1].description, 'test query')
 
-    local arg_described = util.map_by_name(test_query[1].args, function(v) return v end)['arg_described']
+    local arg_described = util.find_by_name(test_query.fields[1].args, 'arg_described')
     t.assert_equals(arg_described.description, 'described query argument')
 
-    local test_object = util.map_by_name(data.__schema.types, function(v) return v end)['test_object']
-    local object_arg_described =
-        util.map_by_name(test_object.fields, function(v) return v end)['object_arg_described']
+    local test_object = util.find_by_name(data.__schema.types, 'test_object')
+    local object_arg_described = util.find_by_name(test_object.fields, 'object_arg_described')
     t.assert_equals(object_arg_described.description, 'object argument')
 
-    local test_mutation = util.map_by_name(data.__schema.types, function(v) return v end)['Mutation'].fields
-    t.assert_equals(test_mutation[1].description, 'test mutation')
+    local test_mutation = util.find_by_name(data.__schema.types, 'Mutation')
+    t.assert_equals(test_mutation.fields[1].description, 'test mutation')
 
-    local mutation_arg_described =
-        util.map_by_name(test_mutation[1].args, function(v) return v end)['mutation_arg_described']
+    local mutation_arg_described = util.find_by_name(test_mutation.fields[1].args, 'mutation_arg_described')
     t.assert_equals(mutation_arg_described.description, 'described mutation argument')
 
-    local test_input_object = util.map_by_name(data.__schema.types, function(v) return v end)['test_input_object']
-    local input_object_arg_described =
-        util.map_by_name(test_input_object.inputFields, function(v) return v end)['input_object_arg_described']
+    local test_input_object = util.find_by_name(data.__schema.types, 'test_input_object')
+    local input_object_arg_described = util.find_by_name(test_input_object.inputFields, 'input_object_arg_described')
     t.assert_equals(input_object_arg_described.description, 'input object argument')
-end
-
-function g.test_query_arguments_defaults()
-    local query1 = [[
-        query {
-            test_query(
-                string_arg: "string_arg"
-                int_arg: 0
-                object_arg: {
-                    string_arg: "string_arg"
-                    int_arg: 3
-                }
-            )
-        }
-    ]]
-
-    local query2 = [[
-        query($string_var: String, $int_var: Int, $object_var: input_object) {
-            test_query(
-                string_arg: $string_var
-                int_arg: $int_var
-                object_arg: $object_var
-            )
-        }
-    ]]
-
-    local variables = {
-        string_var = 'string_var',
-        int_var = 0,
-        object_var = {
-            string_arg = 'string_arg',
-            int_arg = 3,
-        }
-    }
-
-    local function callback(_, arguments, info)
-        return json.encode({
-            arguments = arguments,
-            defaults = info.defaultValues,
-        })
-    end
-
-    local query_schema = {
-        ['test_query'] = {
-            kind = types.string,
-            arguments = {
-                string_arg = {
-                    kind = types.string,
-                    defaultValue = 'default1',
-                },
-                int_arg = {
-                    kind = types.int,
-                    defaultValue = 1,
-                },
-                object_arg = types.inputObject({
-                    name = 'input_object',
-                    fields = {
-                        string_arg = {
-                            kind = types.string,
-                            defaultValue = 'default2',
-                        },
-                        int_arg = {
-                            kind = types.int,
-                            defaultValue = 2,
-                        },
-                    },
-                })
-            },
-            resolve = callback,
-        },
-    }
-
-    local data, errors = check_request(query1, query_schema)
-    t.assert_items_equals(json.decode(data.test_query), {
-        arguments = {
-            string_arg = 'string_arg',
-            int_arg = 0,
-            object_arg = {
-                string_arg = 'string_arg',
-                int_arg = 3,
-            },
-        },
-        defaults = {
-            string_arg = "default1",
-            int_arg = 1,
-            object_arg = {
-                string_arg = 'default2',
-                int_arg = 2,
-            }
-        },
-    })
-    t.assert_equals(errors, nil)
-
-    data, errors = check_request(query2, query_schema, nil, nil, {variables = variables})
-    t.assert_items_equals(json.decode(data.test_query), {
-        arguments = {
-            int_arg = 0,
-            string_arg = 'string_var',
-            object_arg = {
-                string_arg = 'string_arg',
-                int_arg = 3,
-            },
-        },
-        defaults = {
-            string_arg = "default1",
-            int_arg = 1,
-            object_arg = {
-                string_arg = 'default2',
-                int_arg = 2,
-            }
-        },
-    })
-    t.assert_equals(errors, nil)
-end
-
-function g.test_directives_defaults()
-    local function callback(_, _, info)
-        return json.encode({
-            directives = info.directives,
-            directiveDefaults = info.directivesDefaultValues,
-        })
-    end
-
-    local query1 = [[
-        query {
-            test_query
-            @custom
-        }
-    ]]
-
-    local query2 = [[
-        query($string_var: String, $int_var: Int, $object_var: input_object) {
-            test_query@custom(
-                string_arg: $string_var
-                int_arg: $int_var
-                object_arg: $object_var
-            )
-        }
-    ]]
-
-    local variables = {
-        string_var = 'string_var',
-        int_var = 0,
-        object_var = {
-            string_arg = 'string_arg',
-            int_arg = 3,
-        }
-    }
-
-    local query_schema = {
-        ['test_query'] = {
-            kind = types.string,
-            resolve = callback,
-        },
-    }
-
-    local directives = {
-        types.directive({
-            name = 'custom',
-            arguments = {
-                string_arg = {
-                    kind = types.string,
-                    defaultValue = 'default1',
-                },
-                int_arg = {
-                    kind = types.int,
-                    defaultValue = 1,
-                },
-                object_arg = types.inputObject({
-                    name = 'input_object',
-                    fields = {
-                        string_arg = {
-                            kind = types.string,
-                            defaultValue = 'default2',
-                        },
-                        int_arg = {
-                            kind = types.int,
-                            defaultValue = 2,
-                        },
-                    },
-                })
-            },
-            onField = true,
-        })
-    }
-
-    local data, errors = check_request(query1, query_schema, nil, directives)
-    t.assert_equals(data, {
-        test_query = json.encode({
-            directives = {
-                custom = {}
-            },
-            directiveDefaults = {
-                custom = {
-                    int_arg = 1,
-                    string_arg = 'default1',
-                    object_arg = {
-                        string_arg = 'default2',
-                        int_arg = 2,
-                    }
-                }
-            }
-        })
-    })
-    t.assert_equals(errors, nil)
-
-    data, errors = check_request(query2, query_schema, nil, directives, {variables = variables})
-    t.assert_equals(data, {
-        test_query = json.encode({
-            directives = {
-                custom = {
-                    int_arg = 0,
-                    string_arg = 'string_var',
-                    object_arg ={
-                        int_arg = 3,
-                        string_arg = "string_arg",
-                    }
-                }
-            },
-            directiveDefaults = {
-                custom = {
-                    int_arg = 1,
-                    string_arg = 'default1',
-                    object_arg = {
-                        string_arg = 'default2',
-                        int_arg = 2,
-                    }
-                }
-            },
-        })
-    })
-    t.assert_equals(errors, nil)
 end

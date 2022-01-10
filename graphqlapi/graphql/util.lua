@@ -11,9 +11,9 @@ local function map(t, fn)
   return res
 end
 
-local function map_by_name(t, fn)
+local function map_name(t, fn)
   local res = {}
-  for _, v in ipairs(t or {}) do
+  for _, v in pairs(t or {}) do
     if v.name then
       res[v.name] = fn(v, v.name)
     end
@@ -25,6 +25,13 @@ local function find(t, fn)
   for k, v in pairs(t) do
     if fn(v, k) then return v end
   end
+end
+
+local function find_by_name(t, name)
+  for _, v in pairs(t or {}) do
+    if v.name == name then return v end
+  end
+  return nil
 end
 
 local function filter(t, fn)
@@ -72,46 +79,6 @@ local function getTypeName(t)
   error(err)
 end
 
-local function coerceDefaultValues(schemaType, value)
-  if schemaType ~= nil and schemaType.defaultValue ~= nil then
-    return schemaType.defaultValue
-  end
-
-  if schemaType.__type == 'NonNull' then
-    value = coerceDefaultValues(schemaType.ofType, value)
-  end
-
-  if schemaType.__type == 'InputObject' then
-    for name, field in pairs(schemaType.fields or {}) do
-      local kind = field.kind or {}
-      if value == nil then
-        value = {}
-      end
-
-      if kind.__type == 'NonNull' or kind.__type == 'InputObject' or kind.__type == 'List' then
-          value[name] = coerceDefaultValues(field.kind, value[name])
-      elseif not value[name] and field.defaultValue ~= nil then
-        value[name] = field.defaultValue
-      end
-    end
-  end
-
-  if schemaType.__type == 'List' then
-    for i in ipairs(value or {}) do
-      for name, schemaField in pairs(schemaType.ofType.fields or {}) do
-          local kind = schemaField.kind or {}
-          if kind.__type == 'NonNull' or kind.__type == 'InputObject' or kind.__type == 'List' then
-            value[i][name] = coerceDefaultValues(schemaField.kind, value[i][name])
-          elseif value[i][name] == nil and schemaField.defaultValue ~= nil then
-            value[i][name] = schemaField.defaultValue
-          end
-      end
-    end
-  end
-
-  return value
-end
-
 local function coerceValue(node, schemaType, variables, opts)
   variables = variables or {}
   opts = opts or {}
@@ -149,7 +116,6 @@ local function coerceValue(node, schemaType, variables, opts)
         ))
       end
     end
-
     return value
   end
 
@@ -192,8 +158,10 @@ local function coerceValue(node, schemaType, variables, opts)
 
       local childValue = fieldValues[fieldName]
       local childType = schemaType.fields[fieldName].kind
-      inputObjectValue[fieldName] = coerceValue(childValue, childType, variables, opts)
+      inputObjectValue[fieldName] = coerceValue(childValue, childType,
+        variables, opts)
     end
+
     return inputObjectValue
   end
 
@@ -218,17 +186,17 @@ local function coerceValue(node, schemaType, variables, opts)
   end
 end
 
--- Check whether passed value has one of listed types.
---
--- @param obj value to check
---
--- @tparam string obj_name name of the value to form an error
---
--- @tparam string type_1
--- @tparam[opt] string type_2
--- @tparam[opt] string type_3
---
--- @return nothing
+--- Check whether passed value has one of listed types.
+---
+--- @param obj value to check
+---
+--- @tparam string obj_name name of the value to form an error
+---
+--- @tparam string type_1
+--- @tparam[opt] string type_2
+--- @tparam[opt] string type_3
+---
+--- @return nothing
 local function check(obj, obj_name, type_1, type_2, type_3)
     if type(obj) == type_1 or type(obj) == type_2 or type(obj) == type_3 then
         return
@@ -245,15 +213,15 @@ local function check(obj, obj_name, type_1, type_2, type_3)
     end
 end
 
--- Check whether table is an array.
---
--- Based on [that][1] implementation.
--- [1]: https://github.com/mpx/lua-cjson/blob/db122676/lua/cjson/util.lua
---
--- @tparam table table to check
--- @return[1] `true` if passed table is an array (includes the empty table
--- case)
--- @return[2] `false` otherwise
+--- Check whether table is an array.
+---
+--- Based on [that][1] implementation.
+--- [1]: https://github.com/mpx/lua-cjson/blob/db122676/lua/cjson/util.lua
+---
+--- @tparam table table to check
+--- @return[1] `true` if passed table is an array (includes the empty table
+--- case)
+--- @return[2] `false` otherwise
 local function is_array(table)
     if type(table) ~= 'table' then
         return false
@@ -319,8 +287,9 @@ end
 
 return {
   map = map,
-  map_by_name = map_by_name,
+  map_name = map_name,
   find = find,
+  find_by_name = find_by_name,
   filter = filter,
   values = values,
   compose = compose,
@@ -328,7 +297,6 @@ return {
   trim = trim,
   getTypeName = getTypeName,
   coerceValue = coerceValue,
-  coerceDefaultValues = coerceDefaultValues,
 
   is_array = is_array,
   check = check,

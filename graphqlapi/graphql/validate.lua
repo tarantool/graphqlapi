@@ -1,5 +1,5 @@
-local rules = require('graphqlapi.graphql.rules')
 local introspection = require('graphqlapi.graphql.introspection')
+local rules = require('graphqlapi.graphql.rules')
 local util = require('graphqlapi.graphql.util')
 
 local function getParentField(context, name, count)
@@ -194,9 +194,9 @@ local visitors = {
           elseif referencedNode.kind == 'inlineFragment' then
             return collectTransitiveVariables(referencedNode.selectionSet)
           elseif referencedNode.kind == 'fragmentSpread' then
-            local _fragment = context.fragmentMap[referencedNode.name.value]
+            local fragment = context.fragmentMap[referencedNode.name.value]
             context.usedFragments[referencedNode.name.value] = true
-            return _fragment and collectTransitiveVariables(_fragment.selectionSet)
+            return fragment and collectTransitiveVariables(fragment.selectionSet)
           end
         end
 
@@ -349,5 +349,5 @@ local function validate(schema, tree)
 end
 
 return {
-  validate=validate,
+  validate = validate,
 }

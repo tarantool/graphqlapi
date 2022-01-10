@@ -6,7 +6,7 @@ local __Schema, __Directive, __DirectiveLocation, __Type, __Field, __InputValue,
 local function resolveArgs(field)
     local function transformArg(arg, name)
         if arg.__type then
-            return { kind = arg, name = name, description = arg.description  }
+            return { kind = arg, name = name, description = arg.description }
         elseif arg.name then
             return arg
         else
@@ -122,19 +122,19 @@ __Directive = types.object({
           if directive.onInputFieldDefinition then table.insert(res, 'INPUT_FIELD_DEFINITION') end
 
           return res
-        end
+        end,
       },
 
       args = {
         kind = types.nonNull(types.list(types.nonNull(__InputValue))),
-        resolve = resolveArgs
+        resolve = resolveArgs,
       },
 
       isRepeatable = {
         kind = types.nonNull(types.boolean),
         resolve = function(directive)
           return directive.isRepeatable == true
-        end
+        end,
       },
     }
   end,
@@ -283,7 +283,7 @@ __Type = types.object({
           end
 
           error('Unknown type ' .. kind)
-        end
+        end,
       },
 
       fields = {
@@ -292,7 +292,7 @@ __Type = types.object({
           includeDeprecated = {
             kind = types.boolean,
             defaultValue = false,
-          }
+          },
         },
         resolve = function(kind, arguments)
           if kind.__type == 'Object' or kind.__type == 'Interface' then
@@ -311,7 +311,7 @@ __Type = types.object({
           if kind.__type == 'Object' then
             return kind.interfaces or {}
           end
-        end
+        end,
       },
 
       possibleTypes = {
@@ -320,13 +320,13 @@ __Type = types.object({
           if kind.__type == 'Interface' or kind.__type == 'Union' then
             return context.schema:getPossibleTypes(kind)
           end
-        end
+        end,
       },
 
       enumValues = {
         kind = types.list(types.nonNull(__EnumValue)),
         arguments = {
-          includeDeprecated = { kind = types.boolean, defaultValue = false }
+          includeDeprecated = { kind = types.boolean, defaultValue = false },
         },
         resolve = function(kind, arguments)
           if kind.__type == 'Enum' then
@@ -334,7 +334,7 @@ __Type = types.object({
               return arguments.includeDeprecated or not value.deprecationReason
             end)
           end
-        end
+        end,
       },
 
       inputFields = {
@@ -343,7 +343,7 @@ __Type = types.object({
           if kind.__type == 'InputObject' then
             return util.values(kind.fields)
           end
-        end
+        end,
       },
 
       specifiedByUrl = {
@@ -448,7 +448,7 @@ __EnumValue = types.object({
         kind = types.boolean.nonNull,
         resolve = function(enumValue) return enumValue.deprecationReason ~= nil end
       },
-      deprecationReason = types.string
+      deprecationReason = types.string,
     }
   end,
 })
@@ -514,7 +514,7 @@ local Type = {
   kind = __Type,
   description = 'Request the type information of a single type.',
   arguments = {
-    name = types.string.nonNull
+    name = types.string.nonNull,
   },
   resolve = function(_, arguments, info)
     return info.schema:getType(arguments.name)
