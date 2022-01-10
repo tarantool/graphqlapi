@@ -32,6 +32,17 @@ local function funcall_wrap(fun_name, operation_type, operation_schema, operatio
     end
 end
 
+local function is_schema_empty(schema)
+    schema = utils.coerce_schema(schema)
+
+    local all_operations = utils.count_map(_queries[schema])
+    all_operations = all_operations + utils.count_map(_mutations[schema])
+    if all_operations == 0 then
+        return true
+    end
+    return false
+end
+
 local function add_queries_prefix(opts)
     checks({
         prefix = 'string',
@@ -125,7 +136,7 @@ local function remove_queries_prefix(opts)
         end
     end
 
-    schemas.set_invalid(opts.schema)
+    schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
 end
 
 local function add_mutations_prefix(opts)
@@ -221,7 +232,7 @@ local function remove_mutations_prefix(opts)
             end
         end
     end
-    schemas.set_invalid(opts.schema)
+    schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
 end
 
 local function add_query(opts)
@@ -345,7 +356,7 @@ local function remove_query(opts)
         end
     end
 
-    schemas.set_invalid(opts.schema)
+    schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
 end
 
 local function queries_list(schema_name)
@@ -486,7 +497,7 @@ local function remove_mutation(opts)
         end
     end
 
-    schemas.set_invalid(opts.schema)
+    schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
 end
 
 local function mutations_list(schema_name)
@@ -612,7 +623,7 @@ local function remove_space_query(opts)
                 end
             end
             table.remove(_space_query[opts.space], index)
-            schemas.set_invalid(opts.schema)
+            schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
         end
     else
         opts.schema = utils.coerce_schema(opts.schema)
@@ -735,7 +746,7 @@ local function remove_space_mutation(opts)
                 end
             end
             table.remove(_space_mutation[opts.space], index)
-            schemas.set_invalid(opts.schema)
+            schemas.set_invalid(opts.schema, is_schema_empty(opts.schema))
         end
     else
         opts.schema = utils.coerce_schema(opts.schema)
@@ -815,7 +826,7 @@ local function remove_operations_by_space_name(space_name)
             end
         end
 
-        schemas.set_invalid(query.schema)
+        schemas.set_invalid(query.schema, is_schema_empty(query.schema))
     end
 
     _space_query[space_name] = nil
@@ -835,7 +846,7 @@ local function remove_operations_by_space_name(space_name)
             end
         end
 
-        schemas.set_invalid(mutation.schema)
+        schemas.set_invalid(mutation.schema, is_schema_empty(mutation.schema))
     end
     _space_mutation[space_name] = nil
 end
@@ -870,6 +881,7 @@ return {
     remove_all = remove_all,
     get_queries = get_queries,
     get_mutations = get_mutations,
+    is_schema_empty = is_schema_empty,
 
     -- Queries prefixes API
     add_queries_prefix = add_queries_prefix,

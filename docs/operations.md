@@ -27,6 +27,7 @@
     - [remove_operations_by_space_name()](#remove_operations_by_space_name)
     - [on_resolve()](#on_resolve)
     - [remove_on_resolve_triggers()](#remove_on_resolve_triggers)
+    - [is_schema_empty()](#is_schema_empty)
 
 Submodule `operations.lua` - is a part of GraphQL API module provided functions to add/remove queries, mutations and it's prefixes as well as subsidiary functions to deal with GraphQL operations.
 
@@ -235,7 +236,11 @@ Example:
 
 ### queries_list()
 
-`operations.queries_list()` - method is used to get list of registered queries,
+`operations.queries_list(schema_name)` - method is used to get list of registered queries,
+
+where:
+
+- `schema_name` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
 
 returns:
 
@@ -311,7 +316,11 @@ Example:
 
 ### mutations_list()
 
-`operations.mutations_list()` - method is used to get list of registered queries,
+`operations.mutations_list(schema_name)` - method is used to get list of registered queries,
+
+where:
+
+- `schema_name` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
 
 returns:
 
@@ -553,3 +562,15 @@ Example:
 ### remove_on_resolve_triggers()
 
 `operations.remove_on_resolve_triggers()` - method to remove all GraphQL API triggers at once.
+
+### is_schema_empty()
+
+`operations.is_schema_empty(schema_name)` - method is used to check if schema contains at least one of: query, mutation, queries_prefix, mutations_prefix,
+
+where:
+
+- `schema_name` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name),
+
+returns:
+
+- `is_schema_empty` (`boolean`) - If `true` - schema is empty and if `false` - schema contains at least one of: query, mutation, queries_prefix, mutations_prefix.
