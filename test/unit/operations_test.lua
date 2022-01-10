@@ -9,11 +9,13 @@ local types = require('graphqlapi.types')
 g.before_each(function()
     types.remove_all()
     operations.remove_all()
+    assert(operations.is_schema_empty("test_schema"))
 end)
 
 g.after_each(function()
     types.remove_all()
     operations.remove_all()
+    assert(operations.is_schema_empty("test_schema"))
 end)
 
 g.test_add_remove_query_default_schema_no_prefix = function()
@@ -178,6 +180,8 @@ g.test_add_remove_query_default_schema_with_prefix = function()
 end
 
 g.test_add_remove_query_custom_schema_no_prefix = function()
+    t.assert_equals(operations.is_schema_empty('test_schema'), true)
+
     operations.add_query({
         schema = 'test_schema',
         name = 'entity',
@@ -189,6 +193,8 @@ g.test_add_remove_query_custom_schema_no_prefix = function()
         callback = 'fragments.entity.entity_get',
     })
 
+    t.assert_equals(operations.is_schema_empty('test_schema'), false)
+
     t.assert_equals(type(operations.get_queries('test_schema')['entity']), 'table')
     t.assert_equals(operations.get_queries('test_schema')['entity'].description, 'Get entity')
     t.assert_equals(schemas.is_invalid('test_schema'), true)
@@ -199,6 +205,7 @@ g.test_add_remove_query_custom_schema_no_prefix = function()
     t.assert_items_equals(operations.queries_list('test_schema'), {'entity'})
 
     operations.remove_query({name = 'entity', schema = 'test_schema'})
+    t.assert_equals(operations.is_schema_empty('test_schema'), true)
 
     t.assert_equals(operations.get_queries('test_schema')['entity'], nil)
 
@@ -208,6 +215,7 @@ g.test_add_remove_query_custom_schema_no_prefix = function()
 end
 
 g.test_add_remove_query_custom_schema_with_prefix = function()
+    t.assert_equals(operations.is_schema_empty('test_schema'), true)
     operations.add_queries_prefix({
         prefix = 'test',
         schema = 'test_schema',
@@ -234,6 +242,7 @@ g.test_add_remove_query_custom_schema_with_prefix = function()
         kind = types.string,
         callback = 'fragments.entity.entity_1_get',
     })
+    t.assert_equals(operations.is_schema_empty('test_schema'), false)
 
     t.assert_equals(type(operations.get_queries('test_schema')['test'].kind.fields['entity_1']), 'table')
     t.assert_equals(operations.get_queries('test_schema')['test'].kind.fields['entity_1'].description, 'Get entity 1')
@@ -269,7 +278,7 @@ g.test_add_remove_query_custom_schema_with_prefix = function()
         schema = 'test_schema',
         prefix = 'test',
     })
-
+    t.assert_equals(operations.is_schema_empty('test_schema'), false)
     t.assert_equals(type(operations.get_queries('test_schema')['test'].kind.fields['entity_2']), 'table')
     t.assert_equals(operations.get_queries('test_schema')['test'].kind.fields['entity_2'].description, 'Get entity 2')
     t.assert_equals(schemas.is_invalid('test_schema'), true)
@@ -300,6 +309,7 @@ g.test_add_remove_query_custom_schema_with_prefix = function()
 end
 
 g.test_add_remove_mutation_default_schema_no_prefix = function()
+    t.assert_equals(operations.is_schema_empty(), true)
     operations.add_mutation({
         name = 'entity',
         doc = 'Mutate entity',
@@ -310,6 +320,7 @@ g.test_add_remove_mutation_default_schema_no_prefix = function()
         callback = 'fragments.entity.entity_set',
     })
 
+    t.assert_equals(operations.is_schema_empty(), false)
     t.assert_equals(operations.is_mutation_exists({ name = 'entity', }), true)
     t.assert_equals(type(operations.get_mutations()['entity']), 'table')
     t.assert_equals(operations.get_mutations()['entity'].description, 'Mutate entity')
@@ -337,6 +348,7 @@ g.test_add_remove_mutation_default_schema_no_prefix = function()
 
 
     operations.remove_mutation({ name = 'entity' })
+    t.assert_equals(operations.is_schema_empty(), true)
     t.assert_equals(operations.get_mutations()['entity'], nil)
 
     t.assert_equals(schemas.is_invalid(), true)
@@ -345,6 +357,7 @@ g.test_add_remove_mutation_default_schema_no_prefix = function()
 end
 
 g.test_add_remove_mutation_default_schema_with_prefix = function()
+    t.assert_equals(operations.is_schema_empty(), true)
     operations.add_mutations_prefix({
         prefix = 'test',
         doc = 'Simple prefix test',
@@ -368,6 +381,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
 
     t.assert_equals(ok, false)
     t.assert_equals(err, 'mutation or prefix with name "test" already exists in schema: "Default"')
+    t.assert_equals(operations.is_schema_empty(), false)
 
     operations.add_mutation({
         prefix = 'test',
@@ -380,6 +394,7 @@ g.test_add_remove_mutation_default_schema_with_prefix = function()
         callback = 'fragments.entity.entity_1_set',
     })
 
+    t.assert_equals(operations.is_schema_empty(), false)
     t.assert_equals(operations.is_mutation_exists({ prefix = 'test', name = 'entity_1', }), true)
     t.assert_equals(type(operations.get_mutations()['test'].kind.fields['entity_1']), 'table')
     t.assert_equals(operations.get_mutations()['test'].kind.fields['entity_1'].description, 'Mutate entity 1')

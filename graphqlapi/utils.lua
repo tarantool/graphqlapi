@@ -251,6 +251,15 @@ local function get_tnt_version()
     return version
 end
 
+local function count_map(t)
+    if t ~= nil and type(t) == 'table' then
+        local count = 0
+        for _ in pairs(t) do count = count + 1 end
+        return count
+    end
+    return 0
+end
+
 return {
     value_in = value_in,
     diff_maps = diff_maps,
@@ -270,4 +279,5 @@ return {
     to_compat = to_compat,
     from_compat = from_compat,
     get_tnt_version = get_tnt_version,
+    count_map = count_map,
 }

@@ -298,3 +298,16 @@ g.test_get_tnt_version = function()
 
     rawset(_G, '_TARANTOOL', version)
 end
+
+g.test_count_map = function()
+    t.assert_equals(utils.count_map(), 0)
+    t.assert_equals(utils.count_map(''), 0)
+    t.assert_equals(utils.count_map({}), 0)
+    t.assert_equals(utils.count_map({'1', 1, ['1'] = {1}}), 3)
+    t.assert_equals(utils.count_map(
+        {
+            ['space2'] = {name = 'space2', schema = 'default', prefix = 'spaces'},
+            ['space1'] = {name = 'space1', schema = 'default', prefix = 'spaces'},
+        }
+    ), 2)
+end
