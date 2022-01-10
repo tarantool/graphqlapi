@@ -8,8 +8,8 @@ dependencies = {
     'tarantool',
     'lua >= 5.1',
     'cartridge == 2.7.3-1',
-    'metrics == 0.11.0-1',
-    'crud == 0.9.0',
+    'metrics == 0.12.0-1',
+    'crud == 0.10.0',
 }
 build = {
     type = 'none';

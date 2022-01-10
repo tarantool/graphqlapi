@@ -2,9 +2,9 @@
 
 This Example shows mostly all base capabilities of using the following set of modules:
 
-- [Tarantool GraphQLIDE 0.0.14+](https://github.com/tarantool/graphqlide)
-- [Tarantool GraphQLAPI 0.0.2+](https://github.com/tarantool/graphqlapi)
-- [Tarantool GraphQLAPI Helpers 0.0.2+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
+- [Tarantool GraphQLIDE 0.0.17+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLAPI 0.0.5+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.5+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 
@@ -33,6 +33,9 @@ cartridge admin --run-dir `pwd`/tmp/run/ --name cartridge-full --instance router
 or use bash-scripts:
 
 ```bash
+# install dependencies
+./deps.sh
+
 # build and start application
 ./scripts/start.sh
 
@@ -108,7 +111,7 @@ Fragments - separate parts of GraphQL schemas located in `./fragments/*.lua`:
 
 After starting application on [`router` - http://localhost:8081](http://localhost:8081) instance GraphQL IDE will be available:
 
-![GraphQL IDE](./resources/graphqlide.jpg "GraphQL IDE")
+![GraphQL IDE](./resources/GraphQLIDE.png "GraphQL IDE")
 
 The following schemes are available in this demo application:
 

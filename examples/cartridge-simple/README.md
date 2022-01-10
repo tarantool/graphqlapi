@@ -2,9 +2,9 @@
 
 This Example shows simple and quite easy way of howto use set of modules in application:
 
-- [Tarantool GraphQLIDE 0.0.14+](https://github.com/tarantool/graphqlide)
-- [Tarantool GraphQLAPI 0.0.2+](https://github.com/tarantool/graphqlapi)
-- [Tarantool GraphQLAPI Helpers 0.0.2+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
+- [Tarantool GraphQLIDE 0.0.17+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLAPI 0.0.5+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.5+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 
@@ -27,6 +27,9 @@ cartridge failover setup --file failover.yml
 or use bash-scripts:
 
 ```bash
+# install dependencies
+./deps.sh
+
 # build and start application
 ./scripts/start.sh
 
@@ -80,7 +83,7 @@ Custom user `storage` role uses the following roles:
 
 After starting application on [`router` - http://localhost:8081](http://localhost:8081) instance GraphQL IDE will be available:
 
-![GraphQL IDE](./resources/GraphQLIDE.jpg "GraphQL IDE")
+![GraphQL IDE](./resources/GraphQLIDEs.png "GraphQL IDE")
 
 The following schemes are available in this demo application:
 
