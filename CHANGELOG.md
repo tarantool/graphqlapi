@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6
+
+- `fix coercing default values on schema generation`
+
 ## 0.0.5
 
 - `rename errors class in cluster submodule`
