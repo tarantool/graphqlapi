@@ -3,8 +3,8 @@
 This Example shows mostly all base capabilities of using the following set of modules:
 
 - [Tarantool GraphQLIDE 0.0.17+](https://github.com/tarantool/graphqlide)
-- [Tarantool GraphQLAPI 0.0.5+](https://github.com/tarantool/graphqlapi)
-- [Tarantool GraphQLAPI Helpers 0.0.5+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
+- [Tarantool GraphQLAPI 0.0.6+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.6+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 
