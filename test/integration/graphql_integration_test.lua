@@ -1537,3 +1537,39 @@ function g.test_descriptions()
     local input_object_arg_described = util.find_by_name(test_input_object.inputFields, 'input_object_arg_described')
     t.assert_equals(input_object_arg_described.description, 'input object argument')
 end
+
+function g.test_arguments_default_values()
+    local function callback(_, _)
+        return nil
+    end
+
+    local mutation_schema = {
+        ['test_mutation'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                mutation_arg = types.string,
+                mutation_arg_defaults = {
+                    kind = types.inputObject({
+                        name = 'test_input_object',
+                        fields = {
+                            input_object_arg_defaults = {
+                                kind = types.string,
+                                defaultValue = 'input object argument default value'
+                            },
+                            input_object_arg = types.string,
+                        },
+                        kind = types.string,
+                    }),
+                },
+            },
+            resolve = callback,
+        }
+    }
+
+    local data, errors = check_request(introspection.query, nil, mutation_schema)
+    t.assert_equals(errors, nil)
+
+    local test_input_object = util.find_by_name(data.__schema.types, 'test_input_object')
+    local input_object_arg_defaults = util.find_by_name(test_input_object.inputFields, 'input_object_arg_defaults')
+    t.assert_equals(input_object_arg_defaults.defaultValue, 'input object argument default value')
+end

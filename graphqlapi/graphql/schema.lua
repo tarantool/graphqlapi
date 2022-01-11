@@ -70,6 +70,7 @@ function schema:generateTypeMap(node)
 
   if node.__type == 'Object' or node.__type == 'Interface' or node.__type == 'InputObject' then
     for fieldName, field in pairs(node.fields) do
+      local defaultValue = field.defaultValue
       if field.arguments then
         for name, argument in pairs(field.arguments) do
           -- BEGIN_HACK: resolve type names to real types
@@ -85,12 +86,14 @@ function schema:generateTypeMap(node)
 
           local argumentType = argument.__type and argument or argument.kind
           assert(argumentType, 'Must supply type for argument "' .. name .. '" on "' .. fieldName .. '"')
+          argumentType.defaultValue = argument.defaultValue
           self:generateTypeMap(argumentType)
         end
       end
 
       -- HACK: resolve type names to real types
       field.kind = types.resolve(field.kind, self.name)
+      field.defaultValue = defaultValue
       self:generateTypeMap(field.kind)
     end
   end
