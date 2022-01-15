@@ -238,7 +238,8 @@ types.space_fields = function(space, required)
 end
 
 types.remove = function (type_name, schema)
-    checks('string', '?string')
+    utils.is_string(1, type_name, false)
+    utils.is_string(2, schema, true)
 
     schema = utils.coerce_schema(schema)
     graphql_types.get_env(schema)[type_name] = nil
@@ -391,7 +392,8 @@ types.get_non_leaf_types = function(t, type_list, depth, skip)
 end
 
 types.remove_recursive = function (type_name, schema)
-    checks('string', '?string')
+    utils.is_string(1, type_name, false)
+    utils.is_string(2, schema, true)
     schema = utils.coerce_schema(schema)
 
     local removed_types = {}
@@ -413,7 +415,8 @@ end
 -- 3: 'string' - remove in provided schema
 
 types.remove_types_by_space_name = function(space_name, schema)
-    checks('string', '?string|nil')
+    utils.is_string(1, space_name, false)
+    utils.is_string(2, schema, true)
     if utils.is_box_null(schema) then
         schema = utils.coerce_schema(schema)
     end
@@ -444,7 +447,8 @@ types.remove_types_by_space_name = function(space_name, schema)
 end
 
 types.remove_all = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
+
     if utils.is_box_null(schema) then
         schema = utils.coerce_schema(schema)
     end
@@ -550,7 +554,7 @@ types.add_space_input_object = function(opts)
 end
 
 types.types_list = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
 
     schema = utils.coerce_schema(schema)
     local type_list = {}
@@ -631,14 +635,16 @@ types.get_directives = function(schema)
 end
 
 types.is_directive_exists = function(name, schema)
-    checks('string', '?')
+    utils.is_string(1, name, false)
+    utils.is_string(2, schema, true)
+
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     return _directives[schema][name] ~= nil
 end
 
 types.directives_list = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
     schema = utils.coerce_schema(schema)
     local directives_list = {}
     for directive in pairs(_directives[schema] or {}) do
@@ -648,7 +654,8 @@ types.directives_list = function(schema)
 end
 
 types.remove_directive = function(name, schema)
-    checks('string', '?')
+    utils.is_string(1, name, false)
+    utils.is_string(2, schema, true)
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     _directives[schema][name] = nil

@@ -8,6 +8,8 @@
     - [remove_schema()](#remove_schema)
     - [remove_all()](#remove_all)
     - [schemas_list()](#schemas_list)
+    - [cache_set()](#cache_set)
+    - [cache_get()](#cache_get)
 
 Submodule `schemas.lua` is a part of GraphQL API module that provides common API for managing internal GraphQL schemas registry. Each GraphQL schema often a large tree of objects in special format. For performance purposes each schema have a cache, but if something is added or removed to the schema cache must be invalidated and on next request to this schema cache must be rebuilt.
 
@@ -57,3 +59,26 @@ where:
 returns:
 
 `[1]` (`table`) - array of strings with schemas names or {} if no any schemas is registered in schemas registry.
+
+### cache_set()
+
+`schemas.cache_set(schema, request_hash, request_ast)` - method is used to put parsed and validated AST (Abstract syntax tree) of graphql request into cache,
+
+where:
+
+- `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+- `request_hash` (`string`) - mandatory, request sha256 hash;
+- `request_ast` (`table`|`nil`) - mandatory, request AST.
+
+### cache_get()
+
+`schemas.cache_get(schema, request_hash)` - method is used to get from cache parsed and validated AST (Abstract syntax tree) of graphql request,
+
+where:
+
+- `schema` (`string`) - optional, schema name, if nil - then default schema is used [Default schema](defaults.md#default_schema_name);
+- `request_hash` (`string`) - mandatory, request sha256 hash,
+
+returns:
+
+- `request_ast` (`table`|`nil`) - request AST or nil if request is not cached.

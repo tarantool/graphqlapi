@@ -187,7 +187,7 @@ g.test_set_sharding_function = function()
     ok, err = pcall(function() return router.net_box:eval(call_test_func) end)
 
     t.assert_equals(ok, false)
-    t.assert_str_contains(tostring(err), 'bad argument #1 to nil (string expected, got nil)')
+    t.assert_str_contains(tostring(err), 'bad argument #1 (string expected, got nil)')
 
     ok, res, err = pcall(function() return router.net_box:eval(call_test_func, {'test'}) end)
 

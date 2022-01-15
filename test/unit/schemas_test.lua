@@ -37,3 +37,16 @@ g.test_multiple_schemas = function()
     schemas.remove_all()
     t.assert_items_equals(schemas.schemas_list(), {})
 end
+
+g.test_graphql_cache = function()
+    local test_query_ast = {'test_value'}
+    t.assert_equals(schemas.cache_get('non_existent_schema', 'test_query'), nil)
+    schemas.cache_set('some_schema', 'test_query', test_query_ast)
+
+    t.assert_items_equals(schemas.cache_get('some_schema', 'test_query'), test_query_ast)
+    schemas.set_invalid('some_schema')
+    t.assert_equals(schemas.cache_get('some_schema', 'test_query'), nil)
+    schemas.remove_all()
+
+    t.assert_items_equals(schemas.schemas_list(), {})
+end

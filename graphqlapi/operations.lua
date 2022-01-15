@@ -14,7 +14,11 @@ local _space_query = {}
 local _space_mutation = {}
 
 local function funcall_wrap(fun_name, operation_type, operation_schema, operation_prefix, operation_name)
-    checks('string', 'string', 'string|nil', 'string|nil', 'string')
+    utils.is_string(1, fun_name, false)
+    utils.is_string(2, operation_type, false)
+    utils.is_string(3, operation_schema, true)
+    utils.is_string(4, operation_prefix, true)
+    utils.is_string(5, operation_name, false)
 
     return function(...)
         for trigger, _ in pairs(_on_resolve_triggers) do
@@ -360,7 +364,7 @@ local function remove_query(opts)
 end
 
 local function queries_list(schema_name)
-    checks('?string')
+    utils.is_string(1, schema_name, true)
 
     local queries = {}
 
@@ -501,7 +505,7 @@ local function remove_mutation(opts)
 end
 
 local function mutations_list(schema_name)
-    checks('?string')
+    utils.is_string(1, schema_name, true)
 
     local mutations = {}
     schema_name = utils.coerce_schema(schema_name)
@@ -809,7 +813,7 @@ local function stop()
 end
 
 local function remove_operations_by_space_name(space_name)
-    checks('string')
+    utils.is_string(1, space_name, false)
 
     -- Cleanup queries related to space
     for _, query in pairs(_space_query[space_name] or {}) do
@@ -852,7 +856,8 @@ local function remove_operations_by_space_name(space_name)
 end
 
 local function on_resolve(trigger_new, trigger_old)
-    checks('?function', '?function')
+    utils.is_function(1, trigger_new, true)
+    utils.is_function(2, trigger_old, true)
     if trigger_old ~= nil then
         _on_resolve_triggers[trigger_old] = nil
     end
@@ -863,14 +868,14 @@ local function on_resolve(trigger_new, trigger_old)
 end
 
 local function get_queries(schema_name)
-    checks('?string')
+    utils.is_string(1, schema_name, true)
 
     schema_name = utils.coerce_schema(schema_name)
     return _queries[schema_name] or {}
 end
 
 local function get_mutations(schema_name)
-    checks('?string')
+    utils.is_string(1, schema_name, true)
 
     schema_name = utils.coerce_schema(schema_name)
     return _mutations[schema_name] or {}

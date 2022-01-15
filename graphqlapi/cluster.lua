@@ -1,6 +1,5 @@
 local argparse = require('cartridge.argparse')
 local cartridge = require('cartridge')
-local checks = require('checks')
 local ddl = require('ddl')
 local errors = require('errors')
 local membership = require('membership')
@@ -16,7 +15,7 @@ local e_cluster_api = errors.new_class('cluster API error', { capture_stack = fa
 local e_sharding = errors.new_class('sharding API error', { capture_stack = false, })
 
 local function get_alias_by_uuid(conn)
-    checks('table')
+    utils.is_table(1, conn, false)
     for _, server in pairs(cartridge.admin_get_servers()) do
         if server.uuid == conn.peer_uuid then
             return server.alias
@@ -59,7 +58,10 @@ local function get_masters()
 end
 
 local function get_storages_instances(mode, prefer_replica, balance)
-    checks('?string', '?boolean', '?boolean')
+    utils.is_string(1, mode, true)
+    utils.is_boolean(2, prefer_replica, true)
+    utils.is_boolean(3, balance, true)
+
     local servers = {}
     if mode ~= 'read' and mode ~= 'write' then
         mode = 'write'
@@ -195,7 +197,8 @@ local function default_sharding_function(sharding_keys)
 end
 
 local function sharding_function(space_name, sharding_keys)
-    checks('string', '?')
+    utils.is_string(1, space_name, false)
+
     if sharding_keys == nil then
         error("Can't get bucket_id with null shard :" .. debug.traceback(), 0)
     end
@@ -210,7 +213,8 @@ local function sharding_function(space_name, sharding_keys)
 end
 
 local function set_sharding_function(space_name, shard_function)
-    checks('string', 'function')
+    utils.is_string(1, space_name, false)
+    utils.is_function(2, shard_function, false)
     if is_space_exists(space_name) or space_name == '*' then
         _sharding_functions[space_name] = shard_function
         return true
@@ -220,12 +224,12 @@ local function set_sharding_function(space_name, shard_function)
 end
 
 local function get_sharding_function(space_name)
-    checks('string')
+    utils.is_string(1, space_name, false)
     return _sharding_functions[space_name] or _sharding_functions['*'] or default_sharding_function
 end
 
 local function remove_sharding_function(space_name)
-    checks('string')
+    utils.is_string(1, space_name, false)
     _sharding_functions[space_name] = nil
 end
 

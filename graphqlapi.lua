@@ -1,7 +1,7 @@
 local log = require('log')
 local json = require('json')
 local fio = require('fio')
-local checks = require('checks')
+local digest = require('digest')
 local errors = require('errors')
 
 local VERSION = 'scm-1'
@@ -52,6 +52,7 @@ local operations = require('graphqlapi.operations')
 local schemas = require('graphqlapi.schemas')
 local trigger = require('graphqlapi.trigger')
 local types = require('graphqlapi.types')
+local utils = require('graphqlapi.utils')
 
 local _http_middleware = {}
 local _endpoint = nil
@@ -65,7 +66,7 @@ local e_graphql_validate = errors.new_class('GraphQL validation failed')
 local e_graphql_execute = errors.new_class('GraphQL execution failed')
 
 local function get_schema(schema_name)
-    checks('?string')
+    utils.is_string(1, schema_name, true)
 
     if schemas.is_invalid(schema_name) == true then
         _graphql_schema[schema_name] = nil
@@ -119,7 +120,9 @@ local function get_schema(schema_name)
 end
 
 local function http_finalize(obj, status)
-    checks('table', '?number')
+    utils.is_table(1, obj, false)
+    utils.is_number(2, status, true)
+
     return _http_middleware.render_response({
         status = status or 200,
         headers = {['content-type'] = "application/json; charset=utf-8"},
@@ -208,24 +211,31 @@ local function _execute_graphql(req)
     end
     local query = parsed.query
 
-    local ast, err = e_graphql_parse:pcall(parse.parse, query)
-
-    if not ast then
-        log.error('%s', err)
-        return http_finalize({
-            errors = {{message = err.err}},
-        }, 400)
-    end
-
     local schema_obj = get_schema(schema_name)
 
-    err = select(2,e_graphql_validate:pcall(validate.validate, schema_obj, ast))
+    local ast, err
+    local request_hash = digest.sha256_hex(query)
+    ast = schemas.cache_get(schema_name, request_hash)
+    if ast == nil then
+        ast, err = e_graphql_parse:pcall(parse.parse, query)
 
-    if err then
-        log.error('%s', err)
-        return http_finalize({
-            errors = {{message = err.err}},
-        }, 400)
+        if not ast then
+            log.error('%s', err)
+            return http_finalize({
+                errors = {{message = err.err}},
+            }, 400)
+        end
+
+        err = select(2,e_graphql_validate:pcall(validate.validate, schema_obj, ast))
+
+        if err then
+            log.error('%s', err)
+            return http_finalize({
+                errors = {{message = err.err}},
+            }, 400)
+        end
+
+        schemas.cache_set(schema_name, request_hash, ast)
     end
 
     local rootValue = {}
@@ -299,7 +309,8 @@ local function remove_side_slashes(path)
 end
 
 local function set_endpoint(endpoint, opts)
-    checks('string', '?table')
+    utils.is_string(1, endpoint, false)
+    utils.is_table(2, opts, true)
     delete_route(_httpd, _endpoint)
     _endpoint = remove_side_slashes(endpoint)
     rawset(_G, '__GRAPHQLAPI_ENDPOINT', _endpoint)
@@ -365,7 +376,12 @@ local function _init()
 end
 
 local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
-    checks('table', '?table', '?string', '?string', '?table')
+    utils.is_table(1, httpd, false)
+    utils.is_table(2, http_middleware, true)
+    utils.is_string(3, endpoint, true)
+    utils.is_string(4, fragments_dir, true)
+    utils.is_table(5, opts, true)
+
 
     endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
     endpoint = endpoint or defaults.DEFAULT_ENDPOINT
@@ -410,7 +426,7 @@ local function reload()
 end
 
 local function set_fragments_dir(fragments_dir)
-    checks('string')
+    utils.is_string(1, fragments_dir, false)
     if fio.path.is_dir(fio.pathjoin(package.searchroot(), fragments_dir)) then
         _fragments_dir = fragments_dir
         rawset(_G, '__GRAPHQLAPI_MODELS_DIR', fragments_dir)

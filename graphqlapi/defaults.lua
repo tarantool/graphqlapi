@@ -21,6 +21,8 @@ local defaults = {
     REMOVE_RECURSIVE_MAX_DEPTH = 128,
     -- default name of field description key in format structure
     DEFAULT_DESCRIPTION_KEY = 'comment',
+    -- default graphql cache size
+    GRAPHQL_QUERY_CACHE_SIZE = 500,
 }
 
 return setmetatable({}, {

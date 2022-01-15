@@ -1,7 +1,10 @@
 local digest = require('digest')
+local errors = require('errors')
 local msgpack = require('msgpack')
 
 local defaults = require('graphqlapi.defaults')
+
+local e_argument_validation = errors.new_class('function argument validation error', { capture_stack = true, })
 
 local function value_in(val, arr)
     if not arr then return false end
@@ -260,6 +263,53 @@ local function count_map(t)
     return 0
 end
 
+local function is_nil(num, value)
+    if type(value) ~= 'nil' then
+        error(e_argument_validation:new('bad argument #%s (nil expected, got %s)', num, type(value)), 0)
+    end
+    return true
+end
+
+local function check_type(num, value, optional, variable_type)
+    if optional == true and value ~= nil and type(value) ~= variable_type then
+        error(e_argument_validation:new(
+            'bad argument #%s (%s or nil expected, got %s)',
+            num,
+            variable_type,
+            type(value)
+        ), 0)
+    end
+    if optional == false and type(value) ~= variable_type then
+        error(e_argument_validation:new(
+            'bad argument #%s (%s expected, got %s)',
+            num,
+            variable_type,
+            type(value)
+        ), 0)
+    end
+    return true
+end
+
+local function is_string(num, value, optional)
+    return check_type(num, value, optional, 'string')
+end
+
+local function is_boolean(num, value, optional)
+    return check_type(num, value, optional, 'boolean')
+end
+
+local function is_number(num, value, optional)
+    return check_type(num, value, optional, 'number')
+end
+
+local function is_function(num, value, optional)
+    return check_type(num, value, optional, 'function')
+end
+
+local function is_table(num, value, optional)
+    return check_type(num, value, optional, 'table')
+end
+
 return {
     value_in = value_in,
     diff_maps = diff_maps,
@@ -280,4 +330,10 @@ return {
     from_compat = from_compat,
     get_tnt_version = get_tnt_version,
     count_map = count_map,
+    is_nil = is_nil,
+    is_string = is_string,
+    is_boolean = is_boolean,
+    is_number = is_number,
+    is_function = is_function,
+    is_table = is_table,
 }

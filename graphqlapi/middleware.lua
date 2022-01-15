@@ -1,4 +1,4 @@
-local checks = require('checks')
+local utils = require('graphqlapi.utils')
 
 local function render_response(resp)
     return resp
@@ -9,7 +9,7 @@ local function request_wrapper(handler)
 end
 
 local function authorize_request(req) -- luacheck: no unused args
-    checks('table')
+    utils.is_table(1, req, false)
     return true
 end
 
