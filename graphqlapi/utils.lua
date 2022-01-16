@@ -310,6 +310,24 @@ local function is_table(num, value, optional)
     return check_type(num, value, optional, 'table')
 end
 
+local function is_table_or_string(num, value, optional)
+    if optional == true and value ~= nil and type(value) ~= 'table' and type(value) ~= 'string' then
+        error(e_argument_validation:new(
+            'bad argument #%s (table or string or nil expected, got %s)',
+            num,
+            type(value)
+        ), 0)
+    end
+    if optional == false and type(value) ~= 'table' and type(value) ~= 'string' then
+        error(e_argument_validation:new(
+            'bad argument #%s (table or string expected, got %s)',
+            num,
+            type(value)
+        ), 0)
+    end
+    return true
+end
+
 return {
     value_in = value_in,
     diff_maps = diff_maps,
@@ -336,4 +354,5 @@ return {
     is_number = is_number,
     is_function = is_function,
     is_table = is_table,
+    is_table_or_string = is_table_or_string,
 }

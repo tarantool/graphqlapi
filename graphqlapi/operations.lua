@@ -1,5 +1,3 @@
-local checks = require('checks')
-
 local cluster = require('graphqlapi.cluster')
 local defaults = require('graphqlapi.defaults')
 local funcall = require('graphqlapi.funcall')
@@ -48,12 +46,11 @@ local function is_schema_empty(schema)
 end
 
 local function add_queries_prefix(opts)
-    checks({
-        prefix = 'string',
-        type_name = '?string',
-        schema = '?string',
-        doc = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.type_name', opts.type_name, true)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.doc', opts.doc, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -101,10 +98,10 @@ local function is_query_prefix(query)
 end
 
 local function is_queries_prefix_exists(opts)
-    checks({
-        prefix = 'string',
-        schema = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.schema', opts.schema, true)
+
     opts.schema = utils.coerce_schema(opts.schema)
 
     for query in pairs(_queries[opts.schema] or {}) do
@@ -116,10 +113,9 @@ local function is_queries_prefix_exists(opts)
 end
 
 local function remove_queries_prefix(opts)
-    checks({
-        prefix = 'string',
-        schema = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.schema', opts.schema, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -144,12 +140,11 @@ local function remove_queries_prefix(opts)
 end
 
 local function add_mutations_prefix(opts)
-    checks({
-        prefix = 'string',
-        type_name = '?string',
-        schema = '?string',
-        doc = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.type_name', opts.type_name, true)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.doc', opts.doc, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -198,10 +193,10 @@ local function is_mutation_prefix(mutation)
 end
 
 local function is_mutations_prefix_exists(opts)
-    checks({
-        prefix = 'string',
-        schema = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.schema', opts.schema, true)
+
     opts.schema = utils.coerce_schema(opts.schema)
 
     for mutation in pairs(_mutations[opts.schema] or {}) do
@@ -213,10 +208,9 @@ local function is_mutations_prefix_exists(opts)
 end
 
 local function remove_mutations_prefix(opts)
-    checks({
-        prefix = 'string',
-        schema = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.prefix', opts.prefix, false)
+    utils.is_string('1.schema', opts.schema, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -240,16 +234,15 @@ local function remove_mutations_prefix(opts)
 end
 
 local function add_query(opts)
-    checks({
-        schema = '?string',
-        prefix = '?string',
-        name = 'string',
-        doc = '?string',
-        args = '?table',
-        interfaces = '?table',
-        kind = 'table|string',
-        callback = 'string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.doc', opts.doc, true)
+    utils.is_table('1.args', opts.args, true)
+    utils.is_table('1.interfaces', opts.interfaces, true)
+    utils.is_table_or_string('1.kind', opts.kind, false)
+    utils.is_string('1.callback', opts.callback, false)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -313,11 +306,10 @@ local function add_query(opts)
 end
 
 local function is_query_exists(opts)
-    checks({
-        name = 'string',
-        schema = '?string',
-        prefix = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -330,11 +322,10 @@ local function is_query_exists(opts)
 end
 
 local function remove_query(opts)
-    checks({
-        name = 'string',
-        schema = '?string',
-        prefix = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -384,15 +375,14 @@ local function queries_list(schema_name)
 end
 
 local function add_mutation(opts)
-    checks({
-        schema = '?string',
-        prefix = '?string',
-        name = 'string',
-        doc = '?string',
-        args = '?table',
-        kind = '?table|?string',
-        callback = 'string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.doc', opts.doc, true)
+    utils.is_table('1.args', opts.args, true)
+    utils.is_table_or_string('1.kind', opts.kind, true)
+    utils.is_string('1.callback', opts.callback, false)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -454,11 +444,10 @@ local function add_mutation(opts)
 end
 
 local function is_mutation_exists(opts)
-    checks({
-        name = 'string',
-        schema = '?string',
-        prefix = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -471,11 +460,10 @@ local function is_mutation_exists(opts)
 end
 
 local function remove_mutation(opts)
-    checks({
-        name = 'string',
-        schema = '?string',
-        prefix = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.name', opts.name, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -524,20 +512,19 @@ local function mutations_list(schema_name)
 end
 
 local function add_space_query(opts)
-    checks({
-        schema = '?string',
-        type_name = '?string',
-        description = '?string',
-        space = 'string',
-        fields = '?table',
-        prefix = '?string',
-        name = '?string',
-        doc = '?string',
-        args = '?table',
-        kind = '?table',
-        list = '?boolean',
-        callback = 'string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.type_name', opts.type_name, true)
+    utils.is_string('1.description', opts.description, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_table('1.fields', opts.fields, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.name', opts.name, true)
+    utils.is_string('1.doc', opts.doc, true)
+    utils.is_table('1.args', opts.args, true)
+    utils.is_table_or_string('1.kind', opts.kind, true)
+    utils.is_boolean('1.list', opts.list, true)
+    utils.is_string('1.callback', opts.callback, false)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _queries[opts.schema] = _queries[opts.schema] or {}
@@ -595,12 +582,11 @@ local function add_space_query(opts)
 end
 
 local function remove_space_query(opts)
-    checks({
-        schema = '?string',
-        prefix = '?string',
-        space = 'string',
-        name = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_string('1.name', opts.name, true)
 
     if opts.name == nil then
         local removed_types = {}
@@ -640,21 +626,20 @@ local function remove_space_query(opts)
 end
 
 local function add_space_mutation(opts)
-    checks({
-        schema = '?string',
-        type_name = '?string',
-        description = '?string',
-        space = 'string',
-        fields = '?table',
-        prefix = '?string',
-        name = '?string',
-        doc = '?string',
-        args = '?table',
-        args_ext = '?table',
-        kind = '?table|?string',
-        list = '?boolean',
-        callback = 'string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.type_name', opts.type_name, true)
+    utils.is_string('1.description', opts.description, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_table('1.fields', opts.fields, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.name', opts.name, true)
+    utils.is_string('1.doc', opts.doc, true)
+    utils.is_table('1.args', opts.args, true)
+    utils.is_table('1.args_ext', opts.args_ext, true)
+    utils.is_table_or_string('1.kind', opts.kind, true)
+    utils.is_boolean('1.list', opts.list, true)
+    utils.is_string('1.callback', opts.callback, false)
 
     opts.schema = utils.coerce_schema(opts.schema)
     _mutations[opts.schema] = _mutations[opts.schema] or {}
@@ -718,12 +703,11 @@ local function add_space_mutation(opts)
 end
 
 local function remove_space_mutation(opts)
-    checks({
-        schema = '?string',
-        prefix = '?string',
-        space = 'string',
-        name = '?string',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.prefix', opts.prefix, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_string('1.name', opts.name, true)
 
     if opts.name == nil then
         local removed_types = {}
@@ -767,9 +751,10 @@ local function remove_on_resolve_triggers()
 end
 
 local function remove_all(opts)
-    checks({
-        schema = '?string',
-    })
+    utils.is_table(1, opts, true)
+    if opts ~= nil then
+        utils.is_string('1.schema', opts.schema, true)
+    end
 
     if opts ~= nil then
         opts.schema = utils.coerce_schema(opts.schema)

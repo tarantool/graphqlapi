@@ -15,7 +15,6 @@ dependencies = {
     'luagraphqlparser == 0.1.0-1',
     'ddl ~> 1.5',
     'http == 1.1.0-1',
-    'checks ~> 3.1',
     'errors ~> 2.2',
     'vshard ~> 0.1',
 }
