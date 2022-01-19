@@ -72,6 +72,53 @@ package.preload['app.roles.storage'] = function()
     }
 end
 
+package.preload['graphqlide'] = function()
+    local ENDPOINTS = {}
+
+    local function get_endpoints()
+        return ENDPOINTS
+    end
+
+    local function remove_side_slashes(path)
+        if path:startswith('/') then
+            path = path:sub(2)
+        end
+        if path:endswith('/') then
+            path = path:sub(1, -2)
+        end
+        return path
+    end
+
+    local function set_endpoint(endpoint)
+        if endpoint.default == true then
+            for name in pairs(ENDPOINTS) do
+                ENDPOINTS[name].default = false
+            end
+        end
+
+        ENDPOINTS[endpoint.name] = {
+            path = remove_side_slashes(endpoint.path),
+            default = endpoint.default or false,
+            options = endpoint.options
+        }
+
+    end
+
+    local function remove_endpoint(name)
+        if ENDPOINTS[name] ~= nil then
+            ENDPOINTS[name] = nil
+            return true
+        end
+        return false
+    end
+
+    return {
+        get_endpoints = get_endpoints,
+        set_endpoint = set_endpoint,
+        remove_endpoint = remove_endpoint,
+    }
+end
+
 local ok, err = errors.pcall('CartridgeCfgError', cartridge.cfg, {
     roles = {
         'cartridge.roles.vshard-storage',

@@ -1,9 +1,9 @@
-local checks = require('checks')
 local errors = require('errors')
 local fiber = require('fiber')
 local log = require('log')
 
 local defaults = require('graphqlapi.defaults')
+local utils  =require('graphqlapi.utils')
 
 local e_schema_updater_fiber = errors.new_class('schema updater fiber error', { capture_stack = true, })
 local e_stop_trigger = errors.new_class('stop trigger error', { capture_stack = true, })
@@ -72,7 +72,9 @@ local function is_update_config_trigger_set(trigger)
 end
 
 local function on_update_config(trigger_new, trigger_old)
-    checks('?function', '?function')
+    utils.is_function(1, trigger_new, true)
+    utils.is_function(2, trigger_old, true)
+
     if trigger_old ~= nil then
         _on_update_config_triggers[trigger_old] = nil
     end
@@ -103,7 +105,8 @@ local function update_schema(message)
 end
 
 local function is_update_schema_trigger_set(trigger)
-    checks('function')
+    utils.is_function(1, trigger, false)
+
     for update_schema_trigger in pairs(_on_update_schema_triggers) do
         if update_schema_trigger == trigger then return true end
     end
@@ -111,7 +114,9 @@ local function is_update_schema_trigger_set(trigger)
 end
 
 local function on_update_schema(trigger_new, trigger_old)
-    checks('?function', '?function')
+    utils.is_function(1, trigger_new, true)
+    utils.is_function(2, trigger_old, true)
+
     if trigger_old ~= nil then
         _on_update_schema_triggers[trigger_old] = nil
     end
@@ -124,7 +129,8 @@ local function on_update_schema(trigger_new, trigger_old)
 end
 
 local function is_stop_trigger_set(trigger)
-    checks('function')
+    utils.is_function(1, trigger, false)
+
     for stop_trigger in pairs(_on_stop_triggers) do
         if stop_trigger == trigger then return true end
     end
@@ -132,7 +138,9 @@ local function is_stop_trigger_set(trigger)
 end
 
 local function on_stop(trigger_new, trigger_old)
-    checks('?function', '?function')
+    utils.is_function(1, trigger_new, true)
+    utils.is_function(2, trigger_old, true)
+
     if trigger_old ~= nil then
         _on_stop_triggers[trigger_old] = nil
     end
@@ -158,7 +166,11 @@ local function stop()
 end
 
 local function add_shared(schema, class, name, helper)
-    checks('string', 'string', 'string', 'string')
+    utils.is_string(1, schema, false)
+    utils.is_string(2, class, false)
+    utils.is_string(3, name, false)
+    utils.is_string(4, helper, false)
+
     _shared[schema] = _shared[schema] or {}
     _shared[schema][class] = _shared[schema][class] or {}
     _shared[schema][class][name] = _shared[schema][class][name] or {}
@@ -166,6 +178,10 @@ local function add_shared(schema, class, name, helper)
 end
 
 local function remove_shared(schema, class, name, helper)
+    utils.is_string(1, schema, false)
+    utils.is_string(2, class, true)
+    utils.is_string(3, name, true)
+    utils.is_string(4, helper, true)
     _shared[schema] = _shared[schema] or {}
     _shared[schema][class] = _shared[schema][class] or {}
     _shared[schema][class][name] = _shared[schema][class][name] or {}
@@ -173,7 +189,10 @@ local function remove_shared(schema, class, name, helper)
 end
 
 local function is_shared(schema, class, name, helper)
-    checks('string', 'string', 'string', 'string')
+    utils.is_string(1, schema, false)
+    utils.is_string(2, class, false)
+    utils.is_string(3, name, false)
+    utils.is_string(4, helper, false)
     _shared[schema] = _shared[schema] or {}
     _shared[schema][class] = _shared[schema][class] or {}
     _shared[schema][class][name] = _shared[schema][class][name] or {}
@@ -186,7 +205,8 @@ local function is_shared(schema, class, name, helper)
 end
 
 local function clean_shared(schema, class)
-    checks('string', '?string')
+    utils.is_string(1, schema, false)
+    utils.is_string(2, class, true)
     _shared[schema] = _shared[schema] or {}
     if class == nil then
         _shared[schema] = {}

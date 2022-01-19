@@ -15,7 +15,6 @@ dependencies = {
     'luagraphqlparser == 0.1.0-1',
     'ddl ~> 1.5',
     'http == 1.1.0-1',
-    'checks ~> 3.1',
     'errors ~> 2.2',
     'vshard ~> 0.1',
 }
@@ -37,6 +36,7 @@ build = {
         ['graphqlapi.graphql.validate'] = 'graphqlapi/graphql/validate.lua',
         ['graphqlapi.graphql.validate_variables'] = 'graphqlapi/graphql/validate_variables.lua',
         ['graphqlapi.helpers'] = 'graphqlapi/helpers.lua',
+        ['graphqlapi.list'] = 'graphqlapi/list.lua',
         ['graphqlapi.middleware'] = 'graphqlapi/middleware.lua',
         ['graphqlapi.fragments'] = 'graphqlapi/fragments.lua',
         ['graphqlapi.operations'] = 'graphqlapi/operations.lua',

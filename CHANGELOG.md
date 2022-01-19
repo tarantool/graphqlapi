@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `add utils.cache_get() and utils.cache_set() methods`
+- `add caching of graphql requests`
+- `add arguments check helpers`
+- `replace checks module to internal check helpers to increase performance`
+
 ## 0.0.6
 
 - `fix coercing default values on schema generation`

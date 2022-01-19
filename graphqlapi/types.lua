@@ -1,4 +1,3 @@
-local checks = require('checks')
 local errors = require('errors')
 local json = require('json')
 local log = require('log')
@@ -238,7 +237,8 @@ types.space_fields = function(space, required)
 end
 
 types.remove = function (type_name, schema)
-    checks('string', '?string')
+    utils.is_string(1, type_name, false)
+    utils.is_string(2, schema, true)
 
     schema = utils.coerce_schema(schema)
     graphql_types.get_env(schema)[type_name] = nil
@@ -391,7 +391,8 @@ types.get_non_leaf_types = function(t, type_list, depth, skip)
 end
 
 types.remove_recursive = function (type_name, schema)
-    checks('string', '?string')
+    utils.is_string(1, type_name, false)
+    utils.is_string(2, schema, true)
     schema = utils.coerce_schema(schema)
 
     local removed_types = {}
@@ -413,7 +414,8 @@ end
 -- 3: 'string' - remove in provided schema
 
 types.remove_types_by_space_name = function(space_name, schema)
-    checks('string', '?string|nil')
+    utils.is_string(1, space_name, false)
+    utils.is_string(2, schema, true)
     if utils.is_box_null(schema) then
         schema = utils.coerce_schema(schema)
     end
@@ -444,7 +446,8 @@ types.remove_types_by_space_name = function(space_name, schema)
 end
 
 types.remove_all = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
+
     if utils.is_box_null(schema) then
         schema = utils.coerce_schema(schema)
     end
@@ -472,14 +475,13 @@ types.remove_all = function(schema)
 end
 
 types.add_space_object = function(opts)
-    checks({
-        schema = '?string',
-        name = '?string',
-        description = '?string',
-        space = 'string',
-        fields = '?table',
-        interfaces = '?table',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.name', opts.name, true)
+    utils.is_string('1.description', opts.description, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_table('1.fields', opts.fields, true)
+    utils.is_table('1.interfaces', opts.interfaces, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
 
@@ -513,13 +515,12 @@ types.add_space_object = function(opts)
 end
 
 types.add_space_input_object = function(opts)
-    checks({
-        schema = '?string',
-        name = '?string',
-        description = '?string',
-        space = 'string',
-        fields = '?table',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.name', opts.name, true)
+    utils.is_string('1.description', opts.description, true)
+    utils.is_string('1.space', opts.space, false)
+    utils.is_table('1.fields', opts.fields, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
 
@@ -550,7 +551,7 @@ types.add_space_input_object = function(opts)
 end
 
 types.types_list = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
 
     schema = utils.coerce_schema(schema)
     local type_list = {}
@@ -561,31 +562,30 @@ types.types_list = function(schema)
 end
 
 types.add_directive = function(opts)
-    checks({
-        schema = '?string',
-        name = 'string',
-        description = '?string',
-        args = 'table',
-        onQuery = '?boolean',
-        onMutation = '?boolean',
-        onField = '?boolean',
-        onFragmentDefinition = '?boolean',
-        onFragmentSpread = '?boolean',
-        onInlineFragment = '?boolean',
-        onVariableDefinition = '?boolean',
-        onSchema = '?boolean',
-        onScalar = '?boolean',
-        onObject = '?boolean',
-        onFieldDefinition = '?boolean',
-        onArgumentDefinition = '?boolean',
-        onInterface = '?boolean',
-        onUnion = '?boolean',
-        onEnum = '?boolean',
-        onEnumValue = '?boolean',
-        onInputObject = '?boolean',
-        onInputFieldDefinition = '?boolean',
-        isRepeatable = '?boolean',
-    })
+    utils.is_table(1, opts, false)
+    utils.is_string('1.schema', opts.schema, true)
+    utils.is_string('1.name', opts.name, true)
+    utils.is_string('1.description', opts.description, true)
+    utils.is_table('1.args', opts.args, true)
+    utils.is_boolean('1.onQuery', opts.onQuery, true)
+    utils.is_boolean('1.onMutation', opts.onMutation, true)
+    utils.is_boolean('1.onField', opts.onField, true)
+    utils.is_boolean('1.onFragmentDefinition', opts.onFragmentDefinition, true)
+    utils.is_boolean('1.onFragmentSpread', opts.onFragmentSpread, true)
+    utils.is_boolean('1.onInlineFragment', opts.onInlineFragment, true)
+    utils.is_boolean('1.onVariableDefinition', opts.onVariableDefinition, true)
+    utils.is_boolean('1.onSchema', opts.onSchema, true)
+    utils.is_boolean('1.onScalar', opts.onScalar, true)
+    utils.is_boolean('1.onObject', opts.onObject, true)
+    utils.is_boolean('1.onFieldDefinition', opts.onFieldDefinition, true)
+    utils.is_boolean('1.onArgumentDefinition', opts.onArgumentDefinition, true)
+    utils.is_boolean('1.onInterface', opts.onInterface, true)
+    utils.is_boolean('1.onUnion', opts.onUnion, true)
+    utils.is_boolean('1.onEnum', opts.onEnum, true)
+    utils.is_boolean('1.onEnumValue', opts.onEnumValue, true)
+    utils.is_boolean('1.onInputObject', opts.onInputObject, true)
+    utils.is_boolean('1.onInputFieldDefinition', opts.onInputFieldDefinition, true)
+    utils.is_boolean('1.isRepeatable', opts.isRepeatable, true)
 
     opts.schema = utils.coerce_schema(opts.schema)
 
@@ -631,14 +631,16 @@ types.get_directives = function(schema)
 end
 
 types.is_directive_exists = function(name, schema)
-    checks('string', '?')
+    utils.is_string(1, name, false)
+    utils.is_string(2, schema, true)
+
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     return _directives[schema][name] ~= nil
 end
 
 types.directives_list = function(schema)
-    checks('?string')
+    utils.is_string(1, schema, true)
     schema = utils.coerce_schema(schema)
     local directives_list = {}
     for directive in pairs(_directives[schema] or {}) do
@@ -648,7 +650,8 @@ types.directives_list = function(schema)
 end
 
 types.remove_directive = function(name, schema)
-    checks('string', '?')
+    utils.is_string(1, name, false)
+    utils.is_string(2, schema, true)
     schema = utils.coerce_schema(schema)
     _directives[schema] = _directives[schema] or {}
     _directives[schema][name] = nil

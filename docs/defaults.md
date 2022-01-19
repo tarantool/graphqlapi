@@ -13,6 +13,7 @@
     - [MUTATIONS_PREFIX](#mutations_prefix)
     - [REMOVE_RECURSIVE_MAX_DEPTH](#remove_recursive_max_depth)
     - [DEFAULT_DESCRIPTION_KEY](#default_description_key)
+    - [GRAPHQL_QUERY_CACHE_SIZE](#graphql_query_cache_size)
 
 Submodule `defaults.lua` is a part of GraphQL API module provided a set of defaults.
 ## Defaults
@@ -60,3 +61,7 @@ Submodule `defaults.lua` is a part of GraphQL API module provided a set of defau
 ### DEFAULT_DESCRIPTION_KEY
 
 `DEFAULT_DESCRIPTION_KEY` - default key name of space field format with field description. Default: 'comment'.
+
+### GRAPHQL_QUERY_CACHE_SIZE
+
+`GRAPHQL_QUERY_CACHE_SIZE` - default number of cached requests for each schema.

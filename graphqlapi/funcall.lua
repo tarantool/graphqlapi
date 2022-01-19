@@ -1,11 +1,11 @@
-local checks = require('checks')
 local errors = require('errors')
 local fragments = require('graphqlapi.fragments')
+local utils = require('graphqlapi.utils')
 
 local e_funcall = errors.new_class("Funcall failed")
 
 local function call(function_name, ...)
-    checks('string')
+    utils.is_string(1, function_name, false)
 
     local parts = function_name:split('.')
 

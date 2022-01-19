@@ -1,4 +1,3 @@
-local checks = require('checks')
 local errors = require('errors')
 local fiber = require('fiber')
 local fio = require('fio')
@@ -52,7 +51,7 @@ local function assert_fragment(fragment)
 end
 
 local function load_fragment(filename)
-    checks('string')
+    utils.is_string(1, filename, false)
     local modules_before = list_modules()
     local fragment_function, err = e_fragment_load:pcall(loadfile, fio.pathjoin(package.searchroot(), filename))
     if fragment_function then
@@ -77,7 +76,7 @@ local function load_fragment(filename)
 end
 
 local function load_fragments(dir_name)
-    checks('string')
+    utils.is_string(1, dir_name, false)
     local files = {}
 
     local function scandir(directory)
@@ -137,7 +136,7 @@ local function update_space_fragments(space_name)
 end
 
 local function remove_fragment(filename)
-    checks('string')
+    utils.is_string(1, filename, false)
     if type(_fragments) == 'table' then
         local fragment = filename:match("^(.+)%.lua$")
         if fragment then
@@ -149,7 +148,7 @@ local function remove_fragment(filename)
 end
 
 local function remove_fragment_by_space_name(space_name)
-    checks('string')
+    utils.is_string(1, space_name, false)
     for key, fragment in pairs(_fragments) do
         for _,space in pairs(fragment.spaces) do
             if space == space_name then

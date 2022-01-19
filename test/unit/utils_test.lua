@@ -311,3 +311,92 @@ g.test_count_map = function()
         }
     ), 2)
 end
+
+g.test_is_nil = function()
+    t.assert_equals(utils.is_nil(1, nil), true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (nil expected, got string)', utils.is_nil, 2, 'string', false)
+end
+
+g.test_is_string = function()
+    t.assert_equals(utils.is_string(1, 'string'), true)
+    t.assert_equals(utils.is_string(2, 'string', true), true)
+    t.assert_equals(utils.is_string(3, 'string', false), true)
+    t.assert_equals(utils.is_string(4, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (string or nil expected, got number)', utils.is_string, 1, 1, true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (string expected, got number)', utils.is_string, 2, 1, false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (string expected, got nil)', utils.is_string, 3, nil, false)
+end
+
+g.test_is_boolean = function()
+    t.assert_equals(utils.is_boolean(1, true), true)
+    t.assert_equals(utils.is_boolean(2, false), true)
+    t.assert_equals(utils.is_boolean(3, true, true), true)
+    t.assert_equals(utils.is_boolean(4, false, true), true)
+    t.assert_equals(utils.is_boolean(5, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (boolean or nil expected, got number)', utils.is_boolean, 1, 1, true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (boolean expected, got number)', utils.is_boolean, 2, 1, false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (boolean expected, got nil)', utils.is_boolean, 3, nil, false)
+end
+
+g.test_is_number = function()
+    t.assert_equals(utils.is_number(1, 1), true)
+    t.assert_equals(utils.is_number(2, 1, true), true)
+    t.assert_equals(utils.is_number(3, 1, false), true)
+    t.assert_equals(utils.is_number(4, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (number or nil expected, got string)', utils.is_number, 1, '1', true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (number expected, got string)', utils.is_number, 2, '1', false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (number expected, got nil)', utils.is_number, 3, nil, false)
+end
+
+g.test_is_function = function()
+    local func = function() end
+    t.assert_equals(utils.is_function(1, func), true)
+    t.assert_equals(utils.is_function(2, func, true), true)
+    t.assert_equals(utils.is_function(3, func, false), true)
+    t.assert_equals(utils.is_function(4, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (function or nil expected, got number)', utils.is_function, 1, 1, true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (function expected, got number)', utils.is_function, 2, 1, false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (function expected, got nil)', utils.is_function, 3, nil, false)
+end
+
+g.test_is_table = function()
+    t.assert_equals(utils.is_table(1, {}), true)
+    t.assert_equals(utils.is_table(2 ,{}, true), true)
+    t.assert_equals(utils.is_table(3, {}, false), true)
+    t.assert_equals(utils.is_table(4, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (table or nil expected, got number)', utils.is_table, 1, 1, true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (table expected, got number)', utils.is_table, 2, 1, false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (table expected, got nil)', utils.is_table, 3, nil, false)
+end
+
+g.test_is_table_or_string = function()
+    t.assert_equals(utils.is_table_or_string(1, {}), true)
+    t.assert_equals(utils.is_table_or_string(2, {}, true), true)
+    t.assert_equals(utils.is_table_or_string(3, 'string'), true)
+    t.assert_equals(utils.is_table_or_string(4, 'string', true), true)
+    t.assert_equals(utils.is_table_or_string(5, {}, false), true)
+    t.assert_equals(utils.is_table_or_string(6, 'string', false), true)
+    t.assert_equals(utils.is_table_or_string(7, nil, true), true)
+    t.assert_error_msg_contains(
+        'bad argument #1 (table or string or nil expected, got number)', utils.is_table_or_string, 1, 1, true)
+    t.assert_error_msg_contains(
+        'bad argument #2 (table or string expected, got number)', utils.is_table_or_string, 2, 1, false)
+    t.assert_error_msg_contains(
+        'bad argument #3 (table or string expected, got nil)', utils.is_table_or_string, 3, nil, false)
+end
