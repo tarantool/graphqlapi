@@ -36,6 +36,7 @@ build = {
         ['graphqlapi.graphql.validate'] = 'graphqlapi/graphql/validate.lua',
         ['graphqlapi.graphql.validate_variables'] = 'graphqlapi/graphql/validate_variables.lua',
         ['graphqlapi.helpers'] = 'graphqlapi/helpers.lua',
+        ['graphqlapi.list'] = 'graphqlapi/list.lua',
         ['graphqlapi.middleware'] = 'graphqlapi/middleware.lua',
         ['graphqlapi.fragments'] = 'graphqlapi/fragments.lua',
         ['graphqlapi.operations'] = 'graphqlapi/operations.lua',
