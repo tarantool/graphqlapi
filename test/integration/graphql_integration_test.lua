@@ -1394,7 +1394,7 @@ function g.test_specifiedByUrl_scalar_field()
         isValueOfTheType = function(_)
             return true
         end,
-        specifiedByUrl = 'http://localhost',
+        specifiedByURL = 'http://localhost',
     })
 
     local query_schema = {
@@ -1410,7 +1410,7 @@ function g.test_specifiedByUrl_scalar_field()
     local data, errors = check_request(introspection.query, query_schema)
     local CustomInt_schema = util.find_by_name(data.__schema.types, 'CustomInt')
     t.assert_type(CustomInt_schema, 'table', 'CustomInt schema found on introspection')
-    t.assert_equals(CustomInt_schema.specifiedByUrl, 'http://localhost')
+    t.assert_equals(CustomInt_schema.specifiedByURL, 'http://localhost')
     t.assert_equals(errors, nil)
 end
 
@@ -1594,4 +1594,22 @@ function g.test_arguments_default_values()
 
     local nested_enum_arg_defaults = util.find_by_name(test_input_object.inputFields, 'nested_enum_arg_defaults')
     t.assert_equals(nested_enum_arg_defaults.defaultValue, 'write')
+end
+
+function g.test_specifiedByURL_long_scalar()
+    local query_schema = {
+        ['test'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                arg = types.long,
+            },
+            resolve = '',
+        }
+    }
+
+    local data, errors = check_request(introspection.query, query_schema)
+    local long_type_schema = util.find_by_name(data.__schema.types, 'Long')
+    t.assert_type(long_type_schema, 'table', 'Long scalar type found on introspection')
+    t.assert_equals(long_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Long')
+    t.assert_equals(errors, nil)
 end
