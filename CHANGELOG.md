@@ -6,6 +6,7 @@
 - `add caching of graphql requests`
 - `add arguments check helpers`
 - `replace checks module to internal check helpers to increase performance`
+- `add specifiedByURL for custom GraphQL scalars`
 
 ## 0.0.6
 
