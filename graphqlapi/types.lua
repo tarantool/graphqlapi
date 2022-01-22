@@ -96,6 +96,7 @@ end
 types.double = types.scalar({
     name = 'Double',
     description = 'The `Double` scalar according to IEEE Standard for Floating-Point Arithmetic (IEEE 754)',
+    specifiedByURL = 'https://github.com/tarantool/graphqlapi/wiki/Double',
     serialize = tonumber,
     parseValue = tonumber,
     parseLiteral = function(node)
@@ -127,6 +128,7 @@ local scalar_kind_to_parse = {
 types.any = types.scalar({
     name = 'Any',
     description = 'The `Any` scalar type to represent any type except array or map',
+    specifiedByURL = 'https://github.com/tarantool/graphqlapi/wiki/Any',
     serialize = function(value)
         if type(value) == 'table' then
             error(type(value)..' is not a scalar kind', 0)
@@ -152,6 +154,7 @@ types.any = types.scalar({
 types.map = types.scalar{
     name = 'Map',
     description = 'Type to process any data in JSON format',
+    specifiedByURL = 'https://github.com/tarantool/graphqlapi/wiki/Map',
     serialize = function(value)
         return json.encode(value)
     end,
