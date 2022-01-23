@@ -10,6 +10,7 @@ local validate = require('graphqlapi.graphql.validate')
 local t = require('luatest')
 local g = t.group('graphql_integration')
 
+local test_schema_name = 'default'
 local function check_request(query, query_schema, mutation_schema, directives, opts)
     opts = opts or {}
     local root = {
@@ -24,7 +25,7 @@ local function check_request(query, query_schema, mutation_schema, directives, o
         directives = directives,
     }
 
-    local compiled_schema = schema.create(root, 'default')
+    local compiled_schema = schema.create(root, test_schema_name)
 
     local parsed = parse.parse(query)
 
@@ -1302,21 +1303,14 @@ function g.test_introspection()
 end
 
 function g.test_custom_directives()
+    -- simple string directive
     local function callback(_, _, info)
         return require('json').encode(info.directives)
     end
 
-    local query = [[query TEST($arg: String){
-        prefix {
-            test_A: test(arg: "A")@custom(arg: "a")
-            test_B: test(arg: "B")@custom(arg: $arg)
-        }
-    }]]
-
     local query_schema = {
         ['prefix'] = {
-            kind = {
-                __type = 'Object',
+            kind = types.object({
                 name = 'prefix',
                 fields = {
                     ['test'] = {
@@ -1330,7 +1324,7 @@ function g.test_custom_directives()
                         resolve = callback,
                     }
                 },
-            },
+            }),
             arguments = {},
             resolve = function()
                 return {}
@@ -1366,13 +1360,112 @@ function g.test_custom_directives()
         })
     }
 
-    local data, errors = check_request(query, query_schema, nil, directives,
-        {variables = {arg = 'echo'}})
-    t.assert_equals(data, { prefix = {
-            test_A = "{\"custom\":{\"arg\":\"a\"}}",
-            test_B = "{\"custom\":{\"arg\":\"echo\"}}"
+    local simple_query = [[query TEST{
+        prefix {
+            test_A: test(arg: "A")@custom(arg: "a")
         }
+    }]]
+    local data, errors = check_request(simple_query, query_schema, nil, directives)
+    t.assert_equals(data, { prefix = { test_A = '{"custom":{"arg":"a"}}' }})
+    t.assert_equals(errors, nil)
+
+    local var_query = [[query TEST($arg: String){
+        prefix {
+            test_B: test(arg: "B")@custom(arg: $arg)
+        }
+    }]]
+    data, errors = check_request(var_query, query_schema, nil, directives,
+        {variables = {arg = 'echo'}})
+    t.assert_equals(data, { prefix = { test_B = '{"custom":{"arg":"echo"}}' }})
+    t.assert_equals(errors, nil)
+
+    -- InputObject directives
+    local Entity = types.inputObject({
+        name = 'Entity',
+        fields = {
+            num = types.int,
+            str = types.string,
+        },
+        schema = test_schema_name, -- add type to schema registry so it may be called by name
     })
+
+    local function callback(_, args, info)
+        local obj = args['arg']
+        local dir = info.directives
+
+        if dir ~= nil then
+            local override = dir.override_v2 or dir.override or {}
+            for k, v in pairs(override['arg']) do
+                obj[k] = v
+            end
+        end
+
+        return require('json').encode(obj)
+    end
+
+    query_schema = {
+        ['test'] = {
+            kind = types.string,
+            arguments = {
+                arg = Entity,
+            },
+            resolve = callback,
+        }
+    }
+
+    directives = {
+        types.directive({
+            name = 'override',
+            arguments = {
+                arg = Entity,
+            },
+            onInputObject = true,
+        })
+    }
+
+    local query = [[query TEST{
+        test_C: test(arg: { num: 2, str: "s" })@override(arg: { num: 3, str: "s1" })
+        test_D: test(arg: { num: 2, str: "s" })@override(arg: { num: 3 })
+        test_E: test(arg: { num: 2, str: "s" })@override(arg: { str: "s1" })
+        test_F: test(arg: { num: 2, str: "s" })@override(arg: { })
+    }]]
+    data, errors = check_request(query, query_schema, nil, directives)
+    t.assert_equals(data, {
+        test_C = '{"num":3,"str":"s1"}',
+        test_D = '{"num":3,"str":"s"}',
+        test_E = '{"num":2,"str":"s1"}',
+        test_F = '{"num":2,"str":"s"}',
+    })
+    t.assert_equals(errors, nil)
+
+    -- Check internal type resolver
+    directives = {
+        types.directive({
+            name = 'override_v2',
+            arguments = {
+                arg = 'Entity', -- refer to type by name
+            },
+            onInputObject = true,
+        })
+    }
+
+    query = [[query TEST{
+        test_G: test(arg: { num: 2, str: "s" })@override_v2(arg: { num: 5, str: "news" })
+    }]]
+
+    data, errors = check_request(query, query_schema, nil, directives)
+    t.assert_equals(data, { test_G = '{"num":5,"str":"news"}' })
+    t.assert_equals(errors, nil)
+
+    -- check custom directives with variables
+    local variables = {num = 33}
+
+    query = [[query TEST($num: Int, $str: String = "variable") {
+        test_G: test(arg: { num: 2, str: "s" })@override_v2(arg: { num: $num, str: $str })
+    }]]
+
+    data, errors = check_request(query, query_schema, nil, directives, {variables = variables})
+    t.assert_equals(data, { test_G = '{"num":33,"str":"variable"}' })
     t.assert_equals(errors, nil)
 end
 
