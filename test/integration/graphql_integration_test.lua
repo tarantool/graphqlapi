@@ -6,6 +6,7 @@ local schema = require('graphqlapi.graphql.schema')
 local types = require('graphqlapi.graphql.types')
 local util = require('graphqlapi.graphql.util')
 local validate = require('graphqlapi.graphql.validate')
+local graphqlapi_types = require('graphqlapi.types')
 
 local t = require('luatest')
 local g = t.group('graphql_integration')
@@ -1702,7 +1703,64 @@ function g.test_specifiedByURL_long_scalar()
 
     local data, errors = check_request(introspection.query, query_schema)
     local long_type_schema = util.find_by_name(data.__schema.types, 'Long')
-    t.assert_type(long_type_schema, 'table', 'Long scalar type found on introspection')
+    t.assert_type(long_type_schema, 'table', 'Long scalar type not found on introspection')
     t.assert_equals(long_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Long')
+    t.assert_equals(errors, nil)
+end
+
+function g.test_specifiedByURL_double_scalar()
+    local query_schema = {
+        ['test'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                arg = graphqlapi_types.double,
+            },
+            resolve = '',
+        }
+    }
+
+    local data, errors = check_request(introspection.query, query_schema)
+
+    local double_type_schema = util.find_by_name(data.__schema.types, 'Double')
+    t.assert_type(double_type_schema, 'table', 'Double scalar type not found on introspection')
+    t.assert_equals(double_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Double')
+    t.assert_equals(errors, nil)
+end
+
+function g.test_specifiedByURL_any_scalar()
+    local query_schema = {
+        ['test'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                arg = graphqlapi_types.any,
+            },
+            resolve = '',
+        }
+    }
+
+    local data, errors = check_request(introspection.query, query_schema)
+
+    local any_type_schema = util.find_by_name(data.__schema.types, 'Any')
+    t.assert_type(any_type_schema, 'table', 'Any scalar type not found on introspection')
+    t.assert_equals(any_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Any')
+    t.assert_equals(errors, nil)
+end
+
+function g.test_specifiedByURL_map_scalar()
+    local query_schema = {
+        ['test'] = {
+            kind = types.string.nonNull,
+            arguments = {
+                arg = graphqlapi_types.map,
+            },
+            resolve = '',
+        }
+    }
+
+    local data, errors = check_request(introspection.query, query_schema)
+
+    local map_type_schema = util.find_by_name(data.__schema.types, 'Map')
+    t.assert_type(map_type_schema, 'table', 'Map scalar type not found on introspection')
+    t.assert_equals(map_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Map')
     t.assert_equals(errors, nil)
 end
