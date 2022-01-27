@@ -7,6 +7,7 @@
 - `add arguments check helpers`
 - `replace checks module to internal check helpers to increase performance`
 - `add specifiedByURL for custom GraphQL scalars`
+- `add propagation of defaultValues and directivesDefaultValues to callback`
 
 ## 0.0.6
 
