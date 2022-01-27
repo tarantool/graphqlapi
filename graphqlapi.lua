@@ -116,7 +116,11 @@ local function get_schema(schema_name)
         root.mutation = types.object({name = 'Mutation', fields=mutations, schema = schema_name, })
     end
 
-    _graphql_schema[schema_name] = schema.create(root, schema_name)
+    _graphql_schema[schema_name] = schema.create(
+        root,
+        schema_name,
+        { defaultValues = true, directivesDefaultValues = true, }
+    )
 
     return _graphql_schema[schema_name]
 end
