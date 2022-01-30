@@ -2,9 +2,9 @@
 
 This Example shows simple and quite easy way of howto use set of modules in application:
 
-- [Tarantool GraphQLIDE 0.0.17+](https://github.com/tarantool/graphqlide)
-- [Tarantool GraphQLAPI 0.0.6+](https://github.com/tarantool/graphqlapi)
-- [Tarantool GraphQLAPI Helpers 0.0.6+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
+- [Tarantool GraphQLIDE 0.0.18+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLAPI 0.0.7+](https://github.com/tarantool/graphqlapi)
+- [Tarantool GraphQLAPI Helpers 0.0.7+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
 ## Quick start
 

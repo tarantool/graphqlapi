@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.7
 
 - `add utils.cache_get() and utils.cache_set() methods`
 - `add caching of graphql requests`
