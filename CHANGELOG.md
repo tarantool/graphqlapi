@@ -8,6 +8,9 @@
 - `replace checks module to internal check helpers to increase performance`
 - `add specifiedByURL for custom GraphQL scalars`
 - `add propagation of defaultValues and directivesDefaultValues to callback`
+- `update luatest@0.5.6 to luatest@0.5.7`
+- `make requirements compatible with Cartridge 2.6.0+`
+- `speedup CI`
 
 ## 0.0.6
 

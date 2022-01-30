@@ -29,7 +29,7 @@ jobs:
           echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
           tarantoolctl rocks new_version --tag $TAG
           sed -i "s/local VERSION = 'scm-1'/local VERSION = '"$TAG"-1'/g" graphqlapi.lua
-          tarantoolctl rocks install graphqlapi-$TAG-1.rockspec
+          tarantoolctl rocks make graphqlapi-$TAG-1.rockspec
           tarantoolctl rocks pack graphqlapi
 
       - uses: tarantool/rocks.tarantool.org/github-action@master
