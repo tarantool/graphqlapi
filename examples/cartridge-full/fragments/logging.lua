@@ -23,14 +23,18 @@ local function log_request(operation_type, operation_schema, operation_prefix, o
              "\tprefix: %s\n"..
              "\toperation name: %s\n"..
              "\targuments: %s\n"..
-             "\tdirectives: %s\n",
+             "\targuments defaults: %s\n"..
+             "\tdirectives: %s\n"..
+             "\tdirectives defaults: %s\n",
         tostring(user or 'unknown'),
         operation_type,
         tostring(operation_schema),
         tostring(operation_prefix),
         operation_name,
         json.encode(arguments, json_options),
-        json.encode(info.directives, json_options)
+        json.encode(info.defaultValues, json_options),
+        json.encode(info.directives, json_options),
+        json.encode(info.directivesDefaultValues, json_options)
     )
 end
 
