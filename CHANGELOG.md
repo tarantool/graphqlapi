@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.8
+
+- `update examples dependencies: graphqlide@0.0.18 ->  graphqlide@0.0.19, graphqlapi@0.0.7 -> graphqlapi@0.0.8, graphqlapi-helpers@0.0.7 -> graphqlapi-helpers@0.0.8`
+
 ## 0.0.7
 
 - `add utils.cache_get() and utils.cache_set() methods`
