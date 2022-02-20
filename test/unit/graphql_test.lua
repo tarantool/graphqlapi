@@ -1105,3 +1105,18 @@ end
 function g.test_get_type_name_error()
     t.assert_error_msg_equals('Internal error: unknown type:\n--- []\n...\n', util.getTypeName, {})
 end
+
+function g.test_is_array()
+    t.assert_equals(util.is_array({[3] = 'a', [1] = 'b', [6] = 'c'}), true)
+    t.assert_equals(util.is_array({[3] = 'a', [1] = 'b', [7] = 'c'}), true)
+    t.assert_equals(util.is_array({[3] = 'a', nil, [6] = 'c'}), true)
+    t.assert_equals(util.is_array({[3] = 'a', nil, [7] = 'c'}), true)
+    t.assert_equals(util.is_array({[0] = 'a', [1] = 'b', [6] = 'c'}), true)
+    t.assert_equals(util.is_array({[-1] = 'a', [1] = 'b', [6] = 'c'}), true)
+    t.assert_equals(util.is_array({[3] = 'a', b = 'b', [6] = 'c'}), false)
+    t.assert_equals(util.is_array({}), true)
+    t.assert_equals(util.is_array(), false)
+    t.assert_equals(util.is_array(''), false)
+    t.assert_equals(util.is_array({a = 'a', b = 'b', c = 'c'}), false)
+    t.assert_equals(util.is_array({a = 'a', nil, c = 'c'}), false)
+end
