@@ -216,15 +216,20 @@ end
 -- Check whether table is an array.
 local function is_array(t)
   if type(t) ~= 'table' then
-    return false
+     return false
   end
-
+  local n = #t
+  if n > 0 then
+     for k in next, t, n do
+        if type(k) ~= 'number' then return false end
+     end
+     return true
+  end
   for k in pairs(t) do
-    if type(k)~= 'number' then
+     if type(k) ~= 'number' then
         return false
-    end
+     end
   end
-
   return true
 end
 
