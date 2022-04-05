@@ -1732,25 +1732,6 @@ function g.test_specifiedByURL_long_scalar()
     t.assert_equals(errors, nil)
 end
 
-function g.test_specifiedByURL_double_scalar()
-    local query_schema = {
-        ['test'] = {
-            kind = types.string.nonNull,
-            arguments = {
-                arg = graphqlapi_types.double,
-            },
-            resolve = '',
-        }
-    }
-
-    local data, errors = check_request(introspection.query, query_schema)
-
-    local double_type_schema = util.find_by_name(data.__schema.types, 'Double')
-    t.assert_type(double_type_schema, 'table', 'Double scalar type not found on introspection')
-    t.assert_equals(double_type_schema.specifiedByURL, 'https://github.com/tarantool/graphqlapi/wiki/Double')
-    t.assert_equals(errors, nil)
-end
-
 function g.test_specifiedByURL_any_scalar()
     local query_schema = {
         ['test'] = {

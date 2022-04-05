@@ -93,30 +93,12 @@ types.union = function(config)
     return instance
 end
 
-types.double = types.scalar({
-    name = 'Double',
-    description = 'The `Double` scalar according to IEEE Standard for Floating-Point Arithmetic (IEEE 754)',
-    specifiedByURL = 'https://github.com/tarantool/graphqlapi/wiki/Double',
-    serialize = tonumber,
-    parseValue = tonumber,
-    parseLiteral = function(node)
-      -- 'float' and 'int' are names of immediate value types
-      if node.kind == 'float' or node.kind == 'int' then
-        return tonumber(node.value)
-      end
-    end,
-    isValueOfTheType = function(value)
-      return type(value) == 'number'
-    end,
-})
-
 local function parseNullLiteral(_)
     return box.NULL
 end
 
 local scalar_kind_to_parse = {
     boolean = types.boolean.parseLiteral,
-    double = types.double.parseLiteral,
     float = types.float.parseLiteral,
     int = types.long.parseLiteral,
     long = types.long.parseLiteral,
@@ -184,7 +166,7 @@ types.mapper = setmetatable({
     ['array'] = { ['type'] = types.list(types.any), name = 'List', },
     ['boolean'] = { ['type'] = types.boolean, name = 'Boolean', },
     ['decimal'] = { ['type'] = types.long, name = 'Long', },
-    ['double'] = { ['type'] = types.double, name = 'Double', },
+    ['double'] = { ['type'] = types.float, name = 'Float', },
     ['integer'] = { ['type'] = types.long, name = 'Long', },
     ['map'] = { ['type'] = types.map, name = 'Map', },
     ['number'] = { ['type'] = types.float, name = 'Float', },

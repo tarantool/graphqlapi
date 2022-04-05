@@ -18,7 +18,6 @@
     - [inputObject()](#inputobject)
     - [interface()](#interface)
     - [union()](#union)
-    - [double](#double)
     - [any](#any)
     - [map](#map)
     - [mapper](#mapper)
@@ -375,10 +374,6 @@ returns:
   - `name` (`string`) - union name;
   - `types` (`table`) - list of any valid GraphQL types.
 
-### double
-
-`types.double` - is a custom GraphQL scalar represents signed double-precision finite values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
-
 ### any
 
 `types.any` - custom GraphQL scalar type represents any of the following scalars:
@@ -406,7 +401,7 @@ returns:
         ['array'] = { ['type'] = types.list(types.any), name = 'List', },
         ['boolean'] = { ['type'] = types.boolean, name = 'Boolean', },
         ['decimal'] = { ['type'] = types.long, name = 'Long', },
-        ['double'] = { ['type'] = types.double, name = 'Double', },
+        ['double'] = { ['type'] = types.float, name = 'Float', },
         ['integer'] = { ['type'] = types.long, name = 'Long', },
         ['map'] = { ['type'] = types.map, name = 'Map', },
         ['number'] = { ['type'] = types.float, name = 'Float', },

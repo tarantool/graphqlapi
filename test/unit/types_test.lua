@@ -138,25 +138,6 @@ g.test_union = function()
     t.assert_str_contains(err, 'union "CatOrDog" already exists in schema: "Default"')
 end
 
-g.test_double = function()
-    local double = types.double
-    t.assert_equals(double.__type, 'Scalar')
-    t.assert_equals(double.name, 'Double')
-    local double_test_suite = {
-        {'int', '123', 123, }, {'int', '-123', -123, }, {'float', '0.0', 0.0},
-        {'float', '-0.0', -0.0}, {'float', '12.34', 12.34}, {'float', '1e0', 1e0},
-        {'float', '1e3', 1e3}, {'float', '1.0e3', 1.0e3}, {'float', '1.0e+3', 1.0e+3},
-        {'float', '1.0e-3', 1.0e-3}, {'float', '1.00e-30', 1.00e-30},
-    }
-
-    for _, ts in pairs(double_test_suite) do
-        t.assert_equals(double.serialize(ts[2]), ts[3])
-        t.assert_equals(double.parseValue(ts[2]), ts[3])
-        t.assert_equals(double.parseLiteral({kind = ts[1], value = ts[2]}), ts[3])
-        t.assert_equals(double.isValueOfTheType(ts[3]), true)
-    end
-end
-
 g.test_any = function()
     local any = types.any
     t.assert_equals(any.__type, 'Scalar')
@@ -533,7 +514,7 @@ g.test_get_non_leaf_types = function()
                                 name = 'alsoComplicated',
                                 fields = {
                                     x = types.string,
-                                    y = types.double,
+                                    y = types.float, -- //
                                 },
                                 arguments = {
                                     dogCommand = dogCommand.nonNull,
@@ -843,7 +824,7 @@ g.test_remove_recursive = function()
                                 name = 'alsoComplicated',
                                 fields = {
                                     x = types.string,
-                                    y = types.double,
+                                    y = types.float, -- //
                                 }
                             })
                         },
