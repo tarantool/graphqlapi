@@ -2032,3 +2032,98 @@ g.test_propagate_defaults_to_callback = function()
     t.assert_equals(errors, nil)
     t.assert_items_equals(json.decode(data.prefix.test_mutation), result)
 end
+
+g.test_cdata_number_as_float = function()
+     local query = [[
+        query ($x: Float!) { test(arg: $x) }
+    ]]
+
+    local function callback(_, args)
+        return args[1].value
+    end
+
+    local query_schema = {
+        ['test'] = {
+            kind = types.float.nonNull,
+            arguments = {
+                arg = types.float.nonNull,
+            },
+            resolve = callback,
+        }
+    }
+
+    -- 2^64-1
+    local variables = {x = 18446744073709551615ULL}
+    local res = check_request(query, query_schema, nil, nil, {variables = variables})
+    t.assert_type(res, 'table')
+    t.assert_almost_equals(res.test, 18446744073709551615)
+end
+
+-- Accept a large number in a Float argument.
+--
+-- The test is created in the scope of gh-47, but it is not
+-- strictly related to it: the issue is about interpreting
+-- a cdata number in a **variable** as a `Float` value.
+--
+-- Here we check a large number, which is written verbatim as
+-- an argument in a query. Despite that it is not what is
+-- described in gh-47, it worth to have such a test.
+g.test_large_float_argument = function()
+    -- 2^64-1
+     local query = [[
+        { test(arg: 18446744073709551615) }
+    ]]
+
+    local function callback(_, args)
+        return args[1].value
+    end
+
+    local query_schema = {
+        ['test'] = {
+            kind = types.float.nonNull,
+            arguments = {
+                arg = types.float.nonNull,
+            },
+            resolve = callback,
+        }
+    }
+
+    local res = check_request(query, query_schema)
+    t.assert_type(res, 'table')
+    t.assert_almost_equals(res.test, 18446744073709551615)
+end
+
+-- http://spec.graphql.org/October2021/#sec-Float
+--
+-- > Non-finite floating-point internal values (NaN and Infinity) cannot be
+-- > coerced to Float and must raise a field error.
+function g.test_non_finite_float()
+    local query = [[
+       query ($x: Float!) { test(arg: $x) }
+   ]]
+
+   local function callback(_, args)
+       return args[1].value
+   end
+
+   local query_schema = {
+       ['test'] = {
+           kind = types.float.nonNull,
+           arguments = {
+               arg = types.float.nonNull,
+           },
+           resolve = callback,
+       }
+   }
+
+   local nan = 0 / 0
+   local inf = 1 / 0
+   local ninf = -inf
+
+   for _, x in pairs({nan, inf, ninf}) do
+       local variables = {x = x}
+       t.assert_error_msg_content_equals(
+           'Wrong variable "x" for the Scalar "Float"', check_request, query,
+           query_schema, nil, nil, {variables = variables})
+   end
+end
