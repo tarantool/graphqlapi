@@ -18,8 +18,8 @@ __pycache__
 *.deb
 *.tar.gz
 node_modules
-/tmp/*
-!/tmp/.keep
+tmp/*
+!tmp/.keep
 .history
 .vscode
 build.luarocks/
