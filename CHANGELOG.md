@@ -6,6 +6,7 @@
 - `Accept a cdata number as value of a Float variable and forbid NaN and Inf`
 - `Fix coerce scalar list variables`
 - `Fix returning gapped arrays`
+- `Fix silently cast huge cdata numbers to null`
 
 ## 0.0.8
 
