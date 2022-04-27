@@ -289,7 +289,8 @@ local function isLong(value)
     if ffi.istype('int64_t', value) then
       return true
     elseif ffi.istype('uint64_t', value) then
-      return value < 2^63
+      -- return value < 2^63
+      return true
     end
   end
 
@@ -299,7 +300,7 @@ end
 local function coerceLong(value)
   if value ~= nil then
     value = tonumber64(value)
-    if not isLong(value) then return end
+    --if not isLong(value) then return end
   end
 
   return value
