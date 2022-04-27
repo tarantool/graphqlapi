@@ -226,12 +226,12 @@ local function is_array(t)
   local n = #t
   if n > 0 then
      for k in next, t, n do
-        if type(k) ~= 'number' then return false end
+        if type(k) ~= 'number' or k < 0 then return false end
      end
      return true
   end
   for k in pairs(t) do
-     if type(k) ~= 'number' then
+     if type(k) ~= 'number' or k < 0 then
         return false
      end
   end

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `Fix is_array() not working properly`
+- `Accept a cdata number as value of a Float variable and forbid NaN and Inf`
+- `Fix coerce scalar list variables`
+- `Fix returning gapped arrays`
+
 ## 0.0.8
 
 - `update examples dependencies: graphqlide@0.0.18 ->  graphqlide@0.0.19, graphqlapi@0.0.7 -> graphqlapi@0.0.8, graphqlapi-helpers@0.0.7 -> graphqlapi-helpers@0.0.8`

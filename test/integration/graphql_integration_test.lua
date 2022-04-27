@@ -2108,3 +2108,36 @@ function g.test_non_finite_float()
            query_schema, nil, nil, {variables = variables})
    end
 end
+
+function g.test_gapped_arrays_output()
+    local query = [[
+        query ($x: [String]) { test(arg: $x) }
+    ]]
+
+    local function callback(_, args)
+        setmetatable(args.arg, {__serialize='array'})
+        return args.arg
+    end
+
+    local query_schema = {
+        ['test'] = {
+            kind = types.list(types.string),
+            arguments = {
+                arg = types.list(types.string),
+            },
+            resolve = callback,
+        }
+    }
+
+    local test_values = {
+        {[3] = 'a', [1] = 'b', [6] = 'c'},
+        {[3] = 'a', [1] = 'b', [7] = 'c'},
+    }
+
+    for _, v in ipairs(test_values) do
+        local variables = {x = v}
+        local res = check_request(query, query_schema, nil, nil, {variables = variables})
+        t.assert_type(res, 'table')
+        t.assert_equals(json.encode(res.test), json.encode(v))
+    end
+end
