@@ -8,6 +8,7 @@
 - `Fix returning gapped arrays`
 - `Fix silently cast huge cdata numbers to null`
 - `Fix arguments and variables nullability validation`
+- `Fix Map (custom scalar type) - prevent dual jason.encode in some cases`
 
 ## 0.0.8
 
