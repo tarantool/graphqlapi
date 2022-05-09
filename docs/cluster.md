@@ -16,11 +16,6 @@
     - [get_schema()](#get_schema)
     - [check_schema()](#check_schema)
     - [set_schema()](#set_schema)
-    - [sharding_function()](#sharding_function)
-    - [set_sharding_function()](#set_sharding_function)
-    - [get_sharding_function()](#get_sharding_function)
-    - [remove_sharding_function()](#remove_sharding_function)
-    - [remove_all_sharding_functions()](#remove_all_sharding_functions)
 
 Submodule `cluster.lua` is a part of GraphQL API module provided functions specific to cluster application architecture. This particular implementation was made for Tarantool Cartridge Application (requires: `Cartridge`, `VShard` and `DDL` modules), for any custom application architecture, for example for so called pure-Tarantool applications most functions of this module may need to be overridden to comply it.
 
@@ -165,54 +160,3 @@ returns:
 - `[2]` (`error`) - error object.
 
 For additional info see [ddl.set_schema()](https://github.com/tarantool/ddl#set-spaces-format).
-
-### sharding_function()
-
-`cluster.sharding_function(space_name, sharding_keys)` - method to calculate bucket_id for provided space and values of sharding keys,
-
-where:
-
-- `space_name` (`string`) - mandatory, name of space;
-- `sharding_keys` (`table`) - mandatory, an array of sharding keys;
-
-returns:
-
-- `[1]` (`unsigned`) - bucket_id.
-
-### set_sharding_function()
-
-`cluster.set_sharding_function(space_name, shard_function)` - method to set custom sharding function for a space,
-
-where:
-
-- `space_name` (`string`) - mandatory, name of space;
-- `shard_function` (`function`) - mandatory, sharding function;
-
-returns:
-
-- `[1]` (`boolean`) - `true` if no error, otherwise return `nil`;
-- `[2]` (`error`) - error object.
-
-### get_sharding_function()
-
-`cluster.get_sharding_function(space_name)` - method to get custom sharding function for a space,
-
-where:
-
-- `space_name` (`string`) - mandatory, name of space;
-
-returns:
-
-- `[1]` (`function`) - sharding function for desired space.
-
-### remove_sharding_function()
-
-`cluster.remove_sharding_function(space_name)` - method to remove sharding function for space,
-
-where:
-
-- `space_name` (`string`) - mandatory, name of space.
-
-### remove_all_sharding_functions()
-
-`cluster.remove_all_sharding_functions()` - method to remove all custom sharding functions for all spaces.

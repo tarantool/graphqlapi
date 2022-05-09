@@ -9,5 +9,4 @@ tarantoolctl rocks install luacov 0.13.0
 tarantoolctl rocks install luacheck 0.26.0
 
 # App dependencies:
-tarantoolctl rocks make
-sh ./cartridge.pre-build
+cartridge build

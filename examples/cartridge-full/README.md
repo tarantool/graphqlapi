@@ -2,7 +2,7 @@
 
 This Example shows mostly all base capabilities of using the following set of modules:
 
-- [Tarantool GraphQLIDE 0.0.19+](https://github.com/tarantool/graphqlide)
+- [Tarantool GraphQLIDE 0.0.20+](https://github.com/tarantool/graphqlide)
 - [Tarantool GraphQLAPI 0.0.8+](https://github.com/tarantool/graphqlapi)
 - [Tarantool GraphQLAPI Helpers 0.0.8+](https://github.com/tarantool/graphqlapi-helpers) - this particular module available only in Tarantool Enterprise SDK bundle
 
@@ -11,6 +11,12 @@ This Example shows mostly all base capabilities of using the following set of mo
 To build application, start it and setup topology:
 
 ```bash
+# install dependencies
+./deps.sh
+
+# or if you've got Tarantool Enterprise
+TARANTOOL_ENTERPRISE=TARANTOOL_ENTERPRISE=$HOME/tarantool-enterprise ./deps.sh
+
 # build application
 cartridge build
 

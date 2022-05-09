@@ -13,7 +13,7 @@ description = {
 dependencies = {
     'lua >= 5.1',
     'luagraphqlparser ~> 0',
-    'ddl ~> 1',
+    'ddl ~> 1.6',
     'http ~> 1',
     'errors ~> 2',
     'vshard ~> 0.1',

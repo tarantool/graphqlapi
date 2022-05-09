@@ -11,6 +11,10 @@ tarantoolctl rocks remove graphqlide --force
 tarantoolctl rocks remove graphqlapi --force
 tarantoolctl rocks remove graphqlapi-helpers --force
 
-tarantoolctl rocks install graphqlide 0.0.19
+tarantoolctl rocks install graphqlide 0.0.20
 tarantoolctl rocks install graphqlapi 0.0.8
-tarantoolctl rocks install graphqlapi-helpers 0.0.8
+
+GRAPHQLAPI_HELPERS_ROCK="${TARANTOOL_ENTERPRISE}/beta-rocks/graphqlapi-helpers-0.0.8-1.all.rock"
+if [ -f $GRAPHQLAPI_HELPERS_ROCK ]; then
+    tarantoolctl rocks install "${GRAPHQLAPI_HELPERS_ROCK}"
+fi
