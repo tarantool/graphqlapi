@@ -7,6 +7,7 @@
 - `Fix coerce scalar list variables`
 - `Fix returning gapped arrays`
 - `Fix silently cast huge cdata numbers to null`
+- `Fix arguments and variables nullability validation`
 
 ## 0.0.8
 
