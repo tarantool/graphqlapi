@@ -138,7 +138,12 @@ types.map = types.scalar{
     description = 'Type to process any data in JSON format',
     specifiedByURL = 'https://github.com/tarantool/graphqlapi/wiki/Map',
     serialize = function(value)
-        return json.encode(value)
+        if type(value) ~= 'string' then
+            return json.encode(value)
+        else
+            -- in some cases need to prevent dual json.encode
+            return value
+        end
     end,
     parseValue = function(value)
         if type(value) == 'string' then
