@@ -3,6 +3,7 @@
 - [Module **graphqlapi** Lua API](#module-graphqlapi-lua-api)
   - [Lua API](#lua-api)
     - [init()](#init)
+      - [execute_graphql()](#execute_graphql)
     - [stop()](#stop)
     - [reload()](#reload)
     - [set_fragments_dir()](#set_fragments_dir)
@@ -11,6 +12,8 @@
     - [get_endpoint()](#get_endpoint)
     - [set_middleware()](#set_middleware)
     - [get_middleware()](#get_middleware)
+    - [init_graphql_iproto()](#init_graphql_iproto)
+    - [stop_graphql_iproto()](#stop_graphql_iproto)
     - [VERSION](#version)
 
 Module `graphqlapi.lua` is a main module which provides general functions to init/stop/reload module and also for setting/getting http-endpoint, setting/getting middleware and setting/getting GraphQLAPI fragments dir path.
@@ -36,13 +39,36 @@ If module runs in Tarantool Cartridge Application Role you can also use the foll
 
 where:
 
-- `httpd` (`table`) - mandatory, instance of a Tarantool HTTP server;
-- `middleware` (`table`) - optional, instance of set of middleware callbacks;
-- `endpoint` (`string`) - optional, URI of http endpoint to be used for interacting with GraphQLAPI module, default value: `http(s)://<server:port>/admin/graphql`;
+- `httpd` (`table`) - optional (may be absent only if `opts.enable_iproto` is `true`), instance of a Tarantool HTTP server;
+- `middleware` (`table`) - optional (must not be provided if `httpd` is not provided), instance of set of middleware callbacks;
+- `endpoint` (`string`) - optional (must not be provided if `httpd` is not provided), URI of http endpoint to be used for interacting with GraphQLAPI module, default value: `http(s)://<server:port>/admin/graphql`;
 - `fragments_dir` (`string`)  - optional, path to dir with customer GraphQL fragments, default value: `<app_root>/fragments`;
-- `opts` (`table`) - optional, options of http-route, options are the same as http:route [HTTP routes](https://github.com/tarantool/http/tree/1.1.0#using-routes)
+- `opts` (`table`) - optional, options of http-route and GraphQL API specific options:  
+  - options are the same as http:route [HTTP routes](https://github.com/tarantool/http/tree/1.1.0#using-routes)
+  - `enable_iproto` (`boolean`) - optional, if true `execute_graphql` function will be set as global to make possible to make GraphQL requests over IPROTO.
 
-Example:
+#### execute_graphql()
+
+`execute_graphql(request)` - is a special function may be set as global by `enable_iproto` option on `init()` or by calling a special method `graphqlapi.init_graphql_iproto()`,
+
+where:
+
+- `request` (`table`) - mandatory, GraphQL request with the following map:
+  - `query` (`string`) - mandatory, GraphQL query;
+  - `operationName` (`string`) - optional, the name of GraphQL operation to be executed;
+  - `variables` (`table`) - optional, a dictionary with operation variables values;
+  - `schema_name` (`string`) - optional, the name of schema query belongs to, if not provided `defaults.DEFAULT_SCHEMA_NAME` is used,
+
+returns:
+
+`[1]` (`table`) - result of GraphQL query or nil if error;
+`[2]` (`table`) - array of error objects if any.
+
+Note: According to GraphQL specification GraphQL may return: `result`, `result == nil and error(s)` and also `result and error(s)`. This fact must be taken into account when handling errors.
+
+Examples:
+
+GraphQL over HTTP:
 
 ```lua
     local http = require('http.server')
@@ -58,6 +84,13 @@ Example:
 
     httpd:start()
     graphqlapi.init(httpd, nil, ENDPOINT, '../example/fragments')
+```
+
+GraphQL over IPROTO:
+
+```lua
+    local graphqlapi = require('graphqlapi')
+    graphqlapi.init(nil, nil, nil, '../example/fragments', { enable_iproto = true })
 ```
 
 ### stop()
@@ -164,6 +197,14 @@ Example:
 returns:
 
 `[1]` (`table`) - current http-middleware triggers. For more info refer to [middleware submodule](middleware.md).
+
+### init_graphql_iproto()
+
+`init_graphql_iproto()` - method is used to set `execute_graphql` as a global function to make possible to make GraphQL requests over IPROTO.
+
+### stop_graphql_iproto()
+
+`stop_graphql_iproto()` - method is used to remove `execute_graphql` from global functions to make impossible to make GraphQL requests over IPROTO if `execute_graphql` was previously set as a global function.
 
 ### VERSION
 

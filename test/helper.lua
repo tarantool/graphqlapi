@@ -384,6 +384,7 @@ t.before_suite(function()
     fio.rmtree(helper.datadir)
     fio.mktree(helper.datadir)
     box.cfg({
+        listen = '127.0.0.1:16000',
         memtx_dir = helper.datadir,
         wal_dir = helper.datadir,
     })
