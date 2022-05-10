@@ -49,6 +49,7 @@ local validate = require('graphqlapi.graphql.validate')
 local defaults = require('graphqlapi.defaults')
 local helpers = require('graphqlapi.helpers')
 local fragments = require('graphqlapi.fragments')
+local graphql_types = require('graphqlapi.graphql.types')
 local middleware = require('graphqlapi.middleware')
 local operations = require('graphqlapi.operations')
 local schemas = require('graphqlapi.schemas')
@@ -109,7 +110,7 @@ local function get_schema(schema_name)
     end
 
     local root = {
-        query = types.object({name = 'Query', fields=queries, schema = schema_name, }),
+        query = graphql_types.object({name = 'Query', fields=queries, schema = schema_name, }),
         directives = directives,
     }
 
@@ -118,13 +119,15 @@ local function get_schema(schema_name)
     end
 
     if type(mutations) == 'table' and next(mutations) then
-        root.mutation = types.object({name = 'Mutation', fields=mutations, schema = schema_name, })
+        root.mutation = graphql_types.object({name = 'Mutation', fields=mutations, schema = schema_name, })
     end
+
+    local default_schema_settings = { defaultValues = true, directivesDefaultValues = true}
 
     _graphql_schema[schema_name] = schema.create(
         root,
         schema_name,
-        { defaultValues = true, directivesDefaultValues = true, }
+        default_schema_settings
     )
 
     return _graphql_schema[schema_name]

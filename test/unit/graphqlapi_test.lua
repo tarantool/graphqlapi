@@ -15,6 +15,7 @@ local http = require('http.server')
 local http_client = require('http.client').new()
 local graphqlapi = require('graphqlapi')
 local operations = require('graphqlapi.operations')
+local schemas = require('graphqlapi.schemas')
 local types = require('graphqlapi.types')
 
 local httpd
@@ -583,6 +584,44 @@ g.test_graphql_iproto = function()
         t.assert_equals(err[1].str, "GraphQL request error: Some error #1")
         t.assert_equals(err[2].str, "GraphQL request error: Some error #2")
         t.assert_equals(err[3].str, "GraphQL request error: Some error #3")
+    end
+end
+
+g.test_schema_caching = function()
+    package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
+    httpd = http.new(HOST, PORT,{ log_requests = false })
+    httpd:start()
+    graphqlapi.init(httpd, nil, nil, 'test/fragments/suite1')
+    -- test return data without errors
+    do
+        operations.add_query({
+            name = 'test_data',
+            doc = 'Get test_data',
+
+            kind = types.object({
+                name = 'some_data1',
+                fields = {
+                    some_data1 = types.string
+                }
+            }),
+            callback = 'test.unit.graphqlapi_test.stub_data'
+        })
+
+        local query = [[
+            {
+                "query":"{ test_data {some_data1}}",
+                "variables":null
+            }
+        ]]
+
+        t.assert_equals(schemas.is_invalid(), true)
+
+        local response = http_client:post(url, query)
+        t.assert_items_equals(json.decode(response.body), { data = { test_data = {some_data1 = 'some_data1'} }})
+        t.assert_equals(response.status, 200)
+        t.assert_equals(schemas.is_invalid(), false)
+        http_client:post(url, query)
+        t.assert_equals(schemas.is_invalid(), false)
     end
 end
 

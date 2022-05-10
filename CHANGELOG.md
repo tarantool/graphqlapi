@@ -12,6 +12,7 @@
 - `Remove sharding functions helpers (ddl 1.6+ now fully support custom sharding functions)`
 - `Update dependencies to latest`
 - `Add GraphQL over IPROTO feature`
+- `Fix schema caching not work`
 
 ## 0.0.8
 
