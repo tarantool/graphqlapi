@@ -190,6 +190,10 @@ local function set_schema(schema)
     return ddl.set_schema(schema)
 end
 
+local function bucket_id(space_name, sharding_key)
+    return ddl.bucket_id(space_name, sharding_key)
+end
+
 return {
     -- Cluster API
     get_servers = get_servers,
@@ -208,4 +212,5 @@ return {
     get_schema = get_schema,
     check_schema = check_schema,
     set_schema = set_schema,
+    bucket_id = bucket_id,
 }

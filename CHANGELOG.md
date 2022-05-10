@@ -13,6 +13,7 @@
 - `Update dependencies to latest`
 - `Add GraphQL over IPROTO feature`
 - `Fix schema caching not work`
+- `Add bucket_id wrapper`
 
 ## 0.0.8
 
