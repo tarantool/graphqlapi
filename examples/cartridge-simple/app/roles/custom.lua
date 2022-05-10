@@ -15,8 +15,14 @@ local function init(opts) -- luacheck: no unused args
         data.init({ schema = 'Data' })
     end
 
-    -- Create test space and fill it with test data
-    test_data.fill()
+    return true
+end
+
+local function apply_config(conf, opts) -- luacheck: no unused args
+    if opts.is_master then
+        -- Create test space and fill it with test data
+        test_data.fill()
+    end
 
     return true
 end
@@ -24,6 +30,7 @@ end
 return {
     role_name = 'app.roles.custom',
     init = init,
+    apply_config = apply_config,
     dependencies = {
         'cartridge.roles.vshard-router',
         'cartridge.roles.vshard-storage',

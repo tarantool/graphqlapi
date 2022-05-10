@@ -8,11 +8,9 @@ local vshard = require('vshard')
 
 local utils = require('graphqlapi.utils')
 
-local _sharding_functions = {}
 local _replicas = {}
 
 local e_cluster_api = errors.new_class('cluster API error', { capture_stack = false, })
-local e_sharding = errors.new_class('sharding API error', { capture_stack = false, })
 
 local function get_alias_by_uuid(conn)
     utils.is_table(1, conn, false)
@@ -192,51 +190,6 @@ local function set_schema(schema)
     return ddl.set_schema(schema)
 end
 
-local function default_sharding_function(sharding_keys)
-    return vshard.router.bucket_id_mpcrc32(sharding_keys)
-end
-
-local function sharding_function(space_name, sharding_keys)
-    utils.is_string(1, space_name, false)
-
-    if sharding_keys == nil then
-        error("Can't get bucket_id with null shard :" .. debug.traceback(), 0)
-    end
-
-    if _sharding_functions[space_name] ~= nil and type(_sharding_functions[space_name]) then
-        return _sharding_functions[space_name](sharding_keys)
-    elseif _sharding_functions['*'] ~= nil and type(_sharding_functions['*']) then
-        return _sharding_functions['*'](sharding_keys)
-    else
-        return default_sharding_function(sharding_keys)
-    end
-end
-
-local function set_sharding_function(space_name, shard_function)
-    utils.is_string(1, space_name, false)
-    utils.is_function(2, shard_function, false)
-    if is_space_exists(space_name) or space_name == '*' then
-        _sharding_functions[space_name] = shard_function
-        return true
-    else
-        return nil, e_sharding:new('space "%s" not found on instance: %s', space_name, get_self_alias())
-    end
-end
-
-local function get_sharding_function(space_name)
-    utils.is_string(1, space_name, false)
-    return _sharding_functions[space_name] or _sharding_functions['*'] or default_sharding_function
-end
-
-local function remove_sharding_function(space_name)
-    utils.is_string(1, space_name, false)
-    _sharding_functions[space_name] = nil
-end
-
-local function remove_all_sharding_functions()
-    _sharding_functions = {}
-end
-
 return {
     -- Cluster API
     get_servers = get_servers,
@@ -255,11 +208,4 @@ return {
     get_schema = get_schema,
     check_schema = check_schema,
     set_schema = set_schema,
-
-    -- Sharding functions API
-    sharding_function = sharding_function,
-    set_sharding_function = set_sharding_function,
-    get_sharding_function = get_sharding_function,
-    remove_sharding_function = remove_sharding_function,
-    remove_all_sharding_functions = remove_all_sharding_functions,
 }

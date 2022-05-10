@@ -11,14 +11,14 @@
 
 Module based on:
 
-- [Tarantool 2.x.x](https://www.tarantool.io/en/download/)
-- [Tarantool Cartridge 2.6.0+](https://github.com/tarantool/cartridge)
-- [Tarantool Graphql 0.1.1+](https://github.com/tarantool/graphql)
-- [Tarantool DDL 1.4.0+](https://github.com/tarantool/ddl)
-- [Tarantool VShard 0.1.18+](https://github.com/tarantool/vshard)
-- [Tarantool Checks 1.1.0+](https://github.com/tarantool/checks)
-- [Tarantool Errors 2.1.3+](https://github.com/tarantool/errors)
-- [Tarantool GraphQLIDE 0.0.19+](https://github.com/tarantool/graphqlide)
+- [Tarantool 2.8.4+](https://www.tarantool.io/en/download/)
+- [Tarantool Cartridge 2.7.4+](https://github.com/tarantool/cartridge)
+- [Tarantool Graphql 0.1.4+](https://github.com/tarantool/graphql)
+- [Tarantool DDL 1.6.0+](https://github.com/tarantool/ddl)
+- [Tarantool VShard 0.1.19+](https://github.com/tarantool/vshard)
+- [Tarantool Checks 3.1.0+](https://github.com/tarantool/checks)
+- [Tarantool Errors 2.2.1+](https://github.com/tarantool/errors)
+- [Tarantool GraphQLIDE 0.0.20+](https://github.com/tarantool/graphqlide)
 
 **CAUTION:** Since this module is under heavy development it is not recommended to use on production environments and also API and functionality in future releases may be changed without backward compatibility!
 
