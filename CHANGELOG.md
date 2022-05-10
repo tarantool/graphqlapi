@@ -8,9 +8,10 @@
 - `Fix returning gapped arrays`
 - `Fix silently cast huge cdata numbers to null`
 - `Fix arguments and variables nullability validation`
-- `Fix Map (custom scalar type) - prevent dual jason.encode in some cases`
+- `Fix Map (custom scalar type) - prevent dual json.encode in some cases`
 - `Remove sharding functions helpers (ddl 1.6+ now fully support custom sharding functions)`
 - `Update dependencies to latest`
+- `Add GraphQL over IPROTO feature`
 
 ## 0.0.8
 

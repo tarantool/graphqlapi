@@ -67,6 +67,11 @@ local e_graphql_parse = errors.new_class('GraphQL parsing failed')
 local e_graphql_validate = errors.new_class('GraphQL validation failed')
 local e_graphql_execute = errors.new_class('GraphQL execution failed')
 
+local e_graphql_internal_iproto = errors.new_class('GraphQL over IPROTO internal error')
+local e_graphql_parse_iproto = errors.new_class('GraphQL over IPROTO parsing failed')
+local e_graphql_validate_iproto = errors.new_class('GraphQL over IPROTO validation failed')
+local e_graphql_execute_iproto = errors.new_class('GraphQL over IPROTO execution failed')
+
 local function get_schema(schema_name)
     utils.is_string(1, schema_name, true)
 
@@ -288,6 +293,104 @@ local function execute_graphql(req)
     return resp
 end
 
+local function _execute_graphql_iproto(query, operationName, variables, schema_name)
+    schema_name = schema_name or defaults.DEFAULT_SCHEMA_NAME
+
+    local schema_obj = get_schema(schema_name)
+
+    local ast, err
+    local query_hash = digest.sha256_hex(query)
+    ast = schemas.cache_get(schema_name, query_hash)
+    if ast == nil then
+        ast, err = e_graphql_parse_iproto:pcall(parse.parse, query)
+
+        if not ast then
+            log.error('%s', err)
+            return nil, { err }
+        end
+
+        err = select(2,e_graphql_validate_iproto:pcall(validate.validate, schema_obj, ast))
+
+        if err then
+            log.error('%s', err)
+            return nil, { err }
+        end
+
+        schemas.cache_set(schema_name, query_hash, ast)
+    end
+
+    local rootValue = {}
+    local data
+    data, err = e_graphql_execute_iproto:pcall(execute.execute,
+        schema_obj, ast, rootValue, variables, operationName
+    )
+
+    if err ~= nil then
+        if errors.is_error_object(err) then
+            err = { err }
+        elseif type(err) == 'string' then
+            err = { { err = err, str = err } }
+        elseif type(err) == 'table' then
+            local _errors = {}
+            for _, _err_arr in ipairs(err) do
+                if errors.is_error_object(_err_arr) then
+                    table.insert(_errors, _err_arr)
+                elseif type(_err_arr) == 'string' then
+                    table.insert(_errors, { err = _err_arr, str = _err_arr })
+                else
+                    for _, _err in ipairs(_err_arr) do
+                        table.insert(_errors, _err)
+                    end
+                end
+            end
+            err = _errors
+        end
+    end
+
+    return data, err
+end
+
+-- request = { query = 'string', operationName = '?string', variables = '?table', schema_name = '?string' }
+local function execute_graphql_iproto(request)
+    if type(request) ~= 'table' then
+        local err = e_graphql_parse_iproto:new('Expected a non-empty request map')
+        log.error('%s', err)
+        return nil, { err }
+    end
+
+    if type(request.query) ~= 'string' or request.query == '' then
+        local err = e_graphql_parse_iproto:new('Expected a non-empty query string')
+        log.error('%s', err)
+        return nil, { err }
+    end
+
+    if request.operationName ~= nil and type(request.operationName) ~= 'string' then
+        local err = e_graphql_parse_iproto:new('Expected a non-empty operationName string')
+        log.error('%s', err)
+        return nil, { err }
+    end
+
+    if request.variables ~= nil and type(request.variables) ~= "table" then
+        local err = e_graphql_parse_iproto:new('Expected variables should be a dictionary')
+        log.error('%s', err)
+        return nil, { err }
+    end
+
+    if request.schema_name ~= nil and (type(request.schema_name) ~= 'string' or request.schema_name == '') then
+        local err = e_graphql_parse_iproto:new('Expected a non-empty schema_name string')
+        log.error('%s', err)
+        return nil, { err }
+    end
+
+    local resp, err = e_graphql_internal_iproto:pcall(
+        _execute_graphql_iproto, request.query, request.variables, request.schema_name)
+    if resp == nil then
+        log.error('%s', err)
+        return nil, err
+    end
+    return resp, err
+end
+
 local function delete_route(httpd, name)
     if httpd then
         local route = httpd.iroutes[name]
@@ -339,7 +442,7 @@ local function _set_middleware(http_middleware)
     end
 
     local m = {}
-    if http_middleware.render_response == nil  then
+    if http_middleware.render_response == nil then
         m.render_response = _http_middleware.render_response or middleware.render_response
     else
         m.render_response = http_middleware.render_response
@@ -369,7 +472,7 @@ local function get_middleware()
     return _http_middleware
 end
 
-local function _init()
+local function _fragments_init()
     if fio.path.is_dir(fio.pathjoin(package.searchroot(), _fragments_dir)) then
         fragments.init(_fragments_dir)
         return true
@@ -381,31 +484,55 @@ local function _init()
     end
 end
 
+local function init_graphql_iproto()
+    rawset(_G, 'execute_graphql', execute_graphql_iproto)
+end
+
+local function stop_graphql_iproto()
+    rawset(_G, 'execute_graphql', nil)
+end
+
 local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
-    utils.is_table(1, httpd, false)
+    utils.is_table(1, httpd, true)
     utils.is_table(2, http_middleware, true)
     utils.is_string(3, endpoint, true)
     utils.is_string(4, fragments_dir, true)
     utils.is_table(5, opts, true)
 
+    if httpd == nil and (http_middleware ~= nil or endpoint ~= nil) then
+        error('"http_middleware" or/and "endpoint" arguments must not be provided if "httpd" is not')
+    end
 
-    endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
-    endpoint = endpoint or defaults.DEFAULT_ENDPOINT
+    if httpd == nil and (not opts or opts.enable_iproto ~= true) then
+        error('Neither GraphQL-over-HTTP nor GraphQL-over-IPROTO interfaces are requested to be initialized')
+    end
+
     fragments_dir = fragments_dir or rawget(_G, '__GRAPHQLAPI_MODELS_DIR')
     _fragments_dir = fragments_dir or defaults.DEFAULT_FRAGMENTS_DIR
     rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)
+    _fragments_init()
 
-    _httpd = httpd
-    _set_middleware(http_middleware)
-    set_endpoint(endpoint, opts)
+    if httpd ~= nil then
+        endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
+        endpoint = endpoint or defaults.DEFAULT_ENDPOINT
 
-    _init()
+        _httpd = httpd
+        _set_middleware(http_middleware)
+        set_endpoint(endpoint, opts)
+    end
 
     trigger.init()
+
+    if opts and opts.enable_iproto == true then
+        init_graphql_iproto()
+    else
+        stop_graphql_iproto()
+    end
 end
 
 local function stop()
     delete_route(_httpd, _endpoint)
+    stop_graphql_iproto()
 
     trigger.stop()
     helpers.stop()
@@ -427,7 +554,7 @@ local function reload()
     helpers.stop()
     _graphql_schema = {}
 
-    _init()
+    _fragments_init()
     return true
 end
 
@@ -455,6 +582,10 @@ return {
     get_endpoint = get_endpoint,
     set_middleware = set_middleware,
     get_middleware = get_middleware,
+
+    -- IPROTO init/stop methods
+    init_graphql_iproto = init_graphql_iproto,
+    stop_graphql_iproto = stop_graphql_iproto,
 
     -- version
     VERSION = VERSION,
