@@ -14,6 +14,7 @@
 - `Add GraphQL over IPROTO feature`
 - `Fix schema caching not work`
 - `Add bucket_id wrapper`
+- `Rename schemas.schemas_list() to schemas.list()`
 
 ## 0.0.8
 
@@ -73,7 +74,7 @@
 - `remove double error logging if fragments dir is not found`
 - `rename fragments.list_fragments to fragments.fragments_list`
 - `rename fragments.list_loaded to fragments.loaded_list`
-- `rename schemas.list_schemas to schemas.schemas_list`
+- `rename schemas.list_schemas to schemas.list`
 - `rename operations.list_queries to operations.queries_list`
 - `rename operations.mutations_list to operation.mutations_list`
 - `rename types.list_types to types.types_list`

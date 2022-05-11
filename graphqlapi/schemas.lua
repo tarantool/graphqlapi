@@ -98,7 +98,7 @@ local function remove_schema(schema)
     cache_reset(schema)
 end
 
-local function schemas_list()
+local function list()
     local schemas = {}
     for schema_name in pairs(_schema_invalid) do
         table.insert(schemas, schema_name)
@@ -107,7 +107,7 @@ local function schemas_list()
 end
 
 local function remove_all()
-    for _, schema in ipairs(schemas_list()) do
+    for _, schema in ipairs(list()) do
         cache_reset(schema)
     end
 
@@ -127,7 +127,7 @@ return {
     is_invalid = is_invalid,
     remove_schema = remove_schema,
     remove_all = remove_all,
-    schemas_list = schemas_list,
+    list = list,
     cache_set = cache_set,
     cache_get = cache_get,
 }
