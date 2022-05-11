@@ -353,7 +353,6 @@ local function _execute_graphql_iproto(query, operationName, variables, schema_n
     return data, err
 end
 
--- request = { query = 'string', operationName = '?string', variables = '?table', schema_name = '?string' }
 local function execute_graphql_iproto(request)
     if type(request) ~= 'table' then
         local err = e_graphql_parse_iproto:new('Expected a non-empty request map')
@@ -510,11 +509,6 @@ local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
         error('Neither GraphQL-over-HTTP nor GraphQL-over-IPROTO interfaces are requested to be initialized')
     end
 
-    fragments_dir = fragments_dir or rawget(_G, '__GRAPHQLAPI_MODELS_DIR')
-    _fragments_dir = fragments_dir or defaults.DEFAULT_FRAGMENTS_DIR
-    rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)
-    _fragments_init()
-
     if httpd ~= nil then
         endpoint = endpoint or rawget(_G, '__GRAPHQLAPI_ENDPOINT')
         endpoint = endpoint or defaults.DEFAULT_ENDPOINT
@@ -523,6 +517,11 @@ local function init(httpd, http_middleware, endpoint, fragments_dir, opts)
         _set_middleware(http_middleware)
         set_endpoint(endpoint, opts)
     end
+
+    fragments_dir = fragments_dir or rawget(_G, '__GRAPHQLAPI_MODELS_DIR')
+    _fragments_dir = fragments_dir or defaults.DEFAULT_FRAGMENTS_DIR
+    rawset(_G, '__GRAPHQLAPI_MODELS_DIR', _fragments_dir)
+    _fragments_init()
 
     trigger.init()
 
