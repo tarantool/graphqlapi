@@ -15,6 +15,7 @@
 - `Fix schema caching not work`
 - `Add bucket_id wrapper`
 - `Rename schemas.schemas_list() to schemas.list()`
+- `Fix GraphQLIDE endpoints not registered in some cases`
 
 ## 0.0.8
 
