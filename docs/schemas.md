@@ -7,7 +7,7 @@
     - [is_invalid()](#is_invalid)
     - [remove_schema()](#remove_schema)
     - [remove_all()](#remove_all)
-    - [schemas_list()](#schemas_list)
+    - [list()](#list)
     - [cache_set()](#cache_set)
     - [cache_get()](#cache_get)
 
@@ -52,7 +52,7 @@ where:
 `schemas.remove_all()` - method is used to remove all schemas from schemas registry and also this method removes all schemas from [GraphQLIDE](https://github.com/tarantool/graphqlide) schemas registry.
 
 
-### schemas_list()
+### list()
 
 `schemas.remove_all()` - method is used to get list of Graphql schemas from schemas registry,
 

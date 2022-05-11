@@ -453,7 +453,7 @@ types.remove_all = function(schema)
 
         schemas.remove_schema(schema)
     else
-        for _, _schema in pairs(schemas.schemas_list()) do
+        for _, _schema in pairs(schemas.list()) do
             for type_name in pairs(graphql_types.get_env(_schema)) do
                 types.remove(type_name, _schema)
             end

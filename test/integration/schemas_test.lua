@@ -39,12 +39,12 @@ g.test_default_schema = function()
     t.assert_equals(res, false)
     t.assert_items_equals(ide, {schema = {default = false, path = "admin/graphql"}})
 
-    res = router.net_box:eval([[ return schemas.schemas_list()]])
+    res = router.net_box:eval([[ return schemas.list()]])
     t.assert_items_equals(res, {'Default'})
 
     res, ide = router.net_box:eval([[
         schemas.remove_schema()
-        return schemas.schemas_list(), graphqlide.get_endpoints()
+        return schemas.list(), graphqlide.get_endpoints()
     ]])
     t.assert_items_equals(res, {})
     t.assert_items_equals(ide, {})
@@ -69,12 +69,12 @@ g.test_custom_schema = function()
     t.assert_equals(res, false)
     t.assert_items_equals(ide, {schema = {default = false, path = "admin/graphql"}})
 
-    res = router.net_box:eval([[ return schemas.schemas_list()]])
+    res = router.net_box:eval([[ return schemas.list()]])
     t.assert_items_equals(res, {'schema'})
 
     res, ide = router.net_box:eval([[
         schemas.remove_schema('schema')
-        return schemas.schemas_list(), graphqlide.get_endpoints()
+        return schemas.list(), graphqlide.get_endpoints()
     ]])
     t.assert_items_equals(res, {})
     t.assert_items_equals(ide, {})
@@ -130,7 +130,7 @@ g.test_multiple_schemas = function()
         }
     )
 
-    res = router.net_box:eval([[return schemas.schemas_list()]])
+    res = router.net_box:eval([[return schemas.list()]])
     t.assert_items_equals(res, {'schema', 'Default'})
 
     res, ide = router.net_box:eval([[
@@ -142,7 +142,7 @@ g.test_multiple_schemas = function()
 
     res, ide = router.net_box:eval([[
         schemas.remove_all()
-        return schemas.schemas_list(), graphqlide.get_endpoints()
+        return schemas.list(), graphqlide.get_endpoints()
     ]])
     t.assert_items_equals(res, {})
     t.assert_items_equals(ide, {})
@@ -172,5 +172,5 @@ g.test_graphql_cache = function()
 
     schemas.remove_all()
 
-    t.assert_items_equals(schemas.schemas_list(), {})
+    t.assert_items_equals(schemas.list(), {})
 end
