@@ -247,7 +247,7 @@ types.remove = function (type_name, schema)
 end
 
 local function add_non_leaf_type(type_list, type_name)
-    if type_name ~= nil and not utils.value_in(type_name, default_scalars) then
+    if type_name ~= nil and not utils.value_in(default_scalars, type_name) then
         table.insert(type_list, type_name)
     end
 end
@@ -389,7 +389,7 @@ types.remove_recursive = function (type_name, schema)
     types.remove(type_name, schema)
     table.insert(removed_types, type_name)
     for k,v in pairs(types(schema)) do
-        if utils.value_in(type_name, types.get_non_leaf_types(v)) then
+        if utils.value_in(types.get_non_leaf_types(v), type_name) then
             types.remove(k, schema)
             table.insert(removed_types, k)
         end

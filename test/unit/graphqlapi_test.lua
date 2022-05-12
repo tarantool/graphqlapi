@@ -30,6 +30,10 @@ end
 
 g.after_each(stop)
 
+local function call_execute_graphql(req, variables, schema_name)
+    return net_box.self:call('execute_graphql', { req, variables, schema_name })
+end
+
 g.test_init_stop = function()
     -- test both HTTP and IPROTO
     package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
@@ -378,10 +382,6 @@ g.test_execute_graphql_data_and_or_errors = function()
         t.assert_equals(json.decode(response.body).errors[3].message, "Some error #3")
         t.assert_equals(response.status, 200)
     end
-end
-
-local function call_execute_graphql(req, variables, schema_name)
-    return net_box.self:call('execute_graphql', { req, variables, schema_name })
 end
 
 g.test_invalid_requests_iproto = function()

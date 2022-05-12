@@ -7,10 +7,11 @@ local defaults = require('graphqlapi.defaults')
 local utils = require('graphqlapi.utils')
 
 g.test_value_in = function()
-    t.assert_equals(utils.value_in(nil, {}), false)
-    t.assert_equals(utils.value_in(1, {2, 3, 4}), false)
-    t.assert_equals(utils.value_in('1', {1, 2}), false)
-    t.assert_equals(utils.value_in('1', {'2', '1'}), true)
+    t.assert_equals(utils.value_in(nil, nil), false)
+    t.assert_equals(utils.value_in({}, nil), false)
+    t.assert_equals(utils.value_in({2, 3, 4}, 1), false)
+    t.assert_equals(utils.value_in({1, 2}, '1'), false)
+    t.assert_equals(utils.value_in({'2', '1'}, '1'), true)
 end
 
 g.test_diff_maps = function()
@@ -399,4 +400,14 @@ g.test_is_table_or_string = function()
         'bad argument #2 (table or string expected, got number)', utils.is_table_or_string, 2, 1, false)
     t.assert_error_msg_contains(
         'bad argument #3 (table or string expected, got nil)', utils.is_table_or_string, 3, nil, false)
+end
+
+g.test_find = function()
+    t.assert_equals(utils.find(), nil)
+    t.assert_equals(utils.find({}), nil)
+    t.assert_equals(utils.find({}, box.NULL), nil)
+    t.assert_equals(utils.find({box.NULL}, box.NULL), 1)
+    t.assert_equals(utils.find({'a'}, 'a'), 1)
+    t.assert_equals(utils.find({'a', 1}, 1), 2)
+    t.assert_equals(utils.find({'a', nil, 1}, 1), 3)
 end

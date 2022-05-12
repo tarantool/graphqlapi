@@ -6,7 +6,7 @@ local defaults = require('graphqlapi.defaults')
 
 local e_argument_validation = errors.new_class('function argument validation error', { capture_stack = true, })
 
-local function value_in(val, arr)
+local function value_in(arr, val)
     if not arr then return false end
     for i, elem in ipairs(arr) do
         if val == elem then
@@ -16,9 +16,17 @@ local function value_in(val, arr)
     return false
 end
 
+local function find(arr, val)
+    for k, v in pairs(arr or {}) do
+        if v == val then
+            return k
+        end
+    end
+end
+
 local function diff_maps(t1, t2, ret)
     for k in pairs(t2) do
-        if not t1[k] and not value_in(k, ret) then
+        if not t1[k] and not value_in(ret, k) then
             table.insert(ret, k)
         end
     end
@@ -28,7 +36,7 @@ end
 local function diff_arrays(t1, t2)
     local ret = {}
     for _,space in ipairs(t1) do
-        if value_in(space, t2) then
+        if value_in(t2, space) then
             table.insert(ret, space)
         end
     end
@@ -55,7 +63,7 @@ end
 local function merge_arrays(a1, a2)
     local a = table.copy(a1)
     for _, value in ipairs(a2) do
-        if not value_in(value, a) then
+        if not value_in(a, value) then
             table.insert(a, value)
         end
     end
@@ -77,19 +85,6 @@ local function concat_arrays(...)
     return t
 end
 
-local function is_string_array(data)
-    if type(data) ~= 'table' then
-        return false
-    end
-    if #data == 0 then return true end
-    for _, v in pairs(data) do
-        if type(v) ~= 'string' then
-            return false
-        end
-    end
-    return #data > 0 and next(data, #data) == nil
-end
-
 local function dedup_array(tbl)
     if not tbl or type(tbl) ~= 'table' then
         return {}
@@ -105,16 +100,6 @@ local function dedup_array(tbl)
     end
 
     return tbl
-end
-
-local function is_map(tbl)
-    if type(tbl) ~= 'table' then
-        return false
-    end
-
-    local key, _ = next(tbl)
-
-    return type(key) == 'string'
 end
 
 local function coerce_schema(schema)
@@ -161,7 +146,7 @@ local function encode_cursor(cursor, space_name)
     local indexes_keys_only = {}
     table.insert(indexes_keys_only, #cursor)
     for key, value in ipairs(cursor) do
-        if value_in(key, indexes_keys) then
+        if value_in(indexes_keys, key) then
             table.insert(indexes_keys_only, key)
             table.insert(indexes_keys_only, value)
         end
@@ -215,13 +200,6 @@ local function capitalize(str, option)
     return str
 end
 
-local function is_box_null(value)
-    if value and value == nil then
-        return true
-    end
-    return false
-end
-
 local function to_compat(cache, name)
     if type(name) == 'string' and cache ~= nil and type(cache) == 'table' then
         local found = name:match('%W')
@@ -268,6 +246,13 @@ local function is_nil(num, value)
         error(e_argument_validation:new('bad argument #%s (nil expected, got %s)', num, type(value)), 0)
     end
     return true
+end
+
+local function is_box_null(value)
+    if value and value == nil then
+        return true
+    end
+    return false
 end
 
 local function check_type(num, value, optional, variable_type)
@@ -328,26 +313,48 @@ local function is_table_or_string(num, value, optional)
     return true
 end
 
+local function is_string_array(data)
+    if type(data) ~= 'table' then
+        return false
+    end
+    if #data == 0 then return true end
+    for _, v in pairs(data) do
+        if type(v) ~= 'string' then
+            return false
+        end
+    end
+    return #data > 0 and next(data, #data) == nil
+end
+
+local function is_map(tbl)
+    if type(tbl) ~= 'table' then
+        return false
+    end
+
+    local key, _ = next(tbl)
+
+    return type(key) == 'string'
+end
+
 return {
     value_in = value_in,
+    find = find,
     diff_maps = diff_maps,
     diff_arrays = diff_arrays,
     merge_maps = merge_maps,
     merge_arrays = merge_arrays,
     concat_arrays = concat_arrays,
-    is_string_array = is_string_array,
     dedup_array = dedup_array,
-    is_map = is_map,
     coerce_schema = coerce_schema,
     map_by_field = map_by_field,
     encode_cursor = encode_cursor,
     decode_cursor = decode_cursor,
     capitalize = capitalize,
-    is_box_null = is_box_null,
     to_compat = to_compat,
     from_compat = from_compat,
     get_tnt_version = get_tnt_version,
     count_map = count_map,
+    is_box_null = is_box_null,
     is_nil = is_nil,
     is_string = is_string,
     is_boolean = is_boolean,
@@ -355,4 +362,6 @@ return {
     is_function = is_function,
     is_table = is_table,
     is_table_or_string = is_table_or_string,
+    is_string_array = is_string_array,
+    is_map = is_map,
 }

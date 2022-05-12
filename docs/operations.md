@@ -28,6 +28,7 @@
     - [on_resolve()](#on_resolve)
     - [remove_on_resolve_triggers()](#remove_on_resolve_triggers)
     - [is_schema_empty()](#is_schema_empty)
+    - [get_operation_fields()](#get_operation_fields)
 
 Submodule `operations.lua` - is a part of GraphQL API module provided functions to add/remove queries, mutations and it's prefixes as well as subsidiary functions to deal with GraphQL operations.
 
@@ -574,3 +575,46 @@ where:
 returns:
 
 - `is_schema_empty` (`boolean`) - If `true` - schema is empty and if `false` - schema contains at least one of: query, mutation, queries_prefix, mutations_prefix.
+
+### get_operation_fields()
+
+`operations.get_operation_fields(info, filter_func)` - method is used to extract query or mutation operation requested fields. This method can be used for different purposes in callback functions to get the list of field names that was requested by caller,
+
+where:
+
+- `info` (`table`) - mandatory, it's actually the third argument of a callback function;
+- `filter_func` (`function`) - optional, function with custom filter which is called on each found field_name during iteration over selection set. `filter_func` has the following declaration: `cursor_filter(field_name, filter)`, where:
+  - `field_name` (`string`) - name of found field name;
+  - `filter` (`any`) - result of previous call of `filter_func` (initially filter is `nil`);
+  
+  `filter_func` must return `filter` or `nil`,
+
+`get_operation_fields()` returns:
+
+- `[1]` (`table`) - mandatory, array of operation requested fields or {} if no any;
+- `[2]` (`any`) - final state of `filter` or nil if `filter_func` was not provided.
+
+Example:
+
+```lua
+  -- GraphQL query
+  local query = '{ entity { result, cursor } }'
+
+  -- query callback function
+  local function callback(_, arguments, info)
+      local function cursor_filter(field_name, filter)
+          if field_name == 'cursor' then
+              return true
+          end
+          return filter
+      end
+
+      -- `fields` will contain an array with names of requested fields: { "result", "cursor" }
+      -- `filter` will be true, because 
+      local fields, filter = operations.get_operation_fields(info, cursor_filter)
+
+      ...
+
+      return ...
+  end
+```
