@@ -1,10 +1,17 @@
 local t = require('luatest')
 local g = t.group('operations')
 
-local test_helper = require('test.helper')
+local helper = require('test.helper')
+
+local graphqlapi = require('graphqlapi')
+local net_box = require('net.box')
 local operations = require('graphqlapi.operations')
 local schemas = require('graphqlapi.schemas')
 local types = require('graphqlapi.types')
+
+local function call_execute_graphql(req, variables, schema_name)
+    return net_box.self:call('execute_graphql', { req, variables, schema_name })
+end
 
 g.before_each(function()
     types.remove_all()
@@ -606,7 +613,7 @@ g.test_add_remove_mutation_custom_schema_with_prefix = function()
 end
 
 g.test_add_remove_space_query_default_schema_no_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
         operations.add_space_query({
             space = 'entity',
@@ -650,7 +657,7 @@ g.test_add_remove_space_query_default_schema_no_prefix = function()
 end
 
 g.test_add_remove_space_query_default_schema_with_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -725,7 +732,7 @@ g.test_add_remove_space_query_default_schema_with_prefix = function()
 end
 
 g.test_add_remove_space_query_custom_schema_no_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_space_query({
         schema = 'test_schema',
@@ -758,7 +765,7 @@ g.test_add_remove_space_query_custom_schema_no_prefix = function()
 end
 
 g.test_add_remove_space_query_custom_schema_with_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_queries_prefix({
         prefix = 'test',
@@ -805,7 +812,7 @@ g.test_add_remove_space_query_custom_schema_with_prefix = function()
 end
 
 g.test_add_remove_space_mutation_default_schema_no_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_space_mutation({
         space = 'entity',
@@ -853,7 +860,7 @@ g.test_add_remove_space_mutation_default_schema_no_prefix = function()
 end
 
 g.test_add_remove_space_mutation_default_schema_with_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -930,7 +937,7 @@ g.test_add_remove_space_mutation_default_schema_with_prefix = function()
 end
 
 g.test_add_remove_space_mutation_custom_schema_no_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_space_mutation({
         schema = 'test_schema',
@@ -962,7 +969,7 @@ g.test_add_remove_space_mutation_custom_schema_no_prefix = function()
 end
 
 g.test_add_remove_space_mutation_custom_schema_with_prefix = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_mutations_prefix({
         prefix = 'test',
@@ -1151,7 +1158,7 @@ g.test_operations_remove_all = function()
     t.assert_items_equals(operations.queries_list('test_schema'), {})
     t.assert_items_equals(operations.mutations_list('test_schema'), {})
 
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_space_query({
         space = 'entity',
@@ -1267,7 +1274,7 @@ g.test_on_resolve_trigger = function()
 end
 
 g.test_remove_operations_by_space_name = function()
-    local space = test_helper.create_space()
+    local space = helper.create_space()
 
     operations.add_space_query({
         space = 'entity',
@@ -1396,6 +1403,40 @@ g.test_remove_operations_by_space_name = function()
     space:drop()
 end
 
+g.test_get_operation_fields = function ()
+    t.assert_items_equals(operations.get_operation_fields(), {})
+    t.assert_items_equals(operations.get_operation_fields({}), {})
+    t.assert_items_equals(operations.get_operation_fields({}, box.null), {})
+
+    package.path = helper.project_root.. '/test/fragments/suite1/?.lua;' .. package.path
+
+    graphqlapi.init(nil, nil, nil, 'test/fragments/suite1', { enable_iproto = true })
+
+    operations.add_query({
+        name = 'entity',
+        doc = 'Get entity',
+        kind = types.object({
+            name = 'entity_result',
+            fields = {
+                result = types.list(types.string),
+                cursor = types.string,
+            }
+        }),
+        callback = 'test.unit.operations_test.stub3',
+    })
+
+    local query = '{ entity { result } }'
+
+    local response, err = call_execute_graphql({ query = query })
+    t.assert_equals(err, nil)
+    t.assert_items_equals(response, {entity = {result = {"result", "nil"}}})
+
+    query = '{ entity { result, cursor } }'
+
+    response = call_execute_graphql({ query = query })
+    t.assert_items_equals(response, {entity = {cursor = "cursor", result = {"result", "cursor", "true"}}})
+    graphqlapi.stop()
+end
 
 local function stub1()
     return 'Operations test'
@@ -1405,7 +1446,23 @@ local function stub2()
     return nil, 'callback error'
 end
 
+local function stub3(_, _, info)
+    local function cursor_filter(field_name, filter)
+        if field_name == 'cursor' then
+            return true
+        end
+        return filter
+    end
+
+    local fields, filter = operations.get_operation_fields(info, cursor_filter)
+
+    table.insert(fields, tostring(filter))
+
+    return { result = fields, cursor = 'cursor' }
+end
+
 return {
     stub1 = stub1,
     stub2 = stub2,
+    stub3 = stub3,
 }

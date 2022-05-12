@@ -150,7 +150,7 @@ local function get_servers_by_list(instances)
     local servers = {}
     local connect_errors
     for _, server in pairs(cartridge.admin_get_servers()) do
-        if utils.value_in(server.alias, instances) then
+        if utils.value_in(instances, server.alias) then
             local conn, err = pool.connect(server.uri)
             local replicaset_uuid = server.replicaset.uuid or '00000000-0000-0000-0000-000000000000'
             local alias = server.alias or 'unknown'

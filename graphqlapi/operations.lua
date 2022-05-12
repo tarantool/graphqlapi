@@ -866,6 +866,27 @@ local function get_mutations(schema_name)
     return _mutations[schema_name] or {}
 end
 
+local function get_operation_fields(info, filter_func)
+    local fields = {}
+    local filter = nil
+
+    if not info then return fields, filter end
+    if not info.fieldASTs then return fields, filter end
+    if not info.fieldASTs[1] then return fields, filter end
+    if not info.fieldASTs[1].selectionSet then return fields, filter end
+    if not info.fieldASTs[1].selectionSet.selections then return fields, filter end
+
+    for _, field in ipairs(info.fieldASTs[1].selectionSet.selections or {}) do
+        if field.name and field.name.value then
+            table.insert(fields, field.name.value)
+            if type(filter_func) == 'function' then
+                filter = filter_func(field.name.value, filter)
+            end
+        end
+    end
+    return fields, filter
+end
+
 return {
     stop = stop,
     remove_all = remove_all,
@@ -905,4 +926,7 @@ return {
     -- Resolve triggers
     on_resolve = on_resolve,
     remove_on_resolve_triggers = remove_on_resolve_triggers,
+
+    -- Operation fields extractor
+    get_operation_fields = get_operation_fields,
 }

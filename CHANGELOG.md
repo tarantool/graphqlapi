@@ -16,6 +16,8 @@
 - `Add bucket_id wrapper`
 - `Rename schemas.schemas_list() to schemas.list()`
 - `Fix GraphQLIDE endpoints not registered in some cases`
+- `Add operations.get_operation_fields() to extract operation requested fields`
+- `Add utils.find() helper`
 
 ## 0.0.8
 
