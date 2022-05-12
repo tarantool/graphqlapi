@@ -3,7 +3,7 @@
 - [Module **graphqlapi** Lua API](#module-graphqlapi-lua-api)
   - [Lua API](#lua-api)
     - [init()](#init)
-      - [execute_graphql()](#execute_graphql)
+    - [execute_graphql()](#execute_graphql)
     - [stop()](#stop)
     - [reload()](#reload)
     - [set_fragments_dir()](#set_fragments_dir)
@@ -47,7 +47,7 @@ where:
   - options are the same as http:route [HTTP routes](https://github.com/tarantool/http/tree/1.1.0#using-routes)
   - `enable_iproto` (`boolean`) - optional, if true `execute_graphql` function will be set as global to make possible to make GraphQL requests over IPROTO.
 
-#### execute_graphql()
+### execute_graphql()
 
 `execute_graphql(request)` - is a special function may be set as global by `enable_iproto` option on `init()` or by calling a special method `graphqlapi.init_graphql_iproto()`,
 
@@ -57,7 +57,7 @@ where:
   - `query` (`string`) - mandatory, GraphQL query;
   - `operationName` (`string`) - optional, the name of GraphQL operation to be executed;
   - `variables` (`table`) - optional, a dictionary with operation variables values;
-  - `schema_name` (`string`) - optional, the name of schema query belongs to, if not provided `defaults.DEFAULT_SCHEMA_NAME` is used,
+  - `schema` (`string`) - optional, the name of schema query belongs to, if not provided `defaults.DEFAULT_SCHEMA_NAME` is used,
 
 returns:
 
@@ -91,6 +91,7 @@ GraphQL over IPROTO:
 ```lua
     local graphqlapi = require('graphqlapi')
     graphqlapi.init(nil, nil, nil, '../example/fragments', { enable_iproto = true })
+    graphqlapi.execute_graphql({query = 'query MyQuery { }', operationName = 'MyQuery', variables = {}, schema = 'Default'})
 ```
 
 ### stop()

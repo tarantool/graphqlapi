@@ -402,13 +402,13 @@ g.test_invalid_requests_iproto = function()
     request = { query = 1 }
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty query string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "query" string')
 
     -- check empty graphql query
     request = { query = '' }
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty query string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "query" string')
 
     -- check incorrect graphql operationName type
     request = {
@@ -417,7 +417,7 @@ g.test_invalid_requests_iproto = function()
     }
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty operationName string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "operationName" string')
 
     -- check incorrect operation name query
     request = {
@@ -427,7 +427,7 @@ g.test_invalid_requests_iproto = function()
 
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty operationName string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "operationName" string')
 
     -- check incorrect variables type
     request = {
@@ -437,27 +437,27 @@ g.test_invalid_requests_iproto = function()
 
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected variables should be a dictionary')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected "variables" should be a dictionary')
 
     -- check incorrect schema_name type
     request = {
             query = 'query {space_info(name: [qqqq]) {name}}',
-            schema_name = 1,
+            schema = 1,
     }
 
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty schema_name string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "schema" string')
 
     -- check empty schema_name
     request = {
         query = 'query {space_info(name: [qqqq]) {name}}',
-        schema_name = '',
+        schema = '',
     }
 
     response, err = call_execute_graphql(request)
     t.assert_equals(response, nil)
-    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty schema_name string')
+    t.assert_equals(err[1].str, 'GraphQL over IPROTO parsing failed: Expected a non-empty "schema" string')
 
 
     -- check incorrect syntax query
@@ -568,7 +568,7 @@ g.test_graphql_iproto = function()
         operations.add_query({
             name = 'test_errors_array',
             doc = 'Get test_errors_error',
-
+            schema = 'test_schema',
             kind = types.object({
                 name = 'some_data5',
                 fields = {
@@ -579,7 +579,7 @@ g.test_graphql_iproto = function()
         })
 
         local query = '{ test_errors_array {some_data5}}'
-        local response, err = call_execute_graphql({ query = query })
+        local response, err = call_execute_graphql({ query = query, schema = 'test_schema' })
         t.assert_equals(response, nil)
         t.assert_equals(err[1].str, "GraphQL request error: Some error #1")
         t.assert_equals(err[2].str, "GraphQL request error: Some error #2")

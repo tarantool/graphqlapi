@@ -361,31 +361,31 @@ local function execute_graphql_iproto(request)
     end
 
     if type(request.query) ~= 'string' or request.query == '' then
-        local err = e_graphql_parse_iproto:new('Expected a non-empty query string')
+        local err = e_graphql_parse_iproto:new('Expected a non-empty "query" string')
         log.error('%s', err)
         return nil, { err }
     end
 
     if request.operationName ~= nil and type(request.operationName) ~= 'string' then
-        local err = e_graphql_parse_iproto:new('Expected a non-empty operationName string')
+        local err = e_graphql_parse_iproto:new('Expected a non-empty "operationName" string')
         log.error('%s', err)
         return nil, { err }
     end
 
     if request.variables ~= nil and type(request.variables) ~= "table" then
-        local err = e_graphql_parse_iproto:new('Expected variables should be a dictionary')
+        local err = e_graphql_parse_iproto:new('Expected "variables" should be a dictionary')
         log.error('%s', err)
         return nil, { err }
     end
 
-    if request.schema_name ~= nil and (type(request.schema_name) ~= 'string' or request.schema_name == '') then
-        local err = e_graphql_parse_iproto:new('Expected a non-empty schema_name string')
+    if request.schema ~= nil and (type(request.schema) ~= 'string' or request.schema == '') then
+        local err = e_graphql_parse_iproto:new('Expected a non-empty "schema" string')
         log.error('%s', err)
         return nil, { err }
     end
 
     local resp, err = e_graphql_internal_iproto:pcall(
-        _execute_graphql_iproto, request.query, request.variables, request.schema_name)
+        _execute_graphql_iproto, request.query, request.operationName, request.variables, request.schema)
     if resp == nil then
         log.error('%s', err)
         return nil, err
