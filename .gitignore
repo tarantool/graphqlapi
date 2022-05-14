@@ -24,3 +24,7 @@ tmp/*
 .vscode
 build.luarocks/
 *.rock
+CTestTestfile.cmake
+build.luarocks
+graphqlapi/VERSION.lua
+Makefile

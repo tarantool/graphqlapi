@@ -18,6 +18,7 @@
 - `Fix GraphQLIDE endpoints not registered in some cases`
 - `Add operations.get_operation_fields() to extract operation requested fields`
 - `Add utils.find() helper`
+- `Use cmake build type instead builtin`
 
 ## 0.0.8
 

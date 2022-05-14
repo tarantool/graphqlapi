@@ -16,7 +16,18 @@ jobs:
       - uses: tarantool/setup-tarantool@v1
         with:
           tarantool-version: '2.8'
-      - name: Install rocks
-        run: make .rocks
+
+      - name: CMAKE
+        run: cmake .
+
+      - name: Install dependencies
+        run: make deps
+
+      - name: Build
+        run: make build
+
+      - name: Run linter
+        run: make lint
+
       - name: Run tests
         run: make test

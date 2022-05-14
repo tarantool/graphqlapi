@@ -4,7 +4,10 @@ local fio = require('fio')
 local digest = require('digest')
 local errors = require('errors')
 
-local VERSION = 'scm-1'
+local ok, VERSION = pcall(require, 'graphqlapi.VERSION')
+if not ok then
+    VERSION = 'unknown'
+end
 
 for _, module in ipairs({
     'graphqlapi.cluster',

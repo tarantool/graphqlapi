@@ -19,31 +19,11 @@ dependencies = {
     'vshard ~> 0.1',
 }
 build = {
-    type = 'builtin',
-    modules = {
-        ['graphqlapi'] = 'graphqlapi.lua',
-        ['graphqlapi.cluster'] = 'graphqlapi/cluster.lua',
-        ['graphqlapi.defaults'] = 'graphqlapi/defaults.lua',
-        ['graphqlapi.funcall'] = 'graphqlapi/funcall.lua',
-        ['graphqlapi.graphql.execute'] = 'graphqlapi/graphql/execute.lua',
-        ['graphqlapi.graphql.introspection'] = 'graphqlapi/graphql/introspection.lua',
-        ['graphqlapi.graphql.parse'] = 'graphqlapi/graphql/parse.lua',
-        ['graphqlapi.graphql.query_util'] = 'graphqlapi/graphql/query_util.lua',
-        ['graphqlapi.graphql.rules'] = 'graphqlapi/graphql/rules.lua',
-        ['graphqlapi.graphql.schema'] = 'graphqlapi/graphql/schema.lua',
-        ['graphqlapi.graphql.types'] = 'graphqlapi/graphql/types.lua',
-        ['graphqlapi.graphql.util'] = 'graphqlapi/graphql/util.lua',
-        ['graphqlapi.graphql.validate'] = 'graphqlapi/graphql/validate.lua',
-        ['graphqlapi.graphql.validate_variables'] = 'graphqlapi/graphql/validate_variables.lua',
-        ['graphqlapi.helpers'] = 'graphqlapi/helpers.lua',
-        ['graphqlapi.list'] = 'graphqlapi/list.lua',
-        ['graphqlapi.middleware'] = 'graphqlapi/middleware.lua',
-        ['graphqlapi.fragments'] = 'graphqlapi/fragments.lua',
-        ['graphqlapi.operations'] = 'graphqlapi/operations.lua',
-        ['graphqlapi.schemas'] = 'graphqlapi/schemas.lua',
-        ['graphqlapi.trigger'] = 'graphqlapi/trigger.lua',
-        ['graphqlapi.types'] = 'graphqlapi/types.lua',
-        ['graphqlapi.utils'] = 'graphqlapi/utils.lua',
-        ['cartridge.roles.graphqlapi'] = 'cartridge/roles/graphqlapi.lua',
-    },
+    type = 'cmake',
+    variables = {
+        TARANTOOL_DIR = '$(TARANTOOL_DIR)',
+        TARANTOOL_INSTALL_LIBDIR = '$(LIBDIR)',
+        TARANTOOL_INSTALL_LUADIR = '$(LUADIR)',
+        TARANTOOL_INSTALL_BINDIR = '$(BINDIR)',
+    }
 }
