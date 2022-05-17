@@ -10,7 +10,7 @@ local utils = require('graphqlapi.utils')
 
 local _replicas = {}
 
-local e_cluster_api = errors.new_class('cluster API error', { capture_stack = false, })
+local e_cluster_api = errors.new_class('cluster API error', { capture_stack = false })
 
 local function get_alias_by_uuid(conn)
     utils.is_table(1, conn, false)
@@ -26,10 +26,9 @@ local function get_servers()
     local connect_errors
     for _, server in pairs(cartridge.admin_get_servers()) do
         local conn, err = pool.connect(server.uri)
-        local replicaset_uuid = server.replicaset.uuid or '00000000-0000-0000-0000-000000000000'
         local alias = server.alias or 'unknown'
         if conn then
-            table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
+            table.insert(servers, { alias = alias, conn = conn })
         else
             connect_errors = connect_errors or {}
             table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
@@ -41,15 +40,31 @@ end
 local function get_masters()
     local servers = {}
     local connect_errors
-    for _, replicaset in pairs(require('cartridge').admin_get_replicasets()) do
+    for _, replicaset in pairs(cartridge.admin_get_replicasets()) do
         local conn, err = pool.connect(replicaset.active_master.uri)
-        local replicaset_uuid = replicaset.uuid or '00000000-0000-0000-0000-000000000000'
         local alias = replicaset.active_master.alias or 'unknown'
         if conn then
-            table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
+            table.insert(servers, { alias = alias, conn = conn })
         else
             connect_errors = connect_errors or {}
             table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
+        end
+    end
+    return servers, connect_errors
+end
+
+local function get_candidates(role)
+    utils.is_string(1, role, true)
+    local servers = {}
+    local connect_errors
+    for _, uri in ipairs(cartridge.rpc_get_candidates(role)) do
+        local conn, err = pool.connect(uri)
+        local alias = get_alias_by_uuid(conn)
+        if not conn then
+            connect_errors = connect_errors or {}
+            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
+        else
+            table.insert(servers, { alias = alias, conn = conn })
         end
     end
     return servers, connect_errors
@@ -100,9 +115,9 @@ local function get_storages_instances(mode, prefer_replica, balance)
                 _replicas[uuid] = conn.peer_uuid
             end
         end
-        local replicaset_uuid = uuid or '00000000-0000-0000-0000-000000000000'
+        -- local replicaset_uuid = uuid or '00000000-0000-0000-0000-000000000000'
         local alias = get_alias_by_uuid(conn)
-        table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn , })
+        table.insert(servers, { alias = alias, conn = conn })
     end
     return servers
 end
@@ -198,6 +213,7 @@ return {
     -- Cluster API
     get_servers = get_servers,
     get_masters = get_masters,
+    get_candidates = get_candidates,
     get_storages_instances = get_storages_instances,
     get_self_alias = get_self_alias,
     get_self_uri = get_self_uri,
