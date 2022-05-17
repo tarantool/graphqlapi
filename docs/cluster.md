@@ -4,6 +4,7 @@
   - [lua API](#lua-api)
     - [get_servers()](#get_servers)
     - [get_masters()](#get_masters)
+    - [get_candidates()](#get_candidates)
     - [get_storages_instances()](#get_storages_instances)
     - [get_self_alias()](#get_self_alias)
     - [get_self_uri()](#get_self_uri)
@@ -27,9 +28,10 @@ Submodule `cluster.lua` is a part of GraphQL API module provided functions speci
 
 returns:
 
-- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
-
-- `[2]` (`table`) - array of errors if some cluster instances is not available.
+- `[1]` (`table`) - array of maps with the following structure:
+  - `alias` (`string`) - alias of instance
+  - `conn` (`table`) - conn object. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[2]` (`table`) - array of errors if any of need instances is not available.
 
 ### get_masters()
 
@@ -37,9 +39,25 @@ returns:
 
 returns:
 
-- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[1]` (`table`) - array of maps with the following structure:
+  - `alias` (`string`) - alias of instance
+  - `conn` (`table`) - conn object. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[2]` (`table`) - array of errors if any of need instances is not available.
 
-- `[2]` (`table`) - array of errors if some master instances is not available.
+### get_candidates()
+
+`cluster.get_masters(role)` - method to get connections to all cluster instances with the provided `role`,
+
+where:
+
+- `role` (`string`) - mandatory, name of the role,
+
+returns:
+
+- `[1]` (`table`) - array of maps with the following structure:
+  - `alias` (`string`) - alias of instance
+  - `conn` (`table`) - conn object. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[2]` (`table`) - array of errors if any of need instances is not available.
 
 ### get_storages_instances()
 
@@ -53,9 +71,10 @@ where:
 
 returns:
 
-- `[1]` (`table`) - array of conn objects to all servers. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
-
-- `[2]` (`table`) - array of errors if some master instances is not available.
+- `[1]` (`table`) - array of maps with the following structure:
+  - `alias` (`string`) - alias of instance
+  - `conn` (`table`) - conn object. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
+- `[2]` (`table`) - array of errors if any of need instances is not available.
 
 ### get_self_alias()
 

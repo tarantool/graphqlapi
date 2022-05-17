@@ -9,6 +9,9 @@ g.before_each(function()
     local cluster_config = table.deepcopy(helper.cluster_config)
     g.cluster = helper.Cluster:new(cluster_config)
     g.cluster:start()
+    helper.retrying({}, function()
+        t.assert_equals(helper.list_cluster_issues(g.cluster.main_server), {})
+    end)
 end)
 
 g.after_each(function()
@@ -28,7 +31,7 @@ local function check_instance(servers, instance_name)
 
     local _instance = find_by_alias(servers, instance_name)
     local instance = g.cluster:server(instance_name)
-    t.assert_equals(_instance.replicaset_uuid, instance.replicaset_uuid)
+
     t.assert_equals(
         tostring(_instance.conn.host)..':'..
         tostring(_instance.conn.port), instance.net_box_uri)
@@ -41,7 +44,6 @@ g.test_get_servers = function()
     t.assert_equals(#servers, #g.cluster.servers)
     for _, server in pairs(servers) do
         local instance = g.cluster:server(server.alias)
-        t.assert_equals(server.replicaset_uuid, instance.replicaset_uuid)
         t.assert_equals(tostring(server.conn.host)..':'..tostring(server.conn.port), instance.net_box_uri)
     end
 
@@ -59,6 +61,14 @@ g.test_get_masters = function()
     check_instance(servers, 'router')
     check_instance(servers, 'storage-1-master')
     check_instance(servers, 'storage-2-master')
+end
+
+g.test_get_candidates = function()
+    local router = g.cluster:server('router')
+    local servers = router.net_box:eval("return require('graphqlapi.cluster').get_candidates('vshard-router')")
+
+    t.assert_equals(#servers, 1)
+    check_instance(servers, 'router')
 end
 
 g.test_get_storages_instances = function()
