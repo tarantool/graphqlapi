@@ -53,23 +53,6 @@ local function get_masters()
     return servers, connect_errors
 end
 
-local function get_candidates(role)
-    utils.is_string(1, role, true)
-    local servers = {}
-    local connect_errors
-    for _, uri in ipairs(cartridge.rpc_get_candidates(role)) do
-        local conn, err = pool.connect(uri)
-        local alias = get_alias_by_uuid(conn)
-        if not conn then
-            connect_errors = connect_errors or {}
-            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
-        else
-            table.insert(servers, { alias = alias, conn = conn })
-        end
-    end
-    return servers, connect_errors
-end
-
 local function get_storages_instances(mode, prefer_replica, balance)
     utils.is_string(1, mode, true)
     utils.is_boolean(2, prefer_replica, true)
@@ -161,6 +144,18 @@ local function get_instances()
     return instances
 end
 
+local function get_candidates(role)
+    utils.is_string(1, role, true)
+    local instances = {}
+    local instances_uri = cartridge.rpc_get_candidates(role)
+    for _, server in pairs(cartridge.admin_get_servers()) do
+        if utils.value_in(instances_uri, server.uri) then
+            table.insert(instances, { alias = server.alias, uri = server.uri, status = server.status })
+        end
+    end
+    return instances
+end
+
 local function get_servers_by_list(instances)
     local servers = {}
     local connect_errors
@@ -213,13 +208,13 @@ return {
     -- Cluster API
     get_servers = get_servers,
     get_masters = get_masters,
-    get_candidates = get_candidates,
     get_storages_instances = get_storages_instances,
     get_self_alias = get_self_alias,
     get_self_uri = get_self_uri,
     get_replicasets = get_replicasets,
     get_replicaset_instances = get_replicaset_instances,
     get_instances = get_instances,
+    get_candidates = get_candidates,
     get_servers_by_list = get_servers_by_list,
 
     -- Schema API

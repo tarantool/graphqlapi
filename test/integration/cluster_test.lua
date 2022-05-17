@@ -63,13 +63,13 @@ g.test_get_masters = function()
     check_instance(servers, 'storage-2-master')
 end
 
-g.test_get_candidates = function()
-    local router = g.cluster:server('router')
-    local servers = router.net_box:eval("return require('graphqlapi.cluster').get_candidates('vshard-router')")
+-- g.test_get_candidates = function()
+--     local router = g.cluster:server('router')
+--     local servers = router.net_box:eval("return require('graphqlapi.cluster').get_candidates('vshard-router')")
 
-    t.assert_equals(#servers, 1)
-    check_instance(servers, 'router')
-end
+--     t.assert_equals(#servers, 1)
+--     check_instance(servers, 'router')
+-- end
 
 g.test_get_storages_instances = function()
     local router = g.cluster:server('router')
@@ -142,6 +142,16 @@ g.test_get_instances = function()
         { alias = 'storage-1-master', status = "healthy", uri = 'localhost:13302', },
     })
     instances = cluster.get_instances()
+    t.assert_items_equals(instances, {})
+end
+
+g.test_get_candidates = function()
+    local router = g.cluster:server('router')
+    local instances = router.net_box:eval("return require('graphqlapi.cluster').get_candidates('vshard-router')")
+    t.assert_items_equals(instances, {
+        { alias = 'router', status = "healthy", uri = 'localhost:13301', },
+    })
+    instances = cluster.get_candidates('vshard-router')
     t.assert_items_equals(instances, {})
 end
 

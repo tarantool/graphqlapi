@@ -4,13 +4,13 @@
   - [lua API](#lua-api)
     - [get_servers()](#get_servers)
     - [get_masters()](#get_masters)
-    - [get_candidates()](#get_candidates)
     - [get_storages_instances()](#get_storages_instances)
     - [get_self_alias()](#get_self_alias)
     - [get_self_uri()](#get_self_uri)
     - [get_replicasets()](#get_replicasets)
     - [get_replicaset_instances()](#get_replicaset_instances)
     - [get_instances()](#get_instances)
+    - [get_candidates()](#get_candidates)
     - [get_servers_by_list()](#get_servers_by_list)
     - [get_existing_spaces()](#get_existing_spaces)
     - [is_space_exists()](#is_space_exists)
@@ -36,21 +36,6 @@ returns:
 ### get_masters()
 
 `cluster.get_masters()` - method to get connections to active master instances of all cluster replicasets,
-
-returns:
-
-- `[1]` (`table`) - array of maps with the following structure:
-  - `alias` (`string`) - alias of instance
-  - `conn` (`table`) - conn object. For more details see: [net_box module](https://www.tarantool.io/en/doc/latest/reference/reference_lua/net_box/#net-box-connect)
-- `[2]` (`table`) - array of errors if any of need instances is not available.
-
-### get_candidates()
-
-`cluster.get_masters(role)` - method to get connections to all cluster instances with the provided `role`,
-
-where:
-
-- `role` (`string`) - mandatory, name of the role,
 
 returns:
 
@@ -106,11 +91,14 @@ returns:
 
 where:
 
-- `replicaset` (`string`) - alias name of replicaset;
+- `replicaset` (`table`) - alias name of replicaset;
 
 returns:
 
-- `[1]` (`table`) - array of strings - cluster replicaset instances alias names.
+- `[1]` (`table`) - map with cluster replicaset instances, has the following format:
+  - `alias` (`string`) - instance alias name;
+  - `uri` (`string`) - instance connection string;
+  - `status` (`string`) - server status.
 
 ### get_instances()
 
@@ -118,7 +106,25 @@ returns:
 
 returns:
 
-- `[1]` (`table`) - array of strings - all cluster instances alias names.
+- `[1]` (`table`) - map with cluster replicaset instances, has the following format:
+  - `alias` (`string`) - instance alias name;
+  - `uri` (`string`) - instance connection string;
+  - `status` (`string`) - server status.
+
+### get_candidates()
+
+`cluster.get_candidates(role)` - method to get all cluster instances with the provided role,
+
+where:
+
+- `role` (`string`) - mandatory, role name,
+
+returns:
+
+- `[1]` (`table`) - map with cluster replicaset instances, has the following format:
+  - `alias` (`string`) - instance alias name;
+  - `uri` (`string`) - instance connection string;
+  - `status` (`string`) - server status.
 
 ### get_servers_by_list()
 
