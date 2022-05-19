@@ -29,7 +29,7 @@ local function config_updater_init()
         while true do
             fiber.testcancel()
             local ok, err = e_schema_updater_fiber:pcall(function()
-                local message = channel:get(defaults.SCHEMA_UPDATE_CHANNEL_TIMEOUT)
+                local message = channel:get(defaults.CONFIG_UPDATE_CHANNEL_TIMEOUT)
 
                 if message ~= nil then
                     for update_config_trigger in pairs(_on_update_config_triggers) do
