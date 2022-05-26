@@ -51,6 +51,7 @@ add_custom_target(lint
 )
 
 add_custom_target(test
+  COMMAND cmake .
   COMMAND .rocks/bin/luacheck .
   COMMAND rm -f tmp/luacov*
   COMMAND .rocks/bin/luatest --verbose --coverage --shuffle group

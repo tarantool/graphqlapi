@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.9
 
 - `Fix is_array() not working properly`
 - `Accept a cdata number as value of a Float variable and forbid NaN and Inf`
@@ -20,6 +20,7 @@
 - `Add utils.find() helper`
 - `Use cmake build type instead builtin`
 - `Add cluster.get_candidates() method`
+- `update examples dependencies: graphqlide@0.0.19 ->  graphqlide@0.0.21, graphqlapi@0.0.8 -> graphqlapi@0.0.9, graphqlapi-helpers@0.0.8 -> graphqlapi-helpers@0.0.9`
 
 ## 0.0.8
 
