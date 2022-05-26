@@ -290,6 +290,7 @@ g.test_get_tnt_version = function()
         { '2.8.1-0-ge2a1ec0c2-r405', { major = 2, minor = 8, patch = 1, enterprise = true }},
         { '2.10.0-beta1-0-g7da4b1438', { major = 2, minor = 10, patch = 0, enterprise = false }},
         { '2.10.0-beta1-0-g7da4b1438-r427', { major = 2, minor = 10, patch = 0, enterprise = true }},
+        { '2.10.0-1-gfa775b383-r478', { major = 2, minor = 10, patch = 0, enterprise = true }},
     }
 
     for _, ver in ipairs(versions) do
