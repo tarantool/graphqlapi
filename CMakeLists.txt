@@ -22,26 +22,6 @@ file(GLOB_RECURSE LUA_DOCS
   "${CMAKE_CURRENT_SOURCE_DIR}/docs/*.md"
 )
 
-## VERSION ####################################################################
-###############################################################################
-
-execute_process(
-  COMMAND git describe --tags --always
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  OUTPUT_VARIABLE GIT_DESCRIBE
-  ERROR_QUIET
-)
-
-if (NOT GIT_DESCRIBE)
-  set(GIT_DESCRIBE "unknown")
-endif()
-
-configure_file (
-  "${PROJECT_SOURCE_DIR}/graphqlapi/VERSION.lua.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/graphqlapi/VERSION.lua"
-)
-
 ## Custom targets #############################################################
 ###############################################################################
 
