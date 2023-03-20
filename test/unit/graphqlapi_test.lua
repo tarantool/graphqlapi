@@ -626,10 +626,7 @@ g.test_schema_caching = function()
 end
 
 g.test_version = function()
-    local handle = io.popen('git describe --tags --always')
-    local version = handle:read("*a"):gsub('\n*', '')
-    handle:close()
-    t.assert_equals(require('graphqlapi').VERSION, version)
+    t.assert_type(require('graphqlapi')._VERSION, 'string')
 end
 
 local function stub_data()

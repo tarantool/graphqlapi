@@ -594,4 +594,5 @@ return {
 
     -- version
     VERSION = VERSION,
+    _VERSION = VERSION,
 }

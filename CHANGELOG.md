@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- `Сhange versioning support`
+
 ## 0.0.9
 
 - `Fix is_array() not working properly`
