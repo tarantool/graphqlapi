@@ -17,6 +17,7 @@ dependencies = {
     'http ~> 1',
     'errors ~> 2',
     'vshard ~> 0.1',
+    'cartridge ~> 2',
 }
 build = {
     type = 'cmake',
