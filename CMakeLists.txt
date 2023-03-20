@@ -70,7 +70,6 @@ add_custom_target(pack
 )
 
 add_custom_target(deps
-  COMMAND tarantoolctl rocks install cartridge 2.7.4
   COMMAND tarantoolctl rocks install luatest 0.5.7
   COMMAND tarantoolctl rocks install luacov 0.13.0
   COMMAND tarantoolctl rocks install luacheck 0.26.0

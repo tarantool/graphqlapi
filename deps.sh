@@ -3,9 +3,6 @@
 
 set -e
 
-# Module dependencies:
-tarantoolctl rocks install cartridge 2.7.4
-
 # Test dependencies:
 tarantoolctl rocks install luatest 0.5.7
 tarantoolctl rocks install luacov 0.13.0
