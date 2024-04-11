@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.11
 
 - `Allow to work with ddl 1.7.0 and newer`
 
