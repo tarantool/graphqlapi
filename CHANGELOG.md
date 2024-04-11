@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `Allow to work with ddl 1.7.0 and newer`
+
 ## 0.0.10
 
 - `Сhange versioning support`
