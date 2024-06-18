@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.12
+
+- `Support to use ddl-ee`
+
 ## 0.0.11
 
 - `Allow to work with ddl 1.7.0 and newer`
