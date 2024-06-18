@@ -1,4 +1,11 @@
-local ddl = require('ddl')
+local ddl
+local ok, rc = pcall(require, 'ddl-ee')
+if ok then
+    ddl = rc
+else
+    ddl = require('ddl')
+end
+
 local log = require('log')
 
 local function fill()
@@ -10,33 +17,33 @@ local function fill()
                 is_local = false,
                 temporary = false,
                 format = {
-                    {name = 'customer_id', is_nullable = false, type = 'unsigned'},
-                    {name = 'bucket_id', is_nullable = false, type = 'unsigned'},
-                    {name = 'fullname', is_nullable = false, type = 'string'},
+                    { name = 'customer_id', is_nullable = false, type = 'unsigned' },
+                    { name = 'bucket_id',   is_nullable = false, type = 'unsigned' },
+                    { name = 'fullname',    is_nullable = false, type = 'string' },
                 },
-                indexes = {{
+                indexes = { {
                     name = 'customer_id',
                     type = 'TREE',
                     unique = true,
                     parts = {
-                        {path = 'customer_id', is_nullable = false, type = 'unsigned'}
+                        { path = 'customer_id', is_nullable = false, type = 'unsigned' }
                     }
                 }, {
                     name = 'bucket_id',
                     type = 'TREE',
                     unique = false,
                     parts = {
-                        {path = 'bucket_id', is_nullable = false, type = 'unsigned'}
+                        { path = 'bucket_id', is_nullable = false, type = 'unsigned' }
                     }
                 }, {
                     name = 'fullname',
                     type = 'TREE',
                     unique = true,
                     parts = {
-                        {path = 'fullname', is_nullable = false, type = 'string'}
+                        { path = 'fullname', is_nullable = false, type = 'string' }
                     }
-                }},
-                sharding_key = {'customer_id'},
+                } },
+                sharding_key = { 'customer_id' },
             }
         }
     }
@@ -53,8 +60,8 @@ local function fill()
 
     if box.space['customer'] ~= nil then
         for id = 1, 250 do
-            local bucket_id = ddl.bucket_id('customer', {id})
-            crud.replace('customer', {id, bucket_id, 'Test Customer '..tostring(id)})
+            local bucket_id = ddl.bucket_id('customer', { id })
+            crud.replace('customer', { id, bucket_id, 'Test Customer ' .. tostring(id) })
         end
     end
 end

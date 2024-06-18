@@ -1,12 +1,19 @@
 local argparse = require('cartridge.argparse')
 local cartridge = require('cartridge')
-local ddl = require('ddl')
 local errors = require('errors')
 local membership = require('membership')
 local pool = require('cartridge.pool')
 local vshard = require('vshard')
 
 local utils = require('graphqlapi.utils')
+
+local ddl
+local ok, rc = pcall(require, 'ddl-ee')
+if ok then
+    ddl = rc
+else
+    ddl = require('ddl')
+end
 
 local _replicas = {}
 
@@ -31,7 +38,7 @@ local function get_servers()
             table.insert(servers, { alias = alias, conn = conn })
         else
             connect_errors = connect_errors or {}
-            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
+            table.insert(connect_errors, e_cluster_api:new('instance \'%s\' error: %s', alias, err))
         end
     end
     return servers, connect_errors
@@ -47,7 +54,7 @@ local function get_masters()
             table.insert(servers, { alias = alias, conn = conn })
         else
             connect_errors = connect_errors or {}
-            table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
+            table.insert(connect_errors, e_cluster_api:new('instance \'%s\' error: %s', alias, err))
         end
     end
     return servers, connect_errors
@@ -72,7 +79,7 @@ local function get_storages_instances(mode, prefer_replica, balance)
             _replicas[uuid] = conn.peer_uuid
         else
             if prefer_replica == false and balance == false then
-                conn =  replicaset.master.next_by_priority.conn
+                conn = replicaset.master.next_by_priority.conn
                 _replicas[uuid] = conn.peer_uuid
             elseif prefer_replica == false and balance == true then
                 local prev_uuid = _replicas[uuid] or replicaset.priority_list[1].uuid
@@ -168,7 +175,7 @@ local function get_servers_by_list(instances)
                 table.insert(servers, { replicaset_uuid = replicaset_uuid, alias = alias, conn = conn, })
             else
                 connect_errors = connect_errors or {}
-                table.insert(connect_errors,  e_cluster_api:new('instance \'%s\' error: %s', alias, err))
+                table.insert(connect_errors, e_cluster_api:new('instance \'%s\' error: %s', alias, err))
             end
         end
     end
@@ -179,7 +186,7 @@ local function get_existing_spaces()
     local spaces = {}
     local schema = ddl.get_schema()
     for space in pairs(schema.spaces) do
-        spaces[space]=space
+        spaces[space] = space
     end
     return spaces
 end
