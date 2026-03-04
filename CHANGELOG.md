@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.13
+
+- `Remove ddl-ee dependencies`
+
 ## 0.0.12
 
 - `Support to use ddl-ee`

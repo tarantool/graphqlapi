@@ -7,13 +7,7 @@ local vshard = require('vshard')
 
 local utils = require('graphqlapi.utils')
 
-local ddl
-local ok, rc = pcall(require, 'ddl-ee')
-if ok then
-    ddl = rc
-else
-    ddl = require('ddl')
-end
+local ddl = require('ddl')
 
 local _replicas = {}
 
