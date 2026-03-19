@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10...3.31 FATAL_ERROR)
 
 project(graphqlapi NONE)
 
