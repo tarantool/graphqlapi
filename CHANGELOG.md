@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+## 0.0.13
+
+- `Remove support of the ddl-ee`
+
 ## 0.0.12
 
 - `Support to use ddl-ee`
