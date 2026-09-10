@@ -301,6 +301,32 @@ g.test_get_tnt_version = function()
     rawset(_G, '_TARANTOOL', version)
 end
 
+g.test_get_tnt_version_enterprise_package = function()
+    local tnt_version = rawget(_G, '_TARANTOOL')
+    local saved_tarantool = rawget(_G, 'tarantool')
+
+    rawset(_G, '_TARANTOOL', '2.10.0-0-g7da4b1438')
+
+    rawset(_G, 'tarantool', { package = 'Tarantool Enterprise' })
+    t.assert_equals(utils.get_tnt_version().enterprise, true)
+
+    rawset(_G, 'tarantool', { package = 'Tarantool' })
+    t.assert_equals(utils.get_tnt_version().enterprise, false)
+
+    rawset(_G, 'tarantool', {})
+    t.assert_equals(utils.get_tnt_version().enterprise, false)
+
+    rawset(_G, 'tarantool', nil)
+    t.assert_equals(utils.get_tnt_version().enterprise, false)
+
+    rawset(_G, '_TARANTOOL', '2.10.0-1-gfa775b383-r478')
+    rawset(_G, 'tarantool', { package = 'Tarantool' })
+    t.assert_equals(utils.get_tnt_version().enterprise, true)
+
+    rawset(_G, '_TARANTOOL', tnt_version)
+    rawset(_G, 'tarantool', saved_tarantool)
+end
+
 g.test_count_map = function()
     t.assert_equals(utils.count_map(), 0)
     t.assert_equals(utils.count_map(''), 0)

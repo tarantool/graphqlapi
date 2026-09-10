@@ -219,17 +219,29 @@ local function from_compat(cache, name)
     return name
 end
 
+local function is_enterprise()
+    if (_G._TARANTOOL):match('-r%d+') ~= nil then
+        return true
+    end
+
+    local tnt = _G.tarantool
+    if tnt == nil or tnt.package == nil then
+        return false
+    end
+
+    return tnt.package:match('Enterprise') ~= nil
+end
+
 local function get_tnt_version()
     local major_minor_patch = _G._TARANTOOL:split('-', 1)[1]
     local major_minor_patch_parts = major_minor_patch:split('.', 2)
 
-    local version = {
+    return {
         major = tonumber(major_minor_patch_parts[1]),
         minor = tonumber(major_minor_patch_parts[2]),
         patch = tonumber(major_minor_patch_parts[3]),
-        enterprise = (_G._TARANTOOL):match('-r%d+') ~= nil,
+        enterprise = is_enterprise(),
     }
-    return version
 end
 
 local function count_map(t)

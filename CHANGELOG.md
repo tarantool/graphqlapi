@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `Detect Tarantool Enterprise by tarantool.package in utils.get_tnt_version()`
+
 ## 0.0.13
 
 - `Remove support of the ddl-ee`
