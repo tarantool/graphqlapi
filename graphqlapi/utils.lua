@@ -224,8 +224,11 @@ local function is_enterprise()
         return true
     end
 
-    local tnt = _G.tarantool
-    if tnt == nil or tnt.package == nil then
+    -- `tarantool` is a built-in module; requesting it avoids reading the
+    -- `_G.tarantool` global, which doesn't exist (and whose read raises under
+    -- the cartridge strict-globals metatable).
+    local ok, tnt = pcall(require, 'tarantool')
+    if not ok or tnt == nil or tnt.package == nil then
         return false
     end
 

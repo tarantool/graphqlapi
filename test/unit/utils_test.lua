@@ -303,28 +303,72 @@ end
 
 g.test_get_tnt_version_enterprise_package = function()
     local tnt_version = rawget(_G, '_TARANTOOL')
-    local saved_tarantool = rawget(_G, 'tarantool')
+    local saved_loaded = package.loaded.tarantool
+
+    local cases = {
+        {
+            version = '2.10.0-0-g7da4b1438',
+            package = 'Tarantool Enterprise',
+            enterprise = true,
+        },
+        {
+            version = '2.10.0-0-g7da4b1438',
+            package = 'Tarantool',
+            enterprise = false,
+        },
+        {
+            version = '2.10.0-0-g7da4b1438',
+            package = nil,
+            enterprise = false,
+        },
+        {
+            version = '2.10.0-1-gfa775b383-r478',
+            package = 'Tarantool',
+            enterprise = true,
+        },
+    }
+
+    for _, case in ipairs(cases) do
+        rawset(_G, '_TARANTOOL', case.version)
+        package.loaded.tarantool = { package = case.package }
+        t.assert_equals(utils.get_tnt_version().enterprise, case.enterprise)
+    end
+
+    rawset(_G, '_TARANTOOL', tnt_version)
+    package.loaded.tarantool = saved_loaded
+end
+
+g.test_get_tnt_version_enterprise_package_strict_globals = function()
+    local tnt_version = rawget(_G, '_TARANTOOL')
+    local saved_loaded = package.loaded.tarantool
+    local saved_metatable = getmetatable(_G)
+    local strict = require('strict')
 
     rawset(_G, '_TARANTOOL', '2.10.0-0-g7da4b1438')
 
-    rawset(_G, 'tarantool', { package = 'Tarantool Enterprise' })
-    t.assert_equals(utils.get_tnt_version().enterprise, true)
+    -- Imitate the Cartridge environment, where the entrypoint calls
+    -- `require('strict').on()` and reading an undeclared global raises.
+    strict.on()
 
-    rawset(_G, 'tarantool', { package = 'Tarantool' })
-    t.assert_equals(utils.get_tnt_version().enterprise, false)
+    local global_ok = pcall(function() return _G.tarantool end)
 
-    rawset(_G, 'tarantool', {})
-    t.assert_equals(utils.get_tnt_version().enterprise, false)
+    package.loaded.tarantool = { package = 'Tarantool Enterprise' }
+    local enterprise_ok, version = pcall(utils.get_tnt_version)
 
-    rawset(_G, 'tarantool', nil)
-    t.assert_equals(utils.get_tnt_version().enterprise, false)
+    package.loaded.tarantool = { package = 'Tarantool' }
+    local community_ok, community_version = pcall(utils.get_tnt_version)
 
-    rawset(_G, '_TARANTOOL', '2.10.0-1-gfa775b383-r478')
-    rawset(_G, 'tarantool', { package = 'Tarantool' })
-    t.assert_equals(utils.get_tnt_version().enterprise, true)
+    strict.off()
+    setmetatable(_G, saved_metatable)
+
+    t.assert_equals(global_ok, false)
+    t.assert(enterprise_ok, tostring(version))
+    t.assert_equals(version.enterprise, true)
+    t.assert(community_ok, tostring(community_version))
+    t.assert_equals(community_version.enterprise, false)
 
     rawset(_G, '_TARANTOOL', tnt_version)
-    rawset(_G, 'tarantool', saved_tarantool)
+    package.loaded.tarantool = saved_loaded
 end
 
 g.test_count_map = function()
