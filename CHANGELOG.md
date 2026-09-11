@@ -8,6 +8,12 @@
 
 ### Fixed
 
+## [0.0.15] - 2026-09-11
+
+This release fixes Tarantool Enterprise detection under cartridge.
+
+### Fixed
+
 - `utils.get_tnt_version()` aborting with `variable 'tarantool' is not
   declared` in Cartridge applications, which broke Tarantool Enterprise
   detection (#61).
