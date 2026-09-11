@@ -9,8 +9,17 @@ g.before_each(function()
     local cluster_config = table.deepcopy(helper.cluster_config)
     g.cluster = helper.Cluster:new(cluster_config)
     g.cluster:start()
+
     helper.retrying({}, function()
         t.assert_equals(helper.list_cluster_issues(g.cluster.main_server), {})
+    end)
+
+    helper.retrying({}, function()
+        local instances = g.cluster.main_server.net_box:eval(
+            "return require('graphqlapi.cluster').get_instances()")
+        for _, instance in ipairs(instances) do
+            t.assert_equals(instance.status, 'healthy')
+        end
     end)
 end)
 

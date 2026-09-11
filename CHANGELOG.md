@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- `Detect Tarantool Enterprise by tarantool.package in utils.get_tnt_version()`
+### Added
+
+### Changed
+
+### Fixed
+
+- Flaky `cluster.test_get_instances` and `cluster.test_get_replicaset_instances`
+  tests by waiting until all instances report `healthy` status before running
+  assertions.
 
 ## 0.0.13
 
