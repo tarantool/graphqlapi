@@ -8,6 +8,14 @@
 
 ### Fixed
 
+## [0.0.14] - 2026-09-11
+
+This release fixes Tarantool Enterprise detection and flaky tests.
+
+### Fixed
+
+- Detect Tarantool Enterprise by tarantool.package in utils.get_tnt_version()
+  (#58).
 - Flaky `cluster.test_get_instances` and `cluster.test_get_replicaset_instances`
   tests by waiting until all instances report `healthy` status before running
   assertions.
